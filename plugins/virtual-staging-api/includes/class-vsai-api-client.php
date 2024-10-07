@@ -26,12 +26,12 @@ class VSAI_API_Client
       'method' => $method,
       'headers' => array(
         'Authorization' => 'Api-Key ' . $this->api_key,
+        'Content-Type' => 'application/json',
       ),
     );
 
     if ($body && in_array($method, ['POST', 'PUT', 'PATCH'])) {
       $args['body'] = json_encode($body);
-      $args['headers']['Content-Type'] = 'application/json';
     }
 
     $response = wp_remote_request($full_url, $args);
@@ -42,10 +42,6 @@ class VSAI_API_Client
 
     $status_code = wp_remote_retrieve_response_code($response);
     $body = wp_remote_retrieve_body($response);
-
-    if ($status_code !== 200) {
-      return new WP_Error('api_error', 'API returned non-200 status code: ' . $status_code, array('status' => $status_code, 'body' => $body));
-    }
 
     $data = json_decode($body, true);
 
