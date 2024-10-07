@@ -19,13 +19,6 @@ class VSAI_Handlers
     );
   }
 
-  public function get_env_handler($request)
-  {
-    // This method should be removed or handled differently,
-    // as we no longer have direct access to env_loader here
-    return new WP_Error('not_implemented', 'This endpoint is no longer available', array('status' => 501));
-  }
-
   public function get_posts_handler($request)
   {
     // Consider moving this to the VSAI_API_Client if it's related to your API
