@@ -52,6 +52,21 @@ class VSAI_Router
       'permission_callback' => array($this->authorizer, 'check_authorization')
     ));
 
+    register_rest_route('vsai/v1', '/render', array(
+      'methods' => 'GET',
+      'callback' => array($this->handlers, 'get_render_status_handler'),
+      'permission_callback' => array($this->authorizer, 'check_authorization'),
+      'args' => array(
+        'render_id' => array(
+          'required' => true,
+          'type' => 'string',
+          'validate_callback' => function ($param, $request, $key) {
+            return is_string($param) && !empty($param);
+          }
+        ),
+      ),
+    ));
+
     // Add more routes here as needed
   }
 }
