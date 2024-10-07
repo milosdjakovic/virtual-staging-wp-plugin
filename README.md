@@ -26,3 +26,13 @@ To stop the project:
 ```bash
 docker-compose down
 ```
+
+## Environment Configuration
+
+The environment configuration is done through the `.env` file located in the root directory of the plugin. The following environment variables are available:
+
+```dotenv
+VIRTUAL_STAGING_API_URL: The URL of the Virtual Staging API.
+VIRTUAL_STAGING_API_KEY: The API key for the Virtual Staging API.
+DEV_MODE: Set to `true` to bypass authorization for the API endpoint during development. For production, ensure this is set to `false` to enforce security.
+```
