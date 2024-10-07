@@ -67,6 +67,21 @@ class VSAI_Router
       ),
     ));
 
+    register_rest_route('vsai/v1', '/render/create-variation', array(
+      'methods' => 'POST',
+      'callback' => array($this->handlers, 'create_render_variation_handler'),
+      'permission_callback' => array($this->authorizer, 'check_authorization'),
+      'args' => array(
+        'render_id' => array(
+          'required' => true,
+          'type' => 'string',
+          'validate_callback' => function ($param, $request, $key) {
+            return is_string($param) && !empty($param);
+          }
+        ),
+      ),
+    ));
+
     // Add more routes here as needed
   }
 }
