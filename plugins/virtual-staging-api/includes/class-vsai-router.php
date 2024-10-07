@@ -28,6 +28,12 @@ class VSAI_Router
       'permission_callback' => array($this->authorizer, 'check_authorization')
     ));
 
+    register_rest_route('vsai/v1', '/get-posts', array(
+      'methods' => 'GET',
+      'callback' => array($this->handlers, 'get_posts_handler'),
+      'permission_callback' => array($this->authorizer, 'check_authorization')
+    ));
+
     // Add more routes here as needed
   }
 }
