@@ -67,5 +67,17 @@ class VSAI_Handlers
     return $this->api_client->request('render/create', 'POST', $params);
   }
 
+  public function get_render_status_handler($request)
+  {
+    $render_id = $request->get_param('render_id');
+
+    if (!$render_id) {
+      return new WP_Error('missing_parameter', "Missing required parameter: render_id", array('status' => 400));
+    }
+
+    // Call the API client method
+    return $this->api_client->request("render?render_id=$render_id", 'GET');
+  }
+
   // Add more handler methods here as needed
 }
