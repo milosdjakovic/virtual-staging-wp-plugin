@@ -15,19 +15,22 @@ $router_file = plugin_dir_path(__FILE__) . 'includes/class-vsai-router.php';
 $handlers_file = plugin_dir_path(__FILE__) . 'includes/class-vsai-handlers.php';
 $env_loader_file = plugin_dir_path(__FILE__) . 'includes/class-vsai-env-loader.php';
 $authorizer_file = plugin_dir_path(__FILE__) . 'includes/class-vsai-authorizer.php';
+$api_client_file = plugin_dir_path(__FILE__) . 'includes/class-vsai-api-client.php';
 
-if (file_exists($router_file) && file_exists($handlers_file) && file_exists($env_loader_file) && file_exists($authorizer_file)) {
+if (file_exists($router_file) && file_exists($handlers_file) && file_exists($env_loader_file) && file_exists($authorizer_file) && file_exists($api_client_file)) {
   require_once $router_file;
   require_once $handlers_file;
   require_once $env_loader_file;
   require_once $authorizer_file;
+  require_once $api_client_file;
 
   // Initialize the router
   function vsai_init_router()
   {
     $env_loader = new VSAI_Env_Loader();
     $authorizer = new VSAI_Authorizer($env_loader);
-    $handlers = new VSAI_Handlers($env_loader);
+    $api_client = new VSAI_API_Client($env_loader);
+    $handlers = new VSAI_Handlers($api_client);
     $router = new VSAI_Router($handlers, $authorizer);
     $router->register_routes();
   }
