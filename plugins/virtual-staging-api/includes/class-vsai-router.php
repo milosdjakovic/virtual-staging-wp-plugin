@@ -46,6 +46,12 @@ class VSAI_Router
       'permission_callback' => array($this->authorizer, 'check_authorization')
     ));
 
+    register_rest_route('vsai/v1', '/render/create', array(
+      'methods' => 'POST',
+      'callback' => array($this->handlers, 'create_render_handler'),
+      'permission_callback' => array($this->authorizer, 'check_authorization')
+    ));
+
     // Add more routes here as needed
   }
 }
