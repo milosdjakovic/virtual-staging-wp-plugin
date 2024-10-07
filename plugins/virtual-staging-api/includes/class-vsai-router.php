@@ -16,9 +16,9 @@ class VSAI_Router
 
   public function register_routes()
   {
-    register_rest_route('vsai/v1', '/ping', array(
+    register_rest_route('vsai/v1', '/hello-world', array(
       'methods' => 'GET',
-      'callback' => array($this->handlers, 'ping_handler'),
+      'callback' => array($this->handlers, 'hello_world_handler'),
       'permission_callback' => array($this->authorizer, 'check_authorization')
     ));
 
@@ -37,6 +37,12 @@ class VSAI_Router
     register_rest_route('vsai/v1', '/options', array(
       'methods' => 'GET',
       'callback' => array($this->handlers, 'options_handler'),
+      'permission_callback' => array($this->authorizer, 'check_authorization')
+    ));
+
+    register_rest_route('vsai/v1', '/ping', array(
+      'methods' => 'GET',
+      'callback' => array($this->handlers, 'ping_handler'),
       'permission_callback' => array($this->authorizer, 'check_authorization')
     ));
 
