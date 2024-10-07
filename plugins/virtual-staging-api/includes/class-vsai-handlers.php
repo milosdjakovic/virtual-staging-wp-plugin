@@ -48,5 +48,24 @@ class VSAI_Handlers
     return $this->api_client->request('ping');
   }
 
+  public function create_render_handler($request)
+  {
+    $params = $request->get_json_params();
+
+    // Validate required parameters
+    $required_params = ['image_url', 'room_type', 'style'];
+    foreach ($required_params as $param) {
+      if (!isset($params[$param])) {
+        return new WP_Error('missing_parameter', "Missing required parameter: $param", array('status' => 400));
+      }
+    }
+
+    // Set default value for wait_for_completion if not provided
+    $params['wait_for_completion'] = isset($params['wait_for_completion']) ? $params['wait_for_completion'] : false;
+
+    // Call the API client method
+    return $this->api_client->request('render/create', 'POST', $params);
+  }
+
   // Add more handler methods here as needed
 }
