@@ -79,5 +79,31 @@ class VSAI_Handlers
     return $this->api_client->request("render?render_id=$render_id", 'GET');
   }
 
+  public function create_render_variation_handler($request)
+  {
+    $render_id = $request->get_param('render_id');
+    $params = $request->get_json_params();
+
+    if (!$render_id) {
+      return new WP_Error('missing_parameter', "Missing required parameter: render_id", array('status' => 400));
+    }
+
+    // Validate required parameters
+    $required_params = ['style', 'roomType'];
+    foreach ($required_params as $param) {
+      if (!isset($params[$param])) {
+        return new WP_Error('missing_parameter', "Missing required parameter: $param", array('status' => 400));
+      }
+    }
+
+    // Set default value for wait_for_completion if not provided
+    $params['wait_for_completion'] = isset($params['wait_for_completion']) ? $params['wait_for_completion'] : false;
+
+    // Call the API client method
+    return $this->api_client->request("render/create-variation?render_id=$render_id", 'POST', $params);
+  }
+
+
+
   // Add more handler methods here as needed
 }
