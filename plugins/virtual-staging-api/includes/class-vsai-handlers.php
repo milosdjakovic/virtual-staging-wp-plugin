@@ -12,7 +12,7 @@ class VSAI_Handlers
     $this->env_loader = $env_loader;
   }
 
-  public function ping_handler($request)
+  public function hello_world_handler($request)
   {
     return array(
       'message' => 'Hello World'
@@ -79,5 +79,44 @@ class VSAI_Handlers
 
     return $data;
   }
+
+  public function ping_handler($request)
+  {
+    $api_base_url = $this->env_loader->get_env('VIRTUAL_STAGING_API_URL');
+    $api_key = $this->env_loader->get_env('VIRTUAL_STAGING_API_KEY');
+
+    if (!$api_base_url || !$api_key) {
+      return new WP_Error('missing_config', 'API URL or API Key is missing', array('status' => 500));
+    }
+
+    // Remove trailing slash if present and append 'ping'
+    $full_url = rtrim($api_base_url, '/') . '/ping';
+
+    $response = wp_remote_get($full_url, array(
+      'headers' => array(
+        'Authorization' => 'Api-Key ' . $api_key,
+      ),
+    ));
+
+    if (is_wp_error($response)) {
+      return new WP_Error('api_error', 'Failed to ping API: ' . $response->get_error_message(), array('status' => 500));
+    }
+
+    $status_code = wp_remote_retrieve_response_code($response);
+    $body = wp_remote_retrieve_body($response);
+
+    if ($status_code !== 200) {
+      return new WP_Error('api_error', 'API returned non-200 status code: ' . $status_code, array('status' => $status_code, 'body' => $body));
+    }
+
+    $data = json_decode($body, true);
+
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      return new WP_Error('json_error', 'Failed to parse JSON: ' . json_last_error_msg(), array('status' => 500, 'body' => $body));
+    }
+
+    return $data;
+  }
+
   // Add more handler methods here as needed
 }
