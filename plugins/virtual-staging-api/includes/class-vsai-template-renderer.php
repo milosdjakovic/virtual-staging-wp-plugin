@@ -62,7 +62,7 @@ class VSAI_Template_Renderer
     wp_enqueue_style('vsai-upload-style', $this->plugin_url . 'templates/upload/snipped.css');
 
     // Enqueue any JavaScript files if needed
-    // wp_enqueue_script('vsai-main-script', $this->plugin_url . 'templates/main/script.js', array('jquery'), null, true);
-    // wp_enqueue_script('vsai-upload-script', $this->plugin_url . 'templates/upload/script.js', array('jquery'), null, true);
+    wp_enqueue_script('vsai-main-script', $this->plugin_url . 'templates/main/script.js', array('jquery'), null, true);
+    wp_enqueue_script('vsai-upload-script', $this->plugin_url . 'templates/upload/script.js', array('jquery'), null, true);
   }
 }
