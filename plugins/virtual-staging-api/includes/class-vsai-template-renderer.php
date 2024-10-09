@@ -6,10 +6,13 @@ if (!defined('ABSPATH'))
 class VSAI_Template_Renderer
 {
   private $templates = [];
+  private $plugin_url;
 
-  public function __construct()
+  public function __construct($plugin_url)
   {
+    $this->plugin_url = $plugin_url;
     add_shortcode('vsai_template', array($this, 'render_template_shortcode'));
+    add_action('wp_enqueue_scripts', array($this, 'enqueue_template_assets'));
   }
 
   public function register_template($name, $file_path)
@@ -52,8 +55,14 @@ class VSAI_Template_Renderer
     return $this->render_template($atts['name'], $data);
   }
 
-  public function enqueue_template_styles()
+  public function enqueue_template_assets()
   {
-    wp_enqueue_style('vsai-template-styles', plugin_dir_url(__FILE__) . '../assets/css/vsai-templates.css');
+    // Enqueue main CSS
+    wp_enqueue_style('vsai-main-style', $this->plugin_url . 'templates/main/snipped.css');
+    wp_enqueue_style('vsai-upload-style', $this->plugin_url . 'templates/upload/snipped.css');
+
+    // Enqueue any JavaScript files if needed
+    // wp_enqueue_script('vsai-main-script', $this->plugin_url . 'templates/main/script.js', array('jquery'), null, true);
+    // wp_enqueue_script('vsai-upload-script', $this->plugin_url . 'templates/upload/script.js', array('jquery'), null, true);
   }
 }

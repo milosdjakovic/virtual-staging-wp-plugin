@@ -37,8 +37,8 @@
           value: name,
           options: [
             { label: "Select a template", value: "" },
-            { label: "Upload Form", value: "upload_form" },
-            { label: "Main Page", value: "main_page" },
+            { label: "Main Page", value: "main" },
+            { label: "Upload Form", value: "upload" },
           ],
           onChange: onChangeName,
         }),

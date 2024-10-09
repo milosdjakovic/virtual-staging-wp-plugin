@@ -16,17 +16,22 @@ $handlers_file = plugin_dir_path(__FILE__) . 'includes/class-vsai-handlers.php';
 $env_loader_file = plugin_dir_path(__FILE__) . 'includes/class-vsai-env-loader.php';
 $authorizer_file = plugin_dir_path(__FILE__) . 'includes/class-vsai-authorizer.php';
 $api_client_file = plugin_dir_path(__FILE__) . 'includes/class-vsai-api-client.php';
-require_once plugin_dir_path(__FILE__) . 'includes/class-vsai-template-renderer.php';
+$template_renderer_file = plugin_dir_path(__FILE__) . 'includes/class-vsai-template-renderer.php'; // Add this line
 
-if (file_exists($router_file) && file_exists($handlers_file) && file_exists($env_loader_file) && file_exists($authorizer_file) && file_exists($api_client_file)) {
+// Check if all required files exist
+if (
+  file_exists($router_file) && file_exists($handlers_file) && file_exists($env_loader_file) &&
+  file_exists($authorizer_file) && file_exists($api_client_file) && file_exists($template_renderer_file)
+) {
   require_once $router_file;
   require_once $handlers_file;
   require_once $env_loader_file;
   require_once $authorizer_file;
   require_once $api_client_file;
+  require_once $template_renderer_file; // Add this line
 
-  // Initialize the router
-  function vsai_init_router()
+  // Initialize the plugin
+  function vsai_init()
   {
     $env_loader = new VSAI_Env_Loader();
     $authorizer = new VSAI_Authorizer($env_loader);
@@ -34,16 +39,19 @@ if (file_exists($router_file) && file_exists($handlers_file) && file_exists($env
     $handlers = new VSAI_Handlers($api_client);
     $router = new VSAI_Router($handlers, $authorizer);
     $router->register_routes();
+
+    // Initialize template renderer
+    $plugin_url = plugin_dir_url(__FILE__);
+    $template_renderer = new VSAI_Template_Renderer($plugin_url);
+
+    // Register templates
+    $template_renderer->register_template('main', plugin_dir_path(__FILE__) . 'templates/main/index.html');
+    $template_renderer->register_template('upload', plugin_dir_path(__FILE__) . 'templates/upload/index.html');
   }
 
-  add_action('rest_api_init', 'vsai_init_router');
+  add_action('init', 'vsai_init');
 
-  $template_renderer = new VSAI_Template_Renderer();
-  $template_renderer->register_template('upload_form', plugin_dir_path(__FILE__) . 'templates/upload-form.php');
-  $template_renderer->register_template('main_page', plugin_dir_path(__FILE__) . 'templates/main-page.php');
-  // Enqueue styles
-  add_action('wp_enqueue_scripts', array($template_renderer, 'enqueue_template_styles'));
-
+  // Enqueue block editor assets
   function vsai_enqueue_block_editor_assets()
   {
     wp_enqueue_script(
@@ -55,6 +63,7 @@ if (file_exists($router_file) && file_exists($handlers_file) && file_exists($env
   }
   add_action('enqueue_block_editor_assets', 'vsai_enqueue_block_editor_assets');
 
+  // Register the block
   function vsai_register_block()
   {
     register_block_type('vsai/template-block', array(
@@ -63,12 +72,13 @@ if (file_exists($router_file) && file_exists($handlers_file) && file_exists($env
   }
   add_action('init', 'vsai_register_block');
 
+  // Render callback for the block
   function vsai_render_template_block($attributes)
   {
     $name = isset($attributes['name']) ? $attributes['name'] : '';
     $data = isset($attributes['data']) ? $attributes['data'] : '{}';
 
-    // Use your existing shortcode render function
+    // Use the existing shortcode render function
     $shortcode = sprintf('[vsai_template name="%s" data=\'%s\']', esc_attr($name), esc_attr($data));
     return do_shortcode($shortcode);
   }
