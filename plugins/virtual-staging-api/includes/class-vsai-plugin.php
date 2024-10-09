@@ -57,8 +57,8 @@ class VSAI_Plugin
 
   private function register_templates()
   {
-    $this->template_renderer->register_template('main', plugin_dir_path(dirname(__FILE__)) . 'templates/main/index.html');
-    $this->template_renderer->register_template('upload', plugin_dir_path(dirname(__FILE__)) . 'templates/upload/index.html');
+    $this->template_renderer->register_template('main', plugin_dir_path(dirname(__FILE__)) . 'templates/main/index.php');
+    $this->template_renderer->register_template('upload', plugin_dir_path(dirname(__FILE__)) . 'templates/upload/index.php');
     $this->template_renderer->register_template('test', plugin_dir_path(dirname(__FILE__)) . 'templates/test/index.php');
   }
 
