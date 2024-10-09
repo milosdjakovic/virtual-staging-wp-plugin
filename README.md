@@ -39,16 +39,8 @@ DEV_MODE: Set to `true` to bypass authorization for the plugin's API endpoints d
 
 ## Form Shortcodes
 
-The plugin provides two shortcodes to embed upload form and main page the forms in the WordPress site:
-
-Add the shortcode where you want your template to appear:
+To test the REST API, you can use the following form shortcode:
 
 ```php
-[vsai_template name="upload_form"]
-```
-
-If you need to pass data:
-
-```php
-[vsai_template name="main_page" data='{"api_result": "Sample API Result"}']
+[vsai_test_form]
 ```
