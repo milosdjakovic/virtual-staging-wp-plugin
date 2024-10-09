@@ -46,6 +46,7 @@ class VSAI_Plugin
     add_action('init', array($this, 'init'));
     add_action('enqueue_block_editor_assets', array($this, 'enqueue_block_editor_assets'));
     add_action('init', array($this, 'register_block'));
+    add_shortcode('vsai_test_form', array($this, 'test_form_shortcode'));
   }
 
   public function init()
@@ -58,6 +59,7 @@ class VSAI_Plugin
   {
     $this->template_renderer->register_template('main', plugin_dir_path(dirname(__FILE__)) . 'templates/main/index.html');
     $this->template_renderer->register_template('upload', plugin_dir_path(dirname(__FILE__)) . 'templates/upload/index.html');
+    $this->template_renderer->register_template('test', plugin_dir_path(dirname(__FILE__)) . 'templates/test/index.php');
   }
 
   public function enqueue_block_editor_assets()
@@ -83,5 +85,10 @@ class VSAI_Plugin
     $data = isset($attributes['data']) ? $attributes['data'] : '{}';
 
     return $this->template_renderer->render_template($name, json_decode($data, true));
+  }
+
+  public function test_form_shortcode($atts)
+  {
+    return $this->template_renderer->render_template('test');
   }
 }
