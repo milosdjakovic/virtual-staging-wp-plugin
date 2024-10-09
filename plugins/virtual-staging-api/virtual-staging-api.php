@@ -16,6 +16,7 @@ $handlers_file = plugin_dir_path(__FILE__) . 'includes/class-vsai-handlers.php';
 $env_loader_file = plugin_dir_path(__FILE__) . 'includes/class-vsai-env-loader.php';
 $authorizer_file = plugin_dir_path(__FILE__) . 'includes/class-vsai-authorizer.php';
 $api_client_file = plugin_dir_path(__FILE__) . 'includes/class-vsai-api-client.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-vsai-template-renderer.php';
 
 if (file_exists($router_file) && file_exists($handlers_file) && file_exists($env_loader_file) && file_exists($authorizer_file) && file_exists($api_client_file)) {
   require_once $router_file;
@@ -36,6 +37,13 @@ if (file_exists($router_file) && file_exists($handlers_file) && file_exists($env
   }
 
   add_action('rest_api_init', 'vsai_init_router');
+
+  $template_renderer = new VSAI_Template_Renderer();
+  $template_renderer->register_template('upload_form', plugin_dir_path(__FILE__) . 'templates/upload-form.php');
+  $template_renderer->register_template('main_page', plugin_dir_path(__FILE__) . 'templates/main-page.php');
+  // Enqueue styles
+  add_action('wp_enqueue_scripts', array($template_renderer, 'enqueue_template_styles'));
+
 } else {
   error_log('Virtual Staging API: Required files are missing.');
 }
