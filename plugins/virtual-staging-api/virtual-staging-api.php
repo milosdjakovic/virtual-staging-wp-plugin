@@ -44,6 +44,35 @@ if (file_exists($router_file) && file_exists($handlers_file) && file_exists($env
   // Enqueue styles
   add_action('wp_enqueue_scripts', array($template_renderer, 'enqueue_template_styles'));
 
+  function vsai_enqueue_block_editor_assets()
+  {
+    wp_enqueue_script(
+      'vsai-template-block',
+      plugins_url('assets/js/vsai-template-block.js', __FILE__),
+      array('wp-blocks', 'wp-element', 'wp-components'),
+      filemtime(plugin_dir_path(__FILE__) . 'assets/js/vsai-template-block.js')
+    );
+  }
+  add_action('enqueue_block_editor_assets', 'vsai_enqueue_block_editor_assets');
+
+  function vsai_register_block()
+  {
+    register_block_type('vsai/template-block', array(
+      'render_callback' => 'vsai_render_template_block'
+    ));
+  }
+  add_action('init', 'vsai_register_block');
+
+  function vsai_render_template_block($attributes)
+  {
+    $name = isset($attributes['name']) ? $attributes['name'] : '';
+    $data = isset($attributes['data']) ? $attributes['data'] : '{}';
+
+    // Use your existing shortcode render function
+    $shortcode = sprintf('[vsai_template name="%s" data=\'%s\']', esc_attr($name), esc_attr($data));
+    return do_shortcode($shortcode);
+  }
+
 } else {
   error_log('Virtual Staging API: Required files are missing.');
 }
