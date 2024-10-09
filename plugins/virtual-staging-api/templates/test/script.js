@@ -1,26 +1,24 @@
-jQuery(document).ready(function ($) {
-  $("#vsai-api-test-form").on("submit", function (e) {
+jQuery(document).ready(($) => {
+  $("#vsai-api-test-form").on("submit", (e) => {
     e.preventDefault();
-    var endpoint = $("#vsai-api-endpoint").val();
-    var apiUrl = vsaiApiSettings.root + endpoint;
+    const endpoint = $("#vsai-api-endpoint").val();
+    const apiUrl = vsaiApiSettings.root + endpoint;
 
     $("#vsai-api-response").html("Loading...");
 
     $.ajax({
       url: apiUrl,
       method: "GET",
-      beforeSend: function (xhr) {
+      beforeSend: (xhr) => {
         xhr.setRequestHeader("X-WP-Nonce", vsaiApiSettings.nonce);
       },
-      success: function (response) {
+      success: (response) => {
         $("#vsai-api-response").html(
-          "<pre>" + JSON.stringify(response, null, 2) + "</pre>"
+          `<pre>${JSON.stringify(response, null, 2)}</pre>`
         );
       },
-      error: function (jqXHR, textStatus, errorThrown) {
-        $("#vsai-api-response").html(
-          "Error: " + textStatus + " - " + errorThrown
-        );
+      error: (jqXHR, textStatus, errorThrown) => {
+        $("#vsai-api-response").html(`Error: ${textStatus} - ${errorThrown}`);
       },
     });
   });
