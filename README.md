@@ -44,3 +44,11 @@ To test the REST API, you can use the following form shortcode:
 ```php
 [vsai_test_form]
 ```
+
+### Debug Log
+
+To view the WordPress debug log run:  
+
+```bash
+docker-compose exec wordpress cat /var/www/html/wp-content/debug.log
+```
