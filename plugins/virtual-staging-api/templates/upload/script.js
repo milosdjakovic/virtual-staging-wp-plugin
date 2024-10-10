@@ -1,3 +1,8 @@
+const DEV_MODE = false;
+
+const DEV_IMAGE_URL =
+  "https://img.freepik.com/free-photo/modern-empty-room_23-2150528594.jpg?t=st=1728568656~exp=1728572256~hmac=6ae19b7cfd5cb1a17338bf827123b29825dae441548162a1b0bf85ff47d97514&w=1800";
+
 document.addEventListener("DOMContentLoaded", initializeApp);
 
 function initializeApp() {
@@ -49,9 +54,9 @@ class DropZone {
   }
 
   setupDragAndDrop() {
-    ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+    for (const eventName of ["dragenter", "dragover", "dragleave", "drop"]) {
       this.dropZone.addEventListener(eventName, this.preventDefaults, false);
-    });
+    }
     this.dropZone.addEventListener("drop", (e) => this.handleDrop(e));
   }
 
@@ -90,21 +95,36 @@ class ProcessButton {
   }
 
   processPhoto() {
+    const removeFurniture =
+      document.querySelector('input[type="checkbox"][class*="ml-auto"]')
+        ?.checked || false;
+    const addFurniture =
+      document.getElementById("add-furniture-checkbox")?.checked || false;
+    const roomType = document.getElementById("room-type")?.value;
+    const furnitureStyle = document.getElementById("furniture-style")?.value;
+
+    if (!roomType || !furnitureStyle) {
+      console.error("Room type or furniture style not selected");
+      return;
+    }
+
+    console.log("Remove furniture:", removeFurniture);
+    console.log("Add furniture:", addFurniture);
+    console.log("Room type:", roomType);
+    console.log("Furniture style:", furnitureStyle);
+
+    if (DEV_MODE) {
+      console.log("Using development image URL");
+      this.createRender(DEV_IMAGE_URL, roomType, furnitureStyle);
+      return;
+    }
+
     if (!this.fileInput || !this.fileInput.files.length) {
       console.error("No file selected");
       return;
     }
 
     const file = this.fileInput.files[0];
-    const removeFurniture =
-      document.querySelector('input[type="checkbox"][class*="ml-auto"]')
-        ?.checked || false;
-    const addFurniture =
-      document.getElementById("add-furniture-checkbox")?.checked || false;
-    const roomType = document.getElementById("room-type")?.value || "default";
-    const furnitureStyle =
-      document.getElementById("furniture-style")?.value || "default";
-
     const formData = new FormData();
     formData.append("image", file);
 
@@ -119,11 +139,6 @@ class ProcessButton {
       .then((data) => {
         if (data.url) {
           console.log("Uploaded image URL:", data.url);
-          console.log("Remove furniture:", removeFurniture);
-          console.log("Add furniture:", addFurniture);
-          console.log("Room type:", roomType);
-          console.log("Furniture style:", furnitureStyle);
-
           this.createRender(data.url, roomType, furnitureStyle);
         } else {
           console.error("Error: No image URL received");
@@ -142,7 +157,7 @@ class ProcessButton {
       wait_for_completion: false,
     };
 
-    console.log("Render payload:", JSON.stringify(renderData)); // Log the exact payload
+    console.log("Render payload:", JSON.stringify(renderData));
 
     fetch(`${vsaiApiSettings.root}render/create`, {
       method: "POST",
@@ -153,13 +168,12 @@ class ProcessButton {
       },
     })
       .then((response) => {
-        console.log("Response status:", response.status);
-        console.log("Response headers:", response.headers);
-        return response.text(); // Get the raw text instead of parsing JSON
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
       })
-      .then((text) => {
-        console.log("Raw response:", text);
-        const data = JSON.parse(text);
+      .then((data) => {
         if (data.render_id) {
           console.log("Render ID:", data.render_id);
           window.location.href = `/virtual-staging-main?render_id=${data.render_id}`;
