@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const dropZone = document.getElementById("drop-zone");
   const fileInput = document.getElementById("file-input");
-  const fileSelectButton = document.querySelector(".file-select-button");
   const processButton = document.getElementById("process-button");
 
   dropZone.addEventListener("click", () => {
@@ -26,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const img = document.createElement("img");
       img.src = e.target.result;
       img.style.maxWidth = "100%";
-      img.style.maxHeight = "200px";
+      img.style.maxHeight = "100%";
       dropZone.innerHTML = ""; // Clear existing content
       dropZone.appendChild(img);
 
@@ -44,9 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Prevent default drag behaviors
-  ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+  for (const eventName of ["dragenter", "dragover", "dragleave", "drop"]) {
     dropZone.addEventListener(eventName, preventDefaults, false);
-  });
+  }
 
   function preventDefaults(e) {
     e.preventDefault();
@@ -65,4 +64,23 @@ document.addEventListener("DOMContentLoaded", () => {
     // Add your processing logic here
     console.log("Processing photo...");
   });
+
+  initializeFurnitureSelection();
 });
+
+function initializeFurnitureSelection() {
+  const addFurnitureCheckbox = document.getElementById(
+    "add-furniture-checkbox"
+  );
+  const furnitureOptions = document.getElementById("furniture-options");
+
+  function toggleFurnitureOptions() {
+    if (addFurnitureCheckbox.checked) {
+      furnitureOptions.classList.remove("hidden");
+    } else {
+      furnitureOptions.classList.add("hidden");
+    }
+  }
+
+  addFurnitureCheckbox.addEventListener("change", toggleFurnitureOptions);
+}
