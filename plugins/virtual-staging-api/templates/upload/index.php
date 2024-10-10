@@ -41,10 +41,11 @@
                     <div class="flex h-full w-full flex-row justify-center max-w-3xl">
                         <div class="flex w-full flex-col">
                             <div class="flex h-auto flex-col items-center md:aspect-[7/5]">
-                                <div role="presentation" tabindex="0"
+                                <div id="drop-zone" role="presentation" tabindex="0"
                                     class="relative flex h-full w-full shrink-0 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl border border-dashed border-black/15 p-4 transition-all duration-75 hover:bg-black/[0.025] min-h-52 md:min-h-[300px]">
                                     <input accept="image/png,.png,.jpg,.jpeg,.gif,.webp,.svg,.bmp,.ico,.tiff"
-                                        multiple="" tabindex="-1" type="file" id="style-JvIrZ" class="style-JvIrZ">
+                                        tabindex="-1" type="file" id="file-input" class="style-JvIrZ hidden">
+
                                     <div class="flex items-center gap-2 flex-col text-center">
                                         <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
                                             stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-xl"
@@ -53,6 +54,7 @@
                                             <polyline points="17 8 12 3 7 8"></polyline>
                                             <line x1="12" x2="12" y1="3" y2="15"></line>
                                         </svg>
+
                                         <span>
                                             <span class="md:font-medium md:text-primary">Upload an image</span>
                                             <span class="hidden md:inline"> or drag and drop</span>
@@ -226,7 +228,7 @@
                             </div>
                         </div>
                     </div>
-                    <button
+                    <button id="process-button"
                         class="flex font-semibold relative transition-colors duration-75 items-center justify-center gap-1 md:gap-1.5 cursor-not-allowed opacity-50 rounded-xl border-2 px-10 py-3 text-white bg-primary border-primary mt-auto h-auto w-full text-base"
                         disabled="">
                         <span>Process photo</span>
