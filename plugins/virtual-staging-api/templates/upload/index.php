@@ -128,10 +128,10 @@
                                 </div>
                                 <input
                                     class="ml-auto h-5 w-5 rounded border-gray-300 bg-white text-primary focus:ring-2"
-                                    readonly="" type="checkbox">
+                                    type="checkbox">
                             </div>
                         </div>
-                        <div
+                        <div id="add-furniture-section"
                             class="flex flex-col items-stretch overflow-hidden rounded-xl border p-4 transition-all duration-100 border-black/15 bg-white hover:bg-iceblue-100 cursor-pointer hover:border-navy-800">
                             <div class="flex items-center gap-2">
                                 <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
@@ -142,16 +142,17 @@
                                     <path d="M12 8v8"></path>
                                 </svg>
                                 <div class="whitespace-nowrap text-base">Add furniture</div>
-                                <input
+                                <input id="add-furniture-checkbox"
                                     class="ml-auto h-5 w-5 rounded border-gray-300 bg-white text-primary focus:ring-2"
-                                    readonly="" type="checkbox">
+                                    type="checkbox">
                             </div>
-                            <div class="transition-all duration-300 invisible max-h-0 opacity-0">
+                            <div id="furniture-options" class="transition-all duration-300 hidden">
                                 <div class="mt-4">
                                     <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2">
                                         <div
                                             class="MuiFormControl-root MuiFormControl-vertical MuiFormControl-sizeMd css-9rix66">
-                                            <label for=":rb5:" id=":rb5:-label" class="MuiFormLabel-root css-rtxwyt">
+                                            <label for="room-type" id="room-type-label"
+                                                class="MuiFormLabel-root css-rtxwyt">
                                                 <div class="flex items-center">
                                                     <div class="mr-2 inline-block">
                                                         <svg stroke="currentColor" fill="none" stroke-width="2"
@@ -162,32 +163,21 @@
                                                             <path d="M5 10V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"></path>
                                                             <path d="M3 18h18"></path>
                                                         </svg>
-                                                    </div>Room type
+                                                    </div>
+                                                    Room type
                                                 </div>
                                             </label>
-                                            <div
+                                            <select id="room-type" name="room-type"
                                                 class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
-                                                <button role="combobox" aria-expanded="false" aria-controls=":rb6:"
-                                                    aria-labelledby=":rb5:-label" id=":rb5:" name="radio-buttons-group"
-                                                    class="MuiSelect-button css-1qmzz5g" type="button">
-                                                    Bedroom
-                                                </button>
-                                                <span class="MuiSelect-indicator css-nvn28y">
-                                                    <svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"
-                                                        data-testid="UnfoldIcon"
-                                                        class="MuiSvgIcon-root MuiSvgIcon-sizeMd css-c9nsto">
-                                                        <path
-                                                            d="m12 5.83 2.46 2.46c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L12.7 3.7a.9959.9959 0 0 0-1.41 0L8.12 6.88c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 5.83zm0 12.34-2.46-2.46a.9959.9959 0 0 0-1.41 0c-.39.39-.39 1.02 0 1.41l3.17 3.18c.39.39 1.02.39 1.41 0l3.17-3.17c.39-.39.39-1.02 0-1.41a.9959.9959 0 0 0-1.41 0L12 18.17z">
-                                                        </path>
-                                                    </svg>
-                                                </span>
-                                                <input tabindex="-1" aria-hidden="true" value="bed"
-                                                    name="radio-buttons-group" id="style-yVBAI" class="style-yVBAI">
-                                            </div>
+                                                <option value="bedroom">Bedroom</option>
+                                                <option value="living-room">Living Room</option>
+                                                <option value="kitchen">Kitchen</option>
+                                            </select>
                                         </div>
                                         <div
                                             class="MuiFormControl-root MuiFormControl-vertical MuiFormControl-sizeMd z-50 css-9rix66">
-                                            <label for=":rb7:" id=":rb7:-label" class="MuiFormLabel-root css-rtxwyt">
+                                            <label for="furniture-style" id="furniture-style-label"
+                                                class="MuiFormLabel-root css-rtxwyt">
                                                 <div class="flex items-center">
                                                     <div class="mr-2 inline-block">
                                                         <svg stroke="currentColor" fill="none" stroke-width="2"
@@ -205,23 +195,12 @@
                                                     </div>Furniture style
                                                 </div>
                                             </label>
-                                            <div
+                                            <select id="furniture-style" name="furniture-style"
                                                 class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
-                                                <button role="combobox" aria-expanded="false" aria-controls=":rb8:"
-                                                    aria-labelledby=":rb7:-label" id=":rb7:" name="radio-buttons-group"
-                                                    class="MuiSelect-button css-1qmzz5g" type="button">Standard</button>
-                                                <span class="MuiSelect-indicator css-nvn28y">
-                                                    <svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"
-                                                        data-testid="UnfoldIcon"
-                                                        class="MuiSvgIcon-root MuiSvgIcon-sizeMd css-c9nsto">
-                                                        <path
-                                                            d="m12 5.83 2.46 2.46c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L12.7 3.7a.9959.9959 0 0 0-1.41 0L8.12 6.88c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 5.83zm0 12.34-2.46-2.46a.9959.9959 0 0 0-1.41 0c-.39.39-.39 1.02 0 1.41l3.17 3.18c.39.39 1.02.39 1.41 0l3.17-3.17c.39-.39.39-1.02 0-1.41a.9959.9959 0 0 0-1.41 0L12 18.17z">
-                                                        </path>
-                                                    </svg>
-                                                </span>
-                                                <input tabindex="-1" aria-hidden="true" value="standard"
-                                                    name="radio-buttons-group" id="style-P8iXl" class="style-P8iXl">
-                                            </div>
+                                                <option value="standard">Standard</option>
+                                                <option value="modern">Modern</option>
+                                                <option value="classic">Classic</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -237,6 +216,7 @@
             </div>
         </div>
     </div>
+
 </body>
 
 </html>
