@@ -193,7 +193,7 @@
                                 </div>
                             </div>
                             <div class="carousel">
-                                <div class="thumbs-wrapper axis-vertical">
+                                <div style="overflow-x: auto;" class="thumbs-wrapper axis-vertical">
                                     <button type="button" class="control-arrow control-prev control-disabled"
                                         aria-label="previous slide / item"></button>
                                     <ul class="thumbs animated" id="thumbnail-slider">
