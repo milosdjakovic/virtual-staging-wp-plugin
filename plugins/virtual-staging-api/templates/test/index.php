@@ -1,14 +1,29 @@
 <div class="vsai-test-form">
-  <h2>VSAI API Test</h2>
-  <form id="vsai-api-test-form">
-    <select id="vsai-api-endpoint" name="endpoint">
-      <option value="options">Get Options</option>
-      <option value="ping">Ping</option>
-      <!-- Add more endpoints here as needed -->
-    </select>
-    <button type="submit">Test API</button>
+  <h2>VSAI Render Test</h2>
+  <form id="vsai-upload-form" enctype="multipart/form-data">
+    <input type="file" name="image" accept="image/*" required>
+    <button type="submit">Upload Image</button>
   </form>
-  <div id="vsai-api-response"></div>
+  <div id="vsai-upload-status"></div>
+
+  <form id="vsai-render-form" style="display:none;">
+    <input type="hidden" name="image_url" id="image_url">
+    <select name="room_type" required>
+      <option value="bed">Bedroom</option>
+      <option value="living">Living Room</option>
+      <!-- Add more room types as needed -->
+    </select>
+    <select name="style" required>
+      <option value="standard">Standard</option>
+      <option value="modern">Modern</option>
+      <!-- Add more styles as needed -->
+    </select>
+    <button type="submit">Create Render</button>
+  </form>
+  <div id="vsai-render-id"></div>
+  <button id="check-status" style="display:none;">Check Status</button>
+  <div id="vsai-render-status"></div>
+  <div id="vsai-render-result"></div>
 </div>
 
 <script>
