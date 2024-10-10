@@ -169,9 +169,13 @@
                                             </label>
                                             <select id="room-type" name="room-type"
                                                 class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
-                                                <option value="bedroom">Bedroom</option>
-                                                <option value="living-room">Living Room</option>
+                                                <option value="bed">Bed</option>
                                                 <option value="kitchen">Kitchen</option>
+                                                <option value="dining">Dining</option>
+                                                <option value="bathroom">Bathroom</option>
+                                                <option value="home_office">Home Office</option>
+                                                <option value="outdoor">Outdoor</option>
+                                                <option value="kids_room">Kids Room</option>
                                             </select>
                                         </div>
                                         <div
@@ -197,9 +201,15 @@
                                             </label>
                                             <select id="furniture-style" name="furniture-style"
                                                 class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
+                                                "modern",
+                                                <option value="scandinavian">Scandinavian</option>
+                                                <option value="industrial">Industrial</option>
+                                                <option value="midcentury">Mid-Century</option>
+                                                <option value="luxury">Luxury</option>
+                                                <option value="farmhouse">Farmhouse</option>
+                                                <option value="coastal">Coastal</option>
                                                 <option value="standard">Standard</option>
-                                                <option value="modern">Modern</option>
-                                                <option value="classic">Classic</option>
+
                                             </select>
                                         </div>
                                     </div>
@@ -216,6 +226,13 @@
             </div>
         </div>
     </div>
+
+    <script>
+        var vsaiApiSettings = {
+            root: '<?php echo esc_url_raw(rest_url('vsai/v1/')); ?>',
+            nonce: '<?php echo wp_create_nonce('wp_rest'); ?>'
+        };
+    </script>
 
 </body>
 
