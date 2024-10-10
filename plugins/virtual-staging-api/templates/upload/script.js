@@ -1,7 +1,7 @@
-const DEV_MODE = false;
+const DEV_MODE = true;
 
 const DEV_IMAGE_URL =
-  "https://img.freepik.com/free-photo/modern-empty-room_23-2150528594.jpg?t=st=1728568656~exp=1728572256~hmac=6ae19b7cfd5cb1a17338bf827123b29825dae441548162a1b0bf85ff47d97514&w=1800";
+  "https://static.vecteezy.com/system/resources/previews/005/727/726/non_2x/minimalist-empty-room-with-gray-wall-and-wood-floor-3d-rendering-free-photo.jpg";
 
 document.addEventListener("DOMContentLoaded", initializeApp);
 
@@ -176,7 +176,8 @@ class ProcessButton {
       .then((data) => {
         if (data.render_id) {
           console.log("Render ID:", data.render_id);
-          window.location.href = `/virtual-staging-main?render_id=${data.render_id}`;
+          const encodedImageUrl = encodeURIComponent(imageUrl);
+          window.location.href = `/virtual-staging-main?render_id=${data.render_id}&image_url=${encodedImageUrl}`;
         } else {
           console.error("Error: No render ID received", data);
         }
