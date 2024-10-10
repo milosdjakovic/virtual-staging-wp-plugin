@@ -3,11 +3,48 @@ document.addEventListener("DOMContentLoaded", initializeApp);
 function initializeApp() {
   const urlParams = new URLSearchParams(window.location.search);
   const renderId = urlParams.get("render_id");
+  const imageUrl = urlParams.get("image_url");
 
   if (renderId) {
     pollRenderStatus(renderId);
   } else {
     console.error("No render_id found in URL parameters");
+  }
+
+  if (imageUrl) {
+    setOriginalImage(imageUrl);
+  }
+
+  const dropZone = new DropZone("drop-zone", "file-input");
+  const processButton = new ProcessButton("process-button");
+  const furnitureSelector = new FurnitureSelector(
+    "add-furniture-checkbox",
+    "furniture-options"
+  );
+
+  dropZone.initialize();
+  processButton.initialize();
+  furnitureSelector.initialize();
+}
+
+function setOriginalImage(imageUrl) {
+  const originalImageContainer = document.querySelector(
+    "#renderPageOriginalContainer .group"
+  );
+  if (originalImageContainer) {
+    // Clear existing content
+    originalImageContainer.innerHTML = "";
+
+    // Create and add the image
+    const img = document.createElement("img");
+    img.src = decodeURIComponent(imageUrl);
+    img.alt = "Original Image";
+    img.className =
+      "h-full w-full bg-gray-100 object-contain transition-opacity group-hover:opacity-70";
+
+    originalImageContainer.appendChild(img);
+  } else {
+    console.error("Original image container not found");
   }
 }
 
@@ -28,7 +65,7 @@ function pollRenderStatus(renderId) {
       .catch((error) => {
         console.error("Error polling render status:", error);
       });
-  }, 1000);
+  }, 1500);
 }
 
 function updateUI(data) {
