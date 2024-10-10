@@ -76,17 +76,25 @@ function capitalizeFirstLetter(string) {
 class Carousel {
   constructor(imageUrls) {
     this.imageUrls = imageUrls;
-    this.updateMainCarousel();
-    this.updateThumbnails();
+    this.currentIndex = 0;
+    this.mainSlider = document.getElementById("main-slider");
+    this.thumbnailSlider = document.getElementById("thumbnail-slider");
+    this.initializeCarousel();
+    this.attachEventListeners();
   }
 
-  updateMainCarousel() {
-    const mainSlider = document.getElementById("main-slider");
-    if (mainSlider) {
-      mainSlider.innerHTML = this.imageUrls
+  initializeCarousel() {
+    this.renderMainSlider();
+    this.renderThumbnails();
+    this.updateActiveSlide();
+  }
+
+  renderMainSlider() {
+    if (this.mainSlider) {
+      this.mainSlider.innerHTML = this.imageUrls
         .map(
           (imageUrl, index) => `
-            <li class="slide${index === 0 ? " selected" : ""}">
+            <li class="slide" data-index="${index}">
                 <div class="relative">
                     <div class="group w-full overflow-hidden rounded-xl transition-all duration-0 opacity-100 relative">
                         <img class="h-full w-full bg-gray-100 object-contain transition-opacity"
@@ -100,18 +108,15 @@ class Carousel {
     }
   }
 
-  updateThumbnails() {
-    const thumbnailSlider = document.getElementById("thumbnail-slider");
-    if (thumbnailSlider) {
-      thumbnailSlider.innerHTML = this.imageUrls
+  renderThumbnails() {
+    if (this.thumbnailSlider) {
+      this.thumbnailSlider.innerHTML = this.imageUrls
         .map(
           (imageUrl, index) => `
-            <li class="thumb${
-              index === 0 ? " selected" : ""
-            }" aria-label="slide item ${index + 1}" role="button" tabindex="0">
-                <div class="relative w-24 transition-all duration-300 ${
-                  index === 0 ? "opacity-100" : "opacity-25 hover:opacity-100"
-                }">
+            <li class="thumb" data-index="${index}" aria-label="slide item ${
+            index + 1
+          }" role="button" tabindex="0">
+                <div class="relative w-24 transition-all duration-300">
                     <div class="group w-full overflow-hidden rounded-xl relative">
                         <img class="h-full w-full bg-gray-100 object-contain transition-opacity"
                             src="${imageUrl}" alt="Furnished image" loading="lazy">
@@ -124,18 +129,54 @@ class Carousel {
     }
   }
 
+  updateActiveSlide() {
+    const slides = this.mainSlider.querySelectorAll(".slide");
+    const thumbs = this.thumbnailSlider.querySelectorAll(".thumb");
+
+    slides.forEach((slide, index) => {
+      if (index === this.currentIndex) {
+        slide.classList.add("selected");
+        slide.style.display = "block";
+      } else {
+        slide.classList.remove("selected");
+        slide.style.display = "none";
+      }
+    });
+
+    thumbs.forEach((thumb, index) => {
+      if (index === this.currentIndex) {
+        thumb.classList.add("selected");
+        thumb.querySelector("div").classList.remove("opacity-25");
+        thumb.querySelector("div").classList.add("opacity-100");
+      } else {
+        thumb.classList.remove("selected");
+        thumb.querySelector("div").classList.remove("opacity-100");
+        thumb.querySelector("div").classList.add("opacity-25");
+      }
+    });
+  }
+
+  attachEventListeners() {
+    if (this.thumbnailSlider) {
+      this.thumbnailSlider.addEventListener("click", (event) => {
+        const thumb = event.target.closest(".thumb");
+        if (thumb) {
+          const index = parseInt(thumb.dataset.index, 10);
+          this.setCurrentImage(index);
+        }
+      });
+    }
+  }
+
+  setCurrentImage(index) {
+    if (index >= 0 && index < this.imageUrls.length) {
+      this.currentIndex = index;
+      this.updateActiveSlide();
+    }
+  }
+
   addImages(newImageUrls) {
     this.imageUrls = [...this.imageUrls, ...newImageUrls];
-    this.updateMainCarousel();
-    this.updateThumbnails();
+    this.initializeCarousel();
   }
 }
-
-// Test function to populate carousel with duplicate images
-function testCarouselWithDuplicateImages(imageUrl, count = 10) {
-  const duplicateImages = Array(count).fill(imageUrl);
-  new Carousel(duplicateImages);
-}
-
-// Uncomment the line below and call this function to test the carousel
-// testCarouselWithDuplicateImages('https://example.com/test-image.jpg');
