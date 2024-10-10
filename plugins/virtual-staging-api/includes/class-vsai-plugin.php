@@ -47,6 +47,7 @@ class VSAI_Plugin
     add_action('enqueue_block_editor_assets', array($this, 'enqueue_block_editor_assets'));
     add_action('init', array($this, 'register_block'));
     add_shortcode('vsai_test_form', array($this, 'test_form_shortcode'));
+    add_action('vsai_delete_uploaded_image', array($this, 'delete_uploaded_image'));
   }
 
   public function init()
@@ -90,5 +91,12 @@ class VSAI_Plugin
   public function test_form_shortcode($atts)
   {
     return $this->template_renderer->render_template('test');
+  }
+
+  public function delete_uploaded_image($file_path)
+  {
+    if (file_exists($file_path)) {
+      wp_delete_file($file_path);
+    }
   }
 }
