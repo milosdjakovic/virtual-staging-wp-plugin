@@ -62,43 +62,123 @@ class DropZone {
 
   handleDrop(e) {
     const file = e.dataTransfer.files[0];
-    this.displayImagePreview(file);
+    if (file) {
+      this.fileInput.files = e.dataTransfer.files; // Set the files to the input
+      this.displayImagePreview(file);
+    }
   }
 }
 
 class ProcessButton {
   constructor(buttonId) {
     this.button = document.getElementById(buttonId);
+    this.fileInput =
+      document.getElementById("file-input") ||
+      document.querySelector('input[type="file"]');
+    if (!this.button) {
+      console.error("Process button not found");
+    }
+    if (!this.fileInput) {
+      console.error("File input not found");
+    }
   }
 
   initialize() {
-    this.button.addEventListener("click", () => this.processPhoto());
+    if (this.button) {
+      this.button.addEventListener("click", () => this.processPhoto());
+    }
   }
 
   processPhoto() {
-    const removeFurniture = document.querySelector(
-      'input[type="checkbox"][class*="ml-auto"]'
-    ).checked;
-    const addFurniture = document.getElementById(
-      "add-furniture-checkbox"
-    ).checked;
-    const roomType = document.getElementById("room-type").value;
-    const furnitureStyle = document.getElementById("furniture-style").value;
+    if (!this.fileInput || !this.fileInput.files.length) {
+      console.error("No file selected");
+      return;
+    }
 
-    console.log("Processing photo...");
-    console.log("Remove furniture:", removeFurniture);
-    console.log("Add furniture:", addFurniture);
-    console.log("Room type:", roomType);
-    console.log("Furniture style:", furnitureStyle);
+    const file = this.fileInput.files[0];
+    const removeFurniture =
+      document.querySelector('input[type="checkbox"][class*="ml-auto"]')
+        ?.checked || false;
+    const addFurniture =
+      document.getElementById("add-furniture-checkbox")?.checked || false;
+    const roomType = document.getElementById("room-type")?.value || "default";
+    const furnitureStyle =
+      document.getElementById("furniture-style")?.value || "default";
 
-    // Add your processing logic here
+    const formData = new FormData();
+    formData.append("image", file);
+
+    fetch(`${vsaiApiSettings.root}upload-image`, {
+      method: "POST",
+      body: formData,
+      headers: {
+        "X-WP-Nonce": vsaiApiSettings.nonce,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.url) {
+          console.log("Uploaded image URL:", data.url);
+          console.log("Remove furniture:", removeFurniture);
+          console.log("Add furniture:", addFurniture);
+          console.log("Room type:", roomType);
+          console.log("Furniture style:", furnitureStyle);
+
+          this.createRender(data.url, roomType, furnitureStyle);
+        } else {
+          console.error("Error: No image URL received");
+        }
+      })
+      .catch((error) => {
+        console.error("Error uploading image:", error);
+      });
+  }
+
+  createRender(imageUrl, roomType, style) {
+    const renderData = {
+      image_url: imageUrl,
+      room_type: roomType,
+      style: style,
+      wait_for_completion: false,
+    };
+
+    console.log("Render payload:", JSON.stringify(renderData)); // Log the exact payload
+
+    fetch(`${vsaiApiSettings.root}render/create`, {
+      method: "POST",
+      body: JSON.stringify(renderData),
+      headers: {
+        "Content-Type": "application/json",
+        "X-WP-Nonce": vsaiApiSettings.nonce,
+      },
+    })
+      .then((response) => {
+        console.log("Response status:", response.status);
+        console.log("Response headers:", response.headers);
+        return response.text(); // Get the raw text instead of parsing JSON
+      })
+      .then((text) => {
+        console.log("Raw response:", text);
+        const data = JSON.parse(text);
+        if (data.render_id) {
+          console.log("Render ID:", data.render_id);
+          window.location.href = `/virtual-staging-main?render_id=${data.render_id}`;
+        } else {
+          console.error("Error: No render ID received", data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error creating render:", error);
+      });
   }
 
   static enable() {
     const button = document.getElementById("process-button");
-    button.disabled = false;
-    button.classList.remove("cursor-not-allowed", "opacity-50");
-    button.classList.add("cursor-pointer", "hover:bg-primary-dark");
+    if (button) {
+      button.disabled = false;
+      button.classList.remove("cursor-not-allowed", "opacity-50");
+      button.classList.add("cursor-pointer", "hover:bg-primary-dark");
+    }
   }
 }
 
