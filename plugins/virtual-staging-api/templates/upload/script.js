@@ -1,86 +1,122 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const dropZone = document.getElementById("drop-zone");
-  const fileInput = document.getElementById("file-input");
-  const processButton = document.getElementById("process-button");
+document.addEventListener("DOMContentLoaded", initializeApp);
 
-  dropZone.addEventListener("click", () => {
-    fileInput.click(); // Trigger the file input click
-  });
+function initializeApp() {
+  const dropZone = new DropZone("drop-zone", "file-input");
+  const processButton = new ProcessButton("process-button");
+  const furnitureSelector = new FurnitureSelector(
+    "add-furniture-checkbox",
+    "furniture-options"
+  );
 
-  // Add change event listener to the file input
-  fileInput.addEventListener("change", (event) => {
-    const file = event.target.files[0]; // Get the selected file
+  dropZone.initialize();
+  processButton.initialize();
+  furnitureSelector.initialize();
+}
+
+class DropZone {
+  constructor(dropZoneId, fileInputId) {
+    this.dropZone = document.getElementById(dropZoneId);
+    this.fileInput = document.getElementById(fileInputId);
+  }
+
+  initialize() {
+    this.dropZone.addEventListener("click", () => this.fileInput.click());
+    this.fileInput.addEventListener("change", (event) =>
+      this.handleFileSelection(event)
+    );
+    this.setupDragAndDrop();
+  }
+
+  handleFileSelection(event) {
+    const file = event.target.files[0];
     if (file) {
-      handleFile(file);
+      this.displayImagePreview(file);
     }
-  });
+  }
 
-  // Function to handle the selected file
-  function handleFile(file) {
-    console.log("Selected file:", file.name);
-
-    // Display image preview
+  displayImagePreview(file) {
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = document.createElement("img");
       img.src = e.target.result;
       img.style.maxWidth = "100%";
       img.style.maxHeight = "100%";
-      dropZone.innerHTML = ""; // Clear existing content
-      dropZone.appendChild(img);
-
-      // Enable the process button
-      enableProcessButton();
+      this.dropZone.innerHTML = "";
+      this.dropZone.appendChild(img);
+      ProcessButton.enable();
     };
     reader.readAsDataURL(file);
   }
 
-  // Function to enable the process button
-  function enableProcessButton() {
-    processButton.disabled = false;
-    processButton.classList.remove("cursor-not-allowed", "opacity-50");
-    processButton.classList.add("cursor-pointer", "hover:bg-primary-dark");
+  setupDragAndDrop() {
+    ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+      this.dropZone.addEventListener(eventName, this.preventDefaults, false);
+    });
+    this.dropZone.addEventListener("drop", (e) => this.handleDrop(e));
   }
 
-  // Prevent default drag behaviors
-  for (const eventName of ["dragenter", "dragover", "dragleave", "drop"]) {
-    dropZone.addEventListener(eventName, preventDefaults, false);
-  }
-
-  function preventDefaults(e) {
+  preventDefaults(e) {
     e.preventDefault();
     e.stopPropagation();
   }
 
-  // Handle drop
-  dropZone.addEventListener("drop", (e) => {
-    const dt = e.dataTransfer;
-    const file = dt.files[0];
-    handleFile(file);
-  });
+  handleDrop(e) {
+    const file = e.dataTransfer.files[0];
+    this.displayImagePreview(file);
+  }
+}
 
-  // Add click event listener to the process button
-  processButton.addEventListener("click", () => {
-    // Add your processing logic here
-    console.log("Processing photo...");
-  });
-
-  initializeFurnitureSelection();
-});
-
-function initializeFurnitureSelection() {
-  const addFurnitureCheckbox = document.getElementById(
-    "add-furniture-checkbox"
-  );
-  const furnitureOptions = document.getElementById("furniture-options");
-
-  function toggleFurnitureOptions() {
-    if (addFurnitureCheckbox.checked) {
-      furnitureOptions.classList.remove("hidden");
-    } else {
-      furnitureOptions.classList.add("hidden");
-    }
+class ProcessButton {
+  constructor(buttonId) {
+    this.button = document.getElementById(buttonId);
   }
 
-  addFurnitureCheckbox.addEventListener("change", toggleFurnitureOptions);
+  initialize() {
+    this.button.addEventListener("click", () => this.processPhoto());
+  }
+
+  processPhoto() {
+    const removeFurniture = document.querySelector(
+      'input[type="checkbox"][class*="ml-auto"]'
+    ).checked;
+    const addFurniture = document.getElementById(
+      "add-furniture-checkbox"
+    ).checked;
+    const roomType = document.getElementById("room-type").value;
+    const furnitureStyle = document.getElementById("furniture-style").value;
+
+    console.log("Processing photo...");
+    console.log("Remove furniture:", removeFurniture);
+    console.log("Add furniture:", addFurniture);
+    console.log("Room type:", roomType);
+    console.log("Furniture style:", furnitureStyle);
+
+    // Add your processing logic here
+  }
+
+  static enable() {
+    const button = document.getElementById("process-button");
+    button.disabled = false;
+    button.classList.remove("cursor-not-allowed", "opacity-50");
+    button.classList.add("cursor-pointer", "hover:bg-primary-dark");
+  }
+}
+
+class FurnitureSelector {
+  constructor(checkboxId, optionsId) {
+    this.checkbox = document.getElementById(checkboxId);
+    this.options = document.getElementById(optionsId);
+  }
+
+  initialize() {
+    this.checkbox.addEventListener("change", () => this.toggleOptions());
+  }
+
+  toggleOptions() {
+    if (this.checkbox.checked) {
+      this.options.classList.remove("hidden");
+    } else {
+      this.options.classList.add("hidden");
+    }
+  }
 }
