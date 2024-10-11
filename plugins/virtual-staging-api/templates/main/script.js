@@ -358,9 +358,16 @@ const setupUploadAnotherImageButton = (at) => {
     const currentUrl = new URL(window.location.href);
     const pathSegments = currentUrl.pathname.split("/").filter(Boolean);
     pathSegments[pathSegments.length - 1] = "virtual-staging-upload";
-    currentUrl.pathname = `/${pathSegments.join("/")}`;
-    if (at) currentUrl.searchParams.set("at", at);
-    window.location.href = currentUrl.toString();
+
+    // Create a new URL with only the path
+    const newUrl = new URL(pathSegments.join("/"), currentUrl.origin);
+
+    // Add only the 'at' parameter if it exists
+    if (at) {
+      newUrl.searchParams.set("at", at);
+    }
+
+    window.location.href = newUrl.toString();
   });
 };
 
