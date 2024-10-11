@@ -30,10 +30,14 @@ class VSAI_Handlers
   {
     error_log('VSAI: Starting image upload handler');
 
-    $token = $request->get_header('X-VSAI-Token');
+    $token = $request->get_param('token');
 
-    if (!$token || !$this->token_handler->token_exists($token)) {
-      return new WP_Error('invalid_token', 'Invalid or missing token', array('status' => 401));
+    if (!$token) {
+      return new WP_Error('missing_token', 'Access token is missing', array('status' => 401));
+    }
+
+    if (!$this->token_handler->token_exists($token)) {
+      return new WP_Error('invalid_token', 'Invalid access token', array('status' => 401));
     }
 
     if ($this->token_handler->is_limit_breached($token)) {
@@ -74,7 +78,10 @@ class VSAI_Handlers
       error_log('VSAI: Failed to increment upload count for token: ' . $token);
     }
 
-    return array('url' => $upload['url']);
+    return array(
+      'success' => true,
+      'url' => $upload['url']
+    );
   }
 
   public function get_posts_handler($request)
