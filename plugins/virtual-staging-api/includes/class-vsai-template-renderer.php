@@ -73,21 +73,17 @@ class VSAI_Template_Renderer
 
   public function enqueue_template_assets()
   {
-    // Always enqueue CSS for all templates
-    wp_enqueue_style('vsai-main-style');
-    wp_enqueue_style('vsai-upload-style');
-
-    // Conditionally enqueue JavaScript based on used templates
+    // Conditionally enqueue CSS and JavaScript based on used templates
     if (isset($this->used_templates['main'])) {
+      wp_enqueue_style('vsai-main-style');
       wp_enqueue_script('vsai-main-script');
     }
     if (isset($this->used_templates['upload'])) {
+      wp_enqueue_style('vsai-upload-style');
       wp_enqueue_script('vsai-upload-script');
     }
     if (isset($this->used_templates['test'])) {
       wp_enqueue_script('vsai-test-script');
     }
   }
-
-
 }
