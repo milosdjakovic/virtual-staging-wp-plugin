@@ -36,8 +36,20 @@ class VSAI_Template_Renderer
     ob_start();
     extract($data);
     include $this->templates[$name];
-    return ob_get_clean();
+    $content = ob_get_clean();
+
+    // Output vsaiApiSettings script
+    $script = "<script type=\"text/javascript\">
+            var vsaiApiSettings = {
+                root: '" . esc_url_raw(rest_url('vsai/v1/')) . "',
+                nonce: '" . wp_create_nonce('wp_rest') . "',
+                nextPageUrl: '" . esc_js($data['next_page_url']) . "'
+            };
+        </script>";
+
+    return $script . $content;
   }
+
 
   public function register_template_assets()
   {
@@ -53,14 +65,15 @@ class VSAI_Template_Renderer
   {
     if (isset($this->used_templates['main'])) {
       wp_enqueue_style('vsai-main-style');
-      wp_enqueue_script('vsai-main-script');
+      wp_enqueue_script('vsai-main-script', $this->plugin_url . 'templates/main/script.js', array('jquery'), null, true);
     }
     if (isset($this->used_templates['upload'])) {
       wp_enqueue_style('vsai-upload-style');
-      wp_enqueue_script('vsai-upload-script');
+      wp_enqueue_script('vsai-upload-script', $this->plugin_url . 'templates/upload/script.js', array('jquery'), null, true);
     }
     if (isset($this->used_templates['test'])) {
-      wp_enqueue_script('vsai-test-script');
+      wp_enqueue_script('vsai-test-script', $this->plugin_url . 'templates/test/script.js', array('jquery'), null, true);
     }
   }
+
 }

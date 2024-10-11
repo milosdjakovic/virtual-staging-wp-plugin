@@ -355,19 +355,16 @@ const handleGenerateVariation = async () => {
 const setupUploadAnotherImageButton = (at) => {
   const button = getById("uploadAnotherImageButton");
   button?.addEventListener("click", () => {
-    const currentUrl = new URL(window.location.href);
-    const pathSegments = currentUrl.pathname.split("/").filter(Boolean);
-    pathSegments[pathSegments.length - 1] = "virtual-staging-upload";
-
-    // Create a new URL with only the path
-    const newUrl = new URL(pathSegments.join("/"), currentUrl.origin);
+    const nextPageUrl =
+      vsaiApiSettings.nextPageUrl || "/virtual-staging-upload";
+    const url = new URL(nextPageUrl, window.location.origin);
 
     // Add only the 'at' parameter if it exists
     if (at) {
-      newUrl.searchParams.set("at", at);
+      url.searchParams.set("at", at);
     }
 
-    window.location.href = newUrl.toString();
+    window.location.href = url.toString();
   });
 };
 

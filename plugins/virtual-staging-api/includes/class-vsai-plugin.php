@@ -70,6 +70,7 @@ class VSAI_Plugin
       array(
         'type' => 'main',
         'data' => '{}',
+        'next_page_url' => '',
       ),
       $atts,
       'vsai_template'
@@ -77,12 +78,21 @@ class VSAI_Plugin
 
     $type = $atts['type'];
     $data = json_decode($atts['data'], true);
+    $next_page_url = esc_url($atts['next_page_url']);
 
     if (!in_array($type, ['main', 'upload'])) {
       return "Invalid template type specified.";
     }
 
-    return $this->template_renderer->render_template($type, $data);
+    $template_data = array(
+      'next_page_url' => $next_page_url,
+    );
+
+    if (is_array($data)) {
+      $template_data = array_merge($template_data, $data);
+    }
+
+    return $this->template_renderer->render_template($type, $template_data);
   }
 
   public function delete_uploaded_image($file_path)

@@ -222,9 +222,10 @@ if (!defined('ABSPATH'))
     </div>
 </div>
 
-<script>
+<script type="text/javascript">
     var vsaiApiSettings = {
         root: '<?php echo esc_url_raw(rest_url('vsai/v1/')); ?>',
-        nonce: '<?php echo wp_create_nonce('wp_rest'); ?>'
+        nonce: '<?php echo wp_create_nonce('wp_rest'); ?>',
+        nextPageUrl: '<?php echo esc_js($next_page_url); ?>'
     };
 </script>
