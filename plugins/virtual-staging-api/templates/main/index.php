@@ -125,8 +125,13 @@
 
                 </div>
                 <div class="relative h-full">
+                    <div id="loading-indicator" class="h-full flex items-center justify-center">
+                        <p class="text-lg">Loading...</p>
+                    </div>
+
                     <div class="overflow-hidden rounded-xl h-full">
                         <div class="carousel-root render_carousel left-right-dim group rounded-lg flex flex-col h-full">
+
                             <div class="carousel carousel-slider " id="main-carousel" style="flex: 1;">
 
                                 <div class="slider-wrapper axis-horizontal h-full">
