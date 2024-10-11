@@ -72,7 +72,7 @@ const setOriginalImage = (imageUrl) => {
     container.innerHTML = `
       <img src="${decodeURIComponent(
         imageUrl
-      )}" alt="Original Image" class="h-full w-full bg-gray-100 object-contain transition-opacity group-hover:opacity-70">
+      )}" alt="Original Image" class="h-full w-full bg-gray-100 transition-opacity group-hover:opacity-70" style="object-fit: cover;">
     `;
   }
 };
@@ -120,10 +120,11 @@ class Carousel {
         <img 
           src="${url}" 
           alt="Furnished image ${index + 1}" 
-          class="rounded-xl h-full absolute inset-0 transition-opacity duration-300 ease-in-out" 
+          class="rounded-xl h-full absolute inset-0 transition-opacity duration-300 ease-in-out " 
           style="opacity: ${
             index === this.currentIndex ? "1" : "0"
-          }; z-index: ${index === this.currentIndex ? "1" : "0"};"
+          }; z-index: ${index === this.currentIndex ? "1" : "0"};
+          object-fit: cover;"
         >
       `
         )
