@@ -131,7 +131,7 @@
 
                                 <div class="slider-wrapper axis-horizontal h-full">
                                     <div id="download-image-overlay" style="background: rgba(0, 0, 0, 0.8);"
-                                        class="absolute h-full test w-full z-20 flex justify-center items-center opacity-0 hover:opacity-100 cursor-pointer transition-opacity duration-75">
+                                        class="absolute h-full hidden test w-full z-20 flex justify-center items-center opacity-0 hover:opacity-100 cursor-pointer transition-opacity duration-75">
                                         <div class="flex justify-center items-center gap-1 text-white">
                                             <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
                                                 stroke-linecap="round" stroke-linejoin="round" class="text-base"
