@@ -40,9 +40,11 @@
                         </svg>
                     </div>
                 </div>
+
+                <!-- Room Type Selection -->
                 <div class="mt-4 style-o48r9" id="style-o48r9">
-                    <div class="MuiFormControl-root MuiFormControl-vertical MuiFormControl-sizeMd css-9rix66"><label
-                            for=":r16u:" id=":r16u:-label" class="MuiFormLabel-root css-rtxwyt">
+                    <div class="MuiFormControl-root MuiFormControl-vertical MuiFormControl-sizeMd css-9rix66">
+                        <label for=":r16u:" id=":r16u:-label" class="MuiFormLabel-root css-rtxwyt">
                             <div class="flex items-center">
                                 <div class="mr-2 inline-block"><svg stroke="currentColor" fill="none" stroke-width="2"
                                         viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"
@@ -54,20 +56,22 @@
                             </div>
                         </label>
                         <div
-                            class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf flex">
-                            <button role="combobox" aria-expanded="false" aria-controls=":r16v:"
-                                aria-labelledby=":r16u:-label" id=":r16u:" name="radio-buttons-group"
-                                class="MuiSelect-button css-1qmzz5g" type="button">Bedroom</button><span
-                                class="MuiSelect-indicator css-nvn28y"><svg focusable="false" aria-hidden="true"
-                                    viewBox="0 0 24 24" data-testid="UnfoldIcon"
-                                    class="MuiSvgIcon-root MuiSvgIcon-sizeMd css-c9nsto">
-                                    <path
-                                        d="m12 5.83 2.46 2.46c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L12.7 3.7a.9959.9959 0 0 0-1.41 0L8.12 6.88c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 5.83zm0 12.34-2.46-2.46a.9959.9959 0 0 0-1.41 0c-.39.39-.39 1.02 0 1.41l3.17 3.18c.39.39 1.02.39 1.41 0l3.17-3.17c.39-.39.39-1.02 0-1.41a.9959.9959 0 0 0-1.41 0L12 18.17z">
-                                    </path>
-                                </svg></span><input tabindex="-1" aria-hidden="true" value="bed"
-                                name="radio-buttons-group" id="style-Fp2qg" class="style-Fp2qg">
+                            class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
+                            <select role="combobox" aria-labelledby=":r16u:-label" id=":r16u:"
+                                name="radio-buttons-group" class="MuiSelect-button css-1qmzz5g room-type-select w-full">
+                                <option value="bed">Bedroom</option>
+                                <option value="living">Living Room</option>
+                                <option value="kitchen">Kitchen</option>
+                                <option value="dining">Dining Room</option>
+                                <option value="bathroom">Bathroom</option>
+                                <option value="home_office">Home Office</option>
+                                <option value="outdoor">Outdoor</option>
+                                <option value="kids_room">Kids Room</option>
+                            </select>
                         </div>
                     </div>
+
+                    <!-- Furniture Style Selection -->
                     <div
                         class="MuiFormControl-root MuiFormControl-vertical MuiFormControl-sizeMd mt-2 w-full css-9rix66">
                         <label for=":r170:" id=":r170:-label" class="MuiFormLabel-root css-rtxwyt">
@@ -86,20 +90,23 @@
                             </div>
                         </label>
                         <div
-                            class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf flex">
-                            <button role="combobox" aria-expanded="false" aria-controls=":r171:"
-                                aria-labelledby=":r170:-label" id=":r170:" name="radio-buttons-group"
-                                class="MuiSelect-button css-1qmzz5g" type="button">Midcentury</button><span
-                                class="MuiSelect-indicator css-nvn28y"><svg focusable="false" aria-hidden="true"
-                                    viewBox="0 0 24 24" data-testid="UnfoldIcon"
-                                    class="MuiSvgIcon-root MuiSvgIcon-sizeMd css-c9nsto">
-                                    <path
-                                        d="m12 5.83 2.46 2.46c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L12.7 3.7a.9959.9959 0 0 0-1.41 0L8.12 6.88c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 5.83zm0 12.34-2.46-2.46a.9959.9959 0 0 0-1.41 0c-.39.39-.39 1.02 0 1.41l3.17 3.18c.39.39 1.02.39 1.41 0l3.17-3.17c.39-.39.39-1.02 0-1.41a.9959.9959 0 0 0-1.41 0L12 18.17z">
-                                    </path>
-                                </svg></span><input tabindex="-1" aria-hidden="true" value="midcentury"
-                                name="radio-buttons-group" id="style-dGT98" class="style-dGT98">
+                            class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
+                            <select role="combobox" aria-labelledby=":r170:-label" id=":r170:"
+                                name="radio-buttons-group"
+                                class="MuiSelect-button css-1qmzz5g furniture-style-select w-full">
+                                <option value="modern">Modern</option>
+                                <option value="scandinavian">Scandinavian</option>
+                                <option value="industrial">Industrial</option>
+                                <option value="midcentury">Mid-Century</option>
+                                <option value="luxury">Luxury</option>
+                                <option value="farmhouse">Farmhouse</option>
+                                <option value="coastal">Coastal</option>
+                                <option value="standard">Standard</option>
+                            </select>
                         </div>
                     </div>
+
+                    <!-- Generate Variation Button -->
                     <div class="mb-4 mt-2 md:mb-0">
                         <button
                             class="flex text-sm font-semibold leading-none relative transition-colors duration-75 items-center justify-center gap-1 md:gap-1.5 rounded-xl border-2 px-10 py-3 text-darkgray border-darkgray hover:bg-darkgray hover:text-white mb-2 w-full shrink-0 md:mt-2 md:w-full">
@@ -113,6 +120,7 @@
                             </svg>
                             <span>Generate Variation</span>
                         </button>
+
                         <span class="flex items-center justify-center text-center text-sm text-gray-400">
                             Unlimited variations and downloads included
                         </span>
