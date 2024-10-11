@@ -1,15 +1,55 @@
-document.addEventListener("DOMContentLoaded", initializeApp);
+const DEV = false; // Set this to true for development mode
 
-function initializeApp() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const renderId = urlParams.get("render_id");
-  const imageUrl = urlParams.get("image_url");
-  const at = urlParams.get("at");
+// DOM-related functions
+const getDOMElement = (id) => document.getElementById(id);
+const querySelector = (selector) => document.querySelector(selector);
+const hideElement = (element) => element.classList.add("hidden");
+const showElement = (element) => element.classList.remove("hidden");
+
+// URL-related functions
+const getUrlParams = () => new URLSearchParams(window.location.search);
+const getUrlParam = (params, key) => params.get(key);
+
+// API-related functions
+const fetchRenderStatus = async (renderId) => {
+  const response = await fetch(
+    `${vsaiApiSettings.root}render?render_id=${renderId}`,
+    {
+      headers: { "X-WP-Nonce": vsaiApiSettings.nonce },
+    }
+  );
+  return response.json();
+};
+
+// Image-related functions
+const preloadImage = (url) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = resolve;
+    img.onerror = reject;
+    img.src = url;
+  });
+};
+
+const preloadImages = async (imageUrls) => {
+  const promises = imageUrls.map(preloadImage);
+  await Promise.all(promises);
+};
+
+// Utility functions
+const capitalizeFirstLetter = (string) =>
+  string.charAt(0).toUpperCase() + string.slice(1);
+
+// Main application logic
+const initializeApp = async () => {
+  const urlParams = getUrlParams();
+  const renderId = getUrlParam(urlParams, "render_id");
+  const imageUrl = getUrlParam(urlParams, "image_url");
+  const at = getUrlParam(urlParams, "at");
 
   if (renderId) {
-    pollRenderStatus(renderId);
+    await pollRenderStatus(renderId);
   } else if (imageUrl) {
-    // If there's no render_id but there is an imageUrl, we can still show the original image
     setOriginalImage(imageUrl);
     const carousel = new Carousel([imageUrl]);
     setupDownloadButton(carousel);
@@ -18,100 +58,71 @@ function initializeApp() {
   }
 
   setupUploadAnotherImageButton(at);
-}
+};
 
-function setOriginalImage(imageUrl) {
-  const originalImageContainer = document.querySelector(
-    "#renderPageOriginalContainer .group"
-  );
-  if (originalImageContainer) {
-    originalImageContainer.innerHTML = "";
-    const img = document.createElement("img");
-    img.src = decodeURIComponent(imageUrl);
-    img.alt = "Original Image";
-    img.className =
-      "h-full w-full bg-gray-100 object-contain transition-opacity group-hover:opacity-70";
-    originalImageContainer.appendChild(img);
-  } else {
-    console.error("Original image container not found");
+const pollRenderStatus = async (renderId) => {
+  const loadingIndicator = getDOMElement("loading-indicator");
+
+  while (true) {
+    const data = await fetchRenderStatus(renderId);
+    if (data.status === "done") {
+      hideElement(loadingIndicator);
+      updateUI(data);
+      break;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1500));
   }
-}
+};
 
-function pollRenderStatus(renderId) {
-  const pollInterval = setInterval(() => {
-    fetch(`${vsaiApiSettings.root}render?render_id=${renderId}`, {
-      headers: {
-        "X-WP-Nonce": vsaiApiSettings.nonce,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === "done") {
-          clearInterval(pollInterval);
-          updateUI(data);
-        }
-      })
-      .catch((error) => {
-        console.error("Error polling render status:", error);
-      });
-  }, 1500);
-}
-
-function updateUI(data) {
+const updateUI = (data) => {
   updateResultsTitle(data);
-  const imageUrl = new URLSearchParams(window.location.search).get("image_url");
-  const combinedImages = [...data.outputs, ...Array(10).fill(imageUrl)];
-  const carousel = new Carousel(combinedImages);
+  const imageUrl = getUrlParam(getUrlParams(), "image_url");
+  const images = DEV
+    ? [...data.outputs, ...Array(10).fill(imageUrl)]
+    : data.outputs;
+  const carousel = new Carousel(images);
   setupDownloadButton(carousel);
-}
+};
 
-function updateResultsTitle(data) {
-  const resultsTitle = document.querySelector("#renderPageResultsContainer h3");
+const updateResultsTitle = (data) => {
+  const resultsTitle = querySelector("#renderPageResultsContainer h3");
   if (resultsTitle) {
     const roomType = capitalizeFirstLetter(data.outputs_room_types[0] || "");
     const style = capitalizeFirstLetter(data.outputs_styles[0] || "");
     resultsTitle.textContent = `Results (${roomType}, ${style})`;
   }
-}
+};
 
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
+const setOriginalImage = (imageUrl) => {
+  const container = querySelector("#renderPageOriginalContainer .group");
+  if (container) {
+    const img = document.createElement("img");
+    img.src = decodeURIComponent(imageUrl);
+    img.alt = "Original Image";
+    img.className =
+      "h-full w-full bg-gray-100 object-contain transition-opacity group-hover:opacity-70";
+    container.innerHTML = "";
+    container.appendChild(img);
+  } else {
+    console.error("Original image container not found");
+  }
+};
 
 class Carousel {
   constructor(imageUrls) {
     this.imageUrls = imageUrls;
     this.currentIndex = 0;
-    this.mainSlider = document.getElementById("main-slider");
-    this.thumbnailSlider = document.getElementById("thumbnail-slider");
-    this.preloadImages();
-    this.attachEventListeners();
+    this.mainSlider = getDOMElement("main-slider");
+    this.thumbnailSlider = getDOMElement("thumbnail-slider");
+    this.initializeCarousel();
   }
 
-  preloadImages() {
-    const imagePromises = this.imageUrls.map((url) => {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = resolve;
-        img.onerror = reject;
-        img.src = url;
-      });
-    });
-
-    Promise.all(imagePromises)
-      .then(() => {
-        this.initializeCarousel();
-      })
-      .catch((error) => {
-        console.error("Error preloading images:", error);
-        this.initializeCarousel(); // Still initialize even if some images fail to load
-      });
-  }
-
-  initializeCarousel() {
+  async initializeCarousel() {
+    await preloadImages(this.imageUrls);
     this.renderMainSlider();
     this.renderThumbnails();
     this.updateActiveSlide();
+    this.attachEventListeners();
     this.showDownloadOverlay();
   }
 
@@ -143,17 +154,17 @@ class Carousel {
       this.thumbnailSlider.innerHTML = this.imageUrls
         .map(
           (imageUrl, index) => `
-            <li class="thumb" data-index="${index}" aria-label="slide item ${
+        <li class="thumb" data-index="${index}" aria-label="slide item ${
             index + 1
           }" role="button" tabindex="0">
-                <div class="relative w-24 transition-all duration-300">
-                    <div class="group w-full overflow-hidden rounded-xl relative">
-                        <img class="h-full w-full bg-gray-100 object-contain transition-opacity"
-                            src="${imageUrl}" alt="Furnished image" loading="lazy">
-                    </div>
-                </div>
-            </li>
-        `
+          <div class="relative w-24 transition-all duration-300">
+            <div class="group w-full overflow-hidden rounded-xl relative">
+              <img class="h-full w-full bg-gray-100 object-contain transition-opacity"
+                src="${imageUrl}" alt="Furnished image" loading="lazy">
+            </div>
+          </div>
+        </li>
+      `
         )
         .join("");
     }
@@ -163,7 +174,7 @@ class Carousel {
     const slides = this.mainSlider.querySelectorAll(".slide");
     const thumbs = this.thumbnailSlider.querySelectorAll(".thumb");
 
-    slides.forEach((slide, index) => {
+    for (const [index, slide] of slides.entries()) {
       if (index === this.currentIndex) {
         slide.style.opacity = "1";
         slide.style.zIndex = "1";
@@ -171,9 +182,9 @@ class Carousel {
         slide.style.opacity = "0";
         slide.style.zIndex = "0";
       }
-    });
+    }
 
-    thumbs.forEach((thumb, index) => {
+    for (const [index, thumb] of thumbs.entries()) {
       if (index === this.currentIndex) {
         thumb.classList.add("selected");
         thumb.querySelector("div").classList.remove("opacity-25");
@@ -183,7 +194,7 @@ class Carousel {
         thumb.querySelector("div").classList.remove("opacity-100");
         thumb.querySelector("div").classList.add("opacity-25");
       }
-    });
+    }
   }
 
   attachEventListeners() {
@@ -205,97 +216,63 @@ class Carousel {
     }
   }
 
-  addImages(newImageUrls) {
-    this.imageUrls = [...this.imageUrls, ...newImageUrls];
-    this.preloadImages();
-    this.initializeCarousel();
-  }
-
   getCurrentImageUrl() {
     return this.imageUrls[this.currentIndex];
   }
 
   showDownloadOverlay() {
-    const downloadOverlay = document.getElementById("download-image-overlay");
+    const downloadOverlay = getDOMElement("download-image-overlay");
     if (downloadOverlay) {
-      downloadOverlay.classList.remove("hidden");
+      showElement(downloadOverlay);
     }
   }
 }
 
-function setupUploadAnotherImageButton(at) {
-  const uploadButton = document.getElementById("uploadAnotherImageButton");
+const setupUploadAnotherImageButton = (at) => {
+  const uploadButton = getDOMElement("uploadAnotherImageButton");
   if (uploadButton) {
     uploadButton.addEventListener("click", () => {
-      // Get the current URL
       const currentUrl = new URL(window.location.href);
-
-      // Split the pathname into segments
       const pathSegments = currentUrl.pathname
         .split("/")
         .filter((segment) => segment !== "");
-
-      // Replace the last segment with 'virtual-staging-upload'
       pathSegments[pathSegments.length - 1] = "virtual-staging-upload";
-
-      // Reconstruct the URL
       currentUrl.pathname = `/${pathSegments.join("/")}`;
-
-      // Ensure the 'at' parameter is in the URL if it exists
       if (at) {
         currentUrl.searchParams.set("at", at);
       }
-
-      // Redirect to the new URL
       window.location.href = currentUrl.toString();
     });
   } else {
     console.error("Upload Another Image button not found");
   }
-}
+};
 
-function setupDownloadButton(carousel) {
-  const downloadButton = document.getElementById("download-image-overlay");
+const setupDownloadButton = (carousel) => {
+  const downloadButton = getDOMElement("download-image-overlay");
   if (downloadButton) {
-    downloadButton.addEventListener("click", () => {
+    downloadButton.addEventListener("click", async () => {
       const imageUrl = carousel.getCurrentImageUrl();
       const currentIndex = carousel.currentIndex;
       if (imageUrl) {
-        // Fetch the image data
-        fetch(imageUrl)
-          .then((response) => response.blob())
-          .then((blob) => {
-            // Create a blob URL
-            const blobUrl = window.URL.createObjectURL(blob);
-
-            // Determine the file extension based on the blob's type
-            let fileExtension = "jpg"; // Default to jpg
-            if (blob.type) {
-              const mimeType = blob.type.split("/")[1];
-              if (mimeType) {
-                fileExtension = mimeType.split("+")[0]; // Handle cases like 'image/jpeg+xml'
-              }
-            }
-
-            // Create a filename with the index
-            const filename = `virtual_staging_image_${
-              currentIndex + 1
-            }.${fileExtension}`;
-
-            // Create a temporary anchor element
-            const link = document.createElement("a");
-            link.href = blobUrl;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            // Release the blob URL
-            window.URL.revokeObjectURL(blobUrl);
-          })
-          .catch((error) => {
-            console.error("Error downloading image:", error);
-          });
+        try {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          const blobUrl = window.URL.createObjectURL(blob);
+          const fileExtension = blob.type.split("/")[1]?.split("+")[0] || "jpg";
+          const filename = `virtual_staging_image_${
+            currentIndex + 1
+          }.${fileExtension}`;
+          const link = document.createElement("a");
+          link.href = blobUrl;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+          console.error("Error downloading image:", error);
+        }
       } else {
         console.error("No image selected for download");
       }
@@ -303,4 +280,6 @@ function setupDownloadButton(carousel) {
   } else {
     console.error("Download button not found");
   }
-}
+};
+
+document.addEventListener("DOMContentLoaded", initializeApp);
