@@ -164,5 +164,18 @@ class VSAI_Handlers
     return $this->api_client->request("render/create-variation?render_id=$render_id", 'POST', $params);
   }
 
+  public function generate_token_handler($request)
+  {
+    $token = $this->token_handler->add_token(5);
+    if ($token) {
+      return array(
+        'success' => true,
+        'token' => $token
+      );
+    } else {
+      return new WP_Error('token_generation_failed', 'Failed to generate a unique token after multiple attempts', array('status' => 500));
+    }
+  }
+
   // Add more handler methods here as needed
 }
