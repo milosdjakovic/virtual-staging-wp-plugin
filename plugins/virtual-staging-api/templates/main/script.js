@@ -77,6 +77,7 @@ const pollRenderStatus = async (renderId) => {
 const updateUI = (data) => {
   updateResultsTitle(data);
   const imageUrl = getUrlParam(getUrlParams(), "image_url");
+  setOriginalImage(imageUrl);
   const images = DEV
     ? [...data.outputs, ...Array(10).fill(imageUrl)]
     : data.outputs;
@@ -94,6 +95,10 @@ const updateResultsTitle = (data) => {
 };
 
 const setOriginalImage = (imageUrl) => {
+  if (!imageUrl) {
+    console.error("No image URL provided for original image");
+    return;
+  }
   const container = querySelector("#renderPageOriginalContainer .group");
   if (container) {
     const img = document.createElement("img");
