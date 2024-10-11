@@ -4,6 +4,7 @@ function initializeApp() {
   const urlParams = new URLSearchParams(window.location.search);
   const renderId = urlParams.get("render_id");
   const imageUrl = urlParams.get("image_url");
+  const at = urlParams.get("at");
 
   if (renderId) {
     pollRenderStatus(renderId);
@@ -14,6 +15,8 @@ function initializeApp() {
   if (imageUrl) {
     setOriginalImage(imageUrl);
   }
+
+  setupUploadAnotherImageButton(at);
 }
 
 function setOriginalImage(imageUrl) {
@@ -191,5 +194,36 @@ class Carousel {
     this.imageUrls = [...this.imageUrls, ...newImageUrls];
     this.preloadImages();
     this.initializeCarousel();
+  }
+}
+
+function setupUploadAnotherImageButton(at) {
+  const uploadButton = document.getElementById("uploadAnotherImageButton");
+  if (uploadButton) {
+    uploadButton.addEventListener("click", () => {
+      // Get the current URL
+      const currentUrl = new URL(window.location.href);
+
+      // Split the pathname into segments
+      const pathSegments = currentUrl.pathname
+        .split("/")
+        .filter((segment) => segment !== "");
+
+      // Replace the last segment with 'virtual-staging-upload'
+      pathSegments[pathSegments.length - 1] = "virtual-staging-upload";
+
+      // Reconstruct the URL
+      currentUrl.pathname = `/${pathSegments.join("/")}`;
+
+      // Ensure the 'at' parameter is in the URL if it exists
+      if (at) {
+        currentUrl.searchParams.set("at", at);
+      }
+
+      // Redirect to the new URL
+      window.location.href = currentUrl.toString();
+    });
+  } else {
+    console.error("Upload Another Image button not found");
   }
 }
