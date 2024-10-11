@@ -183,7 +183,9 @@ class ProcessButton {
         if (data.render_id) {
           console.log("Render ID:", data.render_id);
           const finalImageUrl = DEV_MODE ? DEV_IMAGE_URL : imageUrl;
-          window.location.href = `/virtual-staging-main?render_id=${
+          const nextPageUrl =
+            vsaiApiSettings.nextPageUrl || "/virtual-staging-main";
+          window.location.href = `${nextPageUrl}?render_id=${
             data.render_id
           }&image_url=${encodeURIComponent(finalImageUrl)}&at=${token}`;
         } else if (data.code && data.message) {
