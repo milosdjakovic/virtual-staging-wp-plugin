@@ -79,8 +79,16 @@ class Carousel {
     this.currentIndex = 0;
     this.mainSlider = document.getElementById("main-slider");
     this.thumbnailSlider = document.getElementById("thumbnail-slider");
+    this.preloadImages();
     this.initializeCarousel();
     this.attachEventListeners();
+  }
+
+  preloadImages() {
+    this.imageUrls.forEach((url) => {
+      const img = new Image();
+      img.src = url;
+    });
   }
 
   initializeCarousel() {
@@ -91,20 +99,24 @@ class Carousel {
 
   renderMainSlider() {
     if (this.mainSlider) {
-      this.mainSlider.innerHTML = this.imageUrls
-        .map(
-          (imageUrl, index) => `
-            <li class="slide" data-index="${index}">
-                <div class="relative">
-                    <div class="group w-full overflow-hidden rounded-xl transition-all duration-0 opacity-100 relative">
-                        <img class="h-full w-full bg-gray-100 object-contain transition-opacity"
-                            src="${imageUrl}" alt="Furnished image" loading="lazy">
-                    </div>
+      this.mainSlider.innerHTML = `
+        <div class="slide-container" style="position: relative; width: 100%; height: 100%;">
+          ${this.imageUrls
+            .map(
+              (imageUrl, index) => `
+            <div class="slide" data-index="${index}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.3s ease;">
+              <div class="relative">
+                <div class="group w-full overflow-hidden rounded-xl transition-all duration-0 opacity-100 relative">
+                  <img class="h-full w-full bg-gray-100 object-contain transition-opacity"
+                    src="${imageUrl}" alt="Furnished image" loading="lazy">
                 </div>
-            </li>
-        `
-        )
-        .join("");
+              </div>
+            </div>
+          `
+            )
+            .join("")}
+        </div>
+      `;
     }
   }
 
@@ -135,11 +147,11 @@ class Carousel {
 
     slides.forEach((slide, index) => {
       if (index === this.currentIndex) {
-        slide.classList.add("selected");
-        slide.style.display = "block";
+        slide.style.opacity = "1";
+        slide.style.zIndex = "1";
       } else {
-        slide.classList.remove("selected");
-        slide.style.display = "none";
+        slide.style.opacity = "0";
+        slide.style.zIndex = "0";
       }
     });
 
@@ -161,7 +173,7 @@ class Carousel {
       this.thumbnailSlider.addEventListener("click", (event) => {
         const thumb = event.target.closest(".thumb");
         if (thumb) {
-          const index = parseInt(thumb.dataset.index, 10);
+          const index = Number.parseInt(thumb.dataset.index, 10);
           this.setCurrentImage(index);
         }
       });
@@ -177,6 +189,7 @@ class Carousel {
 
   addImages(newImageUrls) {
     this.imageUrls = [...this.imageUrls, ...newImageUrls];
+    this.preloadImages();
     this.initializeCarousel();
   }
 }
