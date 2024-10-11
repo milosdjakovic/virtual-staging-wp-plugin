@@ -88,6 +88,12 @@ class VSAI_Router
       'permission_callback' => array($this->authorizer, 'check_authorization')
     ));
 
+    register_rest_route('vsai/v1', '/generate-token', array(
+      'methods' => 'GET',
+      'callback' => array($this->handlers, 'generate_token_handler'),
+      'permission_callback' => array($this->authorizer, 'check_authorization')
+    ));
+
     // Add more routes here as needed
   }
 }
