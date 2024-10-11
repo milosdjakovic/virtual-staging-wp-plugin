@@ -41,7 +41,7 @@ class VSAI_Plugin
     $this->router = new VSAI_Router($this->handlers, $this->authorizer);
 
     $plugin_url = plugin_dir_url(dirname(__FILE__));
-    $this->template_renderer = new VSAI_Template_Renderer($plugin_url);
+    $this->template_renderer = new VSAI_Template_Renderer($plugin_url, $this->api_client);
   }
 
   private function setup_hooks()

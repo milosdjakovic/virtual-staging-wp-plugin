@@ -8,10 +8,12 @@ class VSAI_Template_Renderer
   private $templates = [];
   private $plugin_url;
   private $used_templates = [];
+  private $api_client;
 
-  public function __construct($plugin_url)
+  public function __construct($plugin_url, $api_client)
   {
     $this->plugin_url = $plugin_url;
+    $this->api_client = $api_client;
     add_action('wp_enqueue_scripts', array($this, 'register_template_assets'));
     add_action('wp_footer', array($this, 'enqueue_template_assets'), 5);
   }
@@ -33,6 +35,9 @@ class VSAI_Template_Renderer
 
     $this->used_templates[$name] = true;
 
+    // Fetch options from API
+    $options = $this->fetch_options();
+
     ob_start();
     extract($data);
     include $this->templates[$name];
@@ -50,7 +55,26 @@ class VSAI_Template_Renderer
     return $script . $content;
   }
 
+  private function fetch_options()
+  {
+    $options = $this->api_client->request('options');
+    if (is_wp_error($options)) {
+      error_log('Failed to fetch options: ' . $options->get_error_message());
+      return array('styles' => array(), 'roomTypes' => array());
+    }
+    return $options;
+  }
 
+  public function generate_select_options($options, $selected = '')
+  {
+    $html = '';
+    foreach ($options as $value) {
+      $label = ucwords(str_replace('_', ' ', $value));
+      $selected_attr = ($value === $selected) ? ' selected' : '';
+      $html .= "<option value=\"{$value}\"{$selected_attr}>{$label}</option>";
+    }
+    return $html;
+  }
   public function register_template_assets()
   {
     wp_register_style('vsai-main-style', $this->plugin_url . 'templates/main/snipped.css');
