@@ -85,21 +85,34 @@ class Carousel {
     this.mainSlider = document.getElementById("main-slider");
     this.thumbnailSlider = document.getElementById("thumbnail-slider");
     this.preloadImages();
-    this.initializeCarousel();
     this.attachEventListeners();
   }
 
   preloadImages() {
-    for (const url of this.imageUrls) {
-      const img = new Image();
-      img.src = url;
-    }
+    const imagePromises = this.imageUrls.map((url) => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = url;
+      });
+    });
+
+    Promise.all(imagePromises)
+      .then(() => {
+        this.initializeCarousel();
+      })
+      .catch((error) => {
+        console.error("Error preloading images:", error);
+        this.initializeCarousel(); // Still initialize even if some images fail to load
+      });
   }
 
   initializeCarousel() {
     this.renderMainSlider();
     this.renderThumbnails();
     this.updateActiveSlide();
+    this.showDownloadOverlay();
   }
 
   renderMainSlider() {
@@ -200,6 +213,13 @@ class Carousel {
 
   getCurrentImageUrl() {
     return this.imageUrls[this.currentIndex];
+  }
+
+  showDownloadOverlay() {
+    const downloadOverlay = document.getElementById("download-image-overlay");
+    if (downloadOverlay) {
+      downloadOverlay.classList.remove("hidden");
+    }
   }
 }
 
