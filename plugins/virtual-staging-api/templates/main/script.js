@@ -64,8 +64,9 @@ const setOriginalImage = (imageUrl) => {
   const container = $("#renderPageOriginalContainer .group");
   if (container && imageUrl) {
     container.innerHTML = `
-      <img src="${decodeURIComponent(imageUrl)}" alt="Original Image" 
-           class="h-full w-full bg-gray-100 object-contain transition-opacity group-hover:opacity-70">
+      <img src="${decodeURIComponent(
+        imageUrl
+      )}" alt="Original Image" class="h-full w-full bg-gray-100 object-contain transition-opacity group-hover:opacity-70">
     `;
   }
 };
@@ -202,7 +203,7 @@ const initializeApp = async () => {
   setupGenerateVariationButton();
 
   if (renderId) {
-    await handleRenderProcess(renderId);
+    await handleInitialRenderProcess(renderId);
   } else if (imageUrl) {
     const carousel = new Carousel([imageUrl]);
     await carousel.initialize();
@@ -212,22 +213,51 @@ const initializeApp = async () => {
   }
 };
 
-const handleRenderProcess = async (renderId) => {
+const handleInitialRenderProcess = async (renderId) => {
   showLoadingIndicator();
-  await pollRenderStatus(renderId, (data) => {
-    setTimeout(() => {
-      hideLoadingIndicator();
+  const generateButton = getById("generateVariationButton");
+  const buttonSpan = generateButton.querySelector("span");
+  const originalText = buttonSpan.textContent;
+
+  let initialDataLoaded = false;
+
+  while (true) {
+    const data = await fetchWithAuth(`render?render_id=${renderId}`);
+
+    if (!initialDataLoaded) {
+      if (data.outputs && data.outputs.length > 0) {
+        updateUIWithRenderResults(data);
+        hideLoadingIndicator();
+        initialDataLoaded = true;
+
+        if (data.status !== "done") {
+          buttonSpan.textContent = "Generating...";
+        } else {
+          generateButton.disabled = false;
+        }
+      }
+    }
+
+    if (data.status === "done") {
       updateUIWithRenderResults(data);
-    }, 500);
-  });
+      setTimeout(() => {
+        hideLoadingIndicator();
+        generateButton.disabled = false;
+        buttonSpan.textContent = originalText;
+      }, 500);
+      break;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+  }
 };
 
 const updateUIWithRenderResults = (data) => {
   const imageUrl = getUrlParam("image_url");
   const roomType = data.outputs_room_types[0] || "";
   const style = data.outputs_styles[0] || "";
-  const reversedOutputs = data.outputs.reverse();
   updateResultsTitle(roomType, style);
+  const reversedOutputs = [...data.outputs].reverse();
   const images = DEV
     ? [...reversedOutputs, ...Array(10).fill(imageUrl)]
     : reversedOutputs;
@@ -243,9 +273,9 @@ const setupGenerateVariationButton = () => {
 
 const handleGenerateVariation = async () => {
   const button = getById("generateVariationButton");
-  const buttonLabel = $("#generateVariationButton > span");
-  const originalText = button.textContent;
-  buttonLabel.textContent = "Generating...";
+  const buttonSpan = button.querySelector("span");
+  const originalText = buttonSpan.textContent;
+  buttonSpan.textContent = "Generating...";
   button.disabled = true;
 
   const renderId = getUrlParam("render_id");
@@ -256,11 +286,13 @@ const handleGenerateVariation = async () => {
     const response = await createVariation(renderId, style, roomType);
     if (response.render_id) {
       await pollRenderStatus(response.render_id, (data) => {
-        updateUIWithRenderResults(data);
-        setTimeout(() => {
-          buttonLabel.textContent = originalText;
-          button.disabled = false;
-        }, 500);
+        if (data.status === "done") {
+          updateUIWithRenderResults(data);
+          setTimeout(() => {
+            buttonSpan.textContent = originalText;
+            button.disabled = false;
+          }, 500);
+        }
       });
     } else {
       throw new Error("No render_id received from variation creation");
@@ -268,7 +300,7 @@ const handleGenerateVariation = async () => {
   } catch (error) {
     console.error("Error generating variation:", error);
     alert("Failed to generate variation. Please try again.");
-    button.textContent = originalText;
+    buttonSpan.textContent = originalText;
     button.disabled = false;
   }
 };
