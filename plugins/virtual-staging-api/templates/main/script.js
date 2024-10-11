@@ -50,7 +50,6 @@ const createVariation = async (renderId, style, roomType) => {
   });
 };
 
-// UI Update Functions
 const updateResultsTitle = (roomType, style) => {
   const resultsTitle = $("#renderPageResultsContainer h3");
   if (resultsTitle) {
@@ -73,8 +72,10 @@ const setOriginalImage = (imageUrl) => {
 
 // Carousel Class
 class Carousel {
-  constructor(imageUrls) {
+  constructor(imageUrls, roomTypes, styles) {
     this.imageUrls = imageUrls;
+    this.roomTypes = roomTypes;
+    this.styles = styles;
     this.currentIndex = 0;
     this.mainSlider = getById("main-carousel-image");
     this.thumbnailSlider = getById("thumbnail-slider");
@@ -167,6 +168,8 @@ class Carousel {
         thumb.querySelector("div").classList.add("opacity-25");
       }
     });
+
+    this.updateTitle();
   }
 
   attachEventListeners() {
@@ -176,6 +179,12 @@ class Carousel {
         this.setCurrentImage(Number(thumb.dataset.index));
       }
     });
+  }
+
+  updateTitle() {
+    const roomType = this.roomTypes[this.currentIndex] || "";
+    const style = this.styles[this.currentIndex] || "";
+    updateResultsTitle(roomType, style);
   }
 
   setCurrentImage(index) {
@@ -191,6 +200,16 @@ class Carousel {
 
   showDownloadOverlay() {
     showElement(getById("download-image-overlay"));
+  }
+
+  updateImages(newImageUrls, newRoomTypes, newStyles) {
+    this.imageUrls = newImageUrls;
+    this.roomTypes = newRoomTypes;
+    this.styles = newStyles;
+    this.currentIndex = 0;
+    this.renderMainSlider();
+    this.renderThumbnails();
+    this.updateActiveSlide();
   }
 }
 
@@ -226,22 +245,23 @@ const handleInitialRenderProcess = async (renderId) => {
   while (true) {
     const data = await fetchWithAuth(`render?render_id=${renderId}`);
 
-    if (!initialDataLoaded) {
-      if (data.outputs && data.outputs.length > 0) {
-        updateUIWithRenderResults(data);
-        hideLoadingIndicator();
-        initialDataLoaded = true;
+    if (!initialDataLoaded && data.outputs && data.outputs.length > 0) {
+      updateUIWithRenderResults(data, true); // Pass true for isInitialLoad
+      hideLoadingIndicator();
+      initialDataLoaded = true;
 
-        if (data.status !== "done") {
-          buttonSpan.textContent = "Generating...";
-        } else {
-          generateButton.disabled = false;
-        }
+      if (data.status !== "done") {
+        buttonSpan.textContent = "Generating...";
+      } else {
+        generateButton.disabled = false;
+        break; // Exit the loop if status is done
       }
     }
 
     if (data.status === "done") {
-      updateUIWithRenderResults(data);
+      if (!initialDataLoaded) {
+        updateUIWithRenderResults(data, true); // Only update UI if not already loaded
+      }
       setTimeout(() => {
         hideLoadingIndicator();
         generateButton.disabled = false;
@@ -254,18 +274,35 @@ const handleInitialRenderProcess = async (renderId) => {
   }
 };
 
-const updateUIWithRenderResults = (data) => {
+const updateUIWithRenderResults = (data, isInitialLoad = false) => {
+  console.log(
+    `Updating UI with render results. Initial load: ${isInitialLoad}`
+  );
+
   const imageUrl = getUrlParam("image_url");
-  const roomType = data.outputs_room_types[0] || "";
-  const style = data.outputs_styles[0] || "";
-  updateResultsTitle(roomType, style);
   const reversedOutputs = [...data.outputs].reverse();
+  const reversedRoomTypes = [...data.outputs_room_types].reverse();
+  const reversedStyles = [...data.outputs_styles].reverse();
+
   const images = DEV
     ? [...reversedOutputs, ...Array(10).fill(imageUrl)]
     : reversedOutputs;
-  const carousel = new Carousel(images);
-  carousel.initialize();
-  setupDownloadButton(carousel);
+  const roomTypes = DEV
+    ? [...reversedRoomTypes, ...Array(10).fill("")]
+    : reversedRoomTypes;
+  const styles = DEV
+    ? [...reversedStyles, ...Array(10).fill("")]
+    : reversedStyles;
+
+  if (isInitialLoad || !window.currentCarousel) {
+    console.log("Creating new carousel");
+    window.currentCarousel = new Carousel(images, roomTypes, styles);
+    window.currentCarousel.initialize();
+    setupDownloadButton(window.currentCarousel);
+  } else {
+    console.log("Updating existing carousel");
+    window.currentCarousel.updateImages(images, roomTypes, styles);
+  }
 };
 
 const setupGenerateVariationButton = () => {
