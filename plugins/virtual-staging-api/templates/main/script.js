@@ -215,8 +215,10 @@ const initializeApp = async () => {
 const handleRenderProcess = async (renderId) => {
   showLoadingIndicator();
   await pollRenderStatus(renderId, (data) => {
-    hideLoadingIndicator();
-    updateUIWithRenderResults(data);
+    setTimeout(() => {
+      hideLoadingIndicator();
+      updateUIWithRenderResults(data);
+    }, 500);
   });
 };
 
@@ -240,22 +242,34 @@ const setupGenerateVariationButton = () => {
 };
 
 const handleGenerateVariation = async () => {
+  const button = getById("generateVariationButton");
+  const buttonLabel = $("#generateVariationButton > span");
+  const originalText = button.textContent;
+  buttonLabel.textContent = "Generating...";
+  button.disabled = true;
+
   const renderId = getUrlParam("render_id");
   const roomType = $(".room-type-select").value;
   const style = $(".furniture-style-select").value;
 
-  showLoadingIndicator();
   try {
     const response = await createVariation(renderId, style, roomType);
     if (response.render_id) {
-      await handleRenderProcess(response.render_id);
+      await pollRenderStatus(response.render_id, (data) => {
+        updateUIWithRenderResults(data);
+        setTimeout(() => {
+          buttonLabel.textContent = originalText;
+          button.disabled = false;
+        }, 500);
+      });
     } else {
       throw new Error("No render_id received from variation creation");
     }
   } catch (error) {
     console.error("Error generating variation:", error);
-    hideLoadingIndicator();
     alert("Failed to generate variation. Please try again.");
+    button.textContent = originalText;
+    button.disabled = false;
   }
 };
 
