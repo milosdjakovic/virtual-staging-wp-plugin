@@ -76,7 +76,7 @@ class Carousel {
   constructor(imageUrls) {
     this.imageUrls = imageUrls;
     this.currentIndex = 0;
-    this.mainSlider = getById("main-slider");
+    this.mainSlider = getById("main-carousel-image");
     this.thumbnailSlider = getById("thumbnail-slider");
   }
 
@@ -106,24 +106,20 @@ class Carousel {
 
   renderMainSlider() {
     if (this.mainSlider) {
-      this.mainSlider.innerHTML = `
-        <div class="slide-container" style="position: relative; width: 100%; height: 100%;">
-          ${this.imageUrls
-            .map(
-              (url, index) => `
-            <div class="slide" data-index="${index}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.3s ease;">
-              <div class="relative">
-                <div class="group w-full overflow-hidden rounded-xl transition-all duration-0 opacity-100 relative">
-                  <img class="h-full w-full bg-gray-100 object-contain transition-opacity"
-                    src="${url}" alt="Furnished image" loading="lazy">
-                </div>
-              </div>
-            </div>
-          `
-            )
-            .join("")}
-        </div>
-      `;
+      this.mainSlider.innerHTML = this.imageUrls
+        .map(
+          (url, index) => `
+        <img 
+          src="${url}" 
+          alt="Furnished image ${index + 1}" 
+          class="rounded-xl h-full absolute inset-0 transition-opacity duration-300 ease-in-out" 
+          style="opacity: ${
+            index === this.currentIndex ? "1" : "0"
+          }; z-index: ${index === this.currentIndex ? "1" : "0"};"
+        >
+      `
+        )
+        .join("");
     }
   }
 
@@ -149,9 +145,15 @@ class Carousel {
   }
 
   updateActiveSlide() {
-    $$(".slide").forEach((slide, index) => {
-      slide.style.opacity = index === this.currentIndex ? "1" : "0";
-      slide.style.zIndex = index === this.currentIndex ? "1" : "0";
+    const slides = this.mainSlider.querySelectorAll("img");
+    slides.forEach((slide, index) => {
+      if (index === this.currentIndex) {
+        slide.style.opacity = "1";
+        slide.style.zIndex = "1";
+      } else {
+        slide.style.opacity = "0";
+        slide.style.zIndex = "0";
+      }
     });
 
     $$(".thumb").forEach((thumb, index) => {
