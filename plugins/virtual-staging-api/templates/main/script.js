@@ -50,12 +50,19 @@ const createVariation = async (renderId, style, roomType) => {
   });
 };
 
+const formatTitleString = (string) => {
+  return string
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+};
+
 const updateResultsTitle = (roomType, style) => {
   const resultsTitle = $("#renderPageResultsContainer h3");
   if (resultsTitle) {
-    resultsTitle.textContent = `Results (${capitalizeFirstLetter(
+    resultsTitle.textContent = `Results (${formatTitleString(
       roomType
-    )}, ${capitalizeFirstLetter(style)})`;
+    )}, ${formatTitleString(style)})`;
   }
 };
 
