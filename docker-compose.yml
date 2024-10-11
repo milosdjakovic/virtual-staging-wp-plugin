@@ -12,6 +12,11 @@ services:
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress_password
     platform: linux/arm64/v8
+    ports:
+      - "3307:3306"
+    command:
+      - --bind-address=0.0.0.0
+      - --default-authentication-plugin=mysql_native_password
 
   wordpress:
     depends_on:
