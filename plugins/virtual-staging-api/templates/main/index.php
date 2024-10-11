@@ -106,76 +106,19 @@
 
                 </div>
                 <div class="relative h-full">
-                    <div class="overflow-hidden rounded-xl">
-                        <div class="carousel-root render_carousel left-right-dim group rounded-lg">
-                            <div class="carousel carousel-slider" id="main-carousel">
-                                <ul class="control-dots"></ul>
-                                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
-                                    stroke-linecap="round" stroke-linejoin="round"
-                                    class="absolute top-1/2 z-20 -translate-y-1/2 text-xl text-white opacity-0 transition-opacity duration-300 cursor-pointer group-hover:opacity-100 left-4"
-                                    height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="m15 18-6-6 6-6"></path>
-                                </svg>
-                                <div
-                                    class="absolute top-0 z-10 h-full w-6 -translate-x-1/2 bg-black opacity-0 blur-2xl transition-opacity duration-300 cursor-pointer group-hover:opacity-50 left-0">
-                                </div>
-                                <div class="slider-wrapper axis-horizontal">
+                    <div class="overflow-hidden rounded-xl h-full">
+                        <div class="carousel-root render_carousel left-right-dim group rounded-lg flex flex-col h-full">
+                            <div class="carousel carousel-slider " id="main-carousel" style="flex: 1;">
+
+                                <div class="slider-wrapper axis-horizontal ">
                                     <ul class="slider animated" id="main-slider">
                                         <!-- Main slides will be dynamically inserted here -->
                                     </ul>
                                 </div>
-                                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
-                                    stroke-linecap="round" stroke-linejoin="round"
-                                    class="absolute top-1/2 z-20 -translate-y-1/2 text-xl text-white opacity-0 transition-opacity duration-300 cursor-pointer group-hover:opacity-100 right-4"
-                                    height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="m9 18 6-6-6-6"></path>
-                                </svg>
-                                <div
-                                    class="absolute top-0 z-10 h-full w-6 -translate-x-1/2 bg-black opacity-0 blur-2xl transition-opacity duration-300 cursor-pointer group-hover:opacity-50 right-0">
-                                </div>
-                                <div
-                                    class="absolute inset-x-2 z-20 flex items-end gap-2 transition-all duration-150 md:inset-x-4 xl:items-end invisible bottom-2 opacity-0">
-                                    <div class="mr-auto"></div>
-                                    <button
-                                        class="flex text-sm font-semibold leading-none relative transition-colors duration-75 items-center justify-center gap-1 md:gap-1.5 overflow-hidden rounded-xl border-2 py-3 text-white bg-primary border-primary hover:bg-primary/90 hover:border-primary/50 px-3">
-                                        <svg stroke="currentColor" fill="currentColor" stroke-width="0"
-                                            viewBox="0 0 256 256" class="text-base" height="1em" width="1em"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M48,64a8,8,0,0,1,8-8H72V40a8,8,0,0,1,16,0V56h16a8,8,0,0,1,0,16H88V88a8,8,0,0,1-16,0V72H56A8,8,0,0,1,48,64ZM184,192h-8v-8a8,8,0,0,0-16,0v8h-8a8,8,0,0,0,0,16h8v8a8,8,0,0,0,16,0v-8h8a8,8,0,0,0,0-16Zm56-48H224V128a8,8,0,0,0-16,0v16H192a8,8,0,0,0,0,16h16v16a8,8,0,0,0,16,0V160h16a8,8,0,0,0,0-16ZM219.31,80,80,219.31a16,16,0,0,1-22.62,0L36.68,198.63a16,16,0,0,1,0-22.63L176,36.69a16,16,0,0,1,22.63,0l20.68,20.68A16,16,0,0,1,219.31,80Zm-54.63,32L144,91.31l-96,96L68.68,208ZM208,68.69,187.31,48l-32,32L176,100.69Z">
-                                            </path>
-                                        </svg>
-                                        <div
-                                            class="overflow-hidden transition-all duration-200 ease-in-out h-auto max-w-[200px] opacity-100">
-                                            <span class="hidden md:block">Enhance</span>
-                                        </div>
-                                    </button>
-                                    <button
-                                        class="flex text-sm font-semibold leading-none relative transition-colors duration-75 items-center justify-center gap-1 md:gap-1.5 rounded-xl border-2 py-3 bg-darkgray border-darkgray text-white hover:bg-opacity-90 px-3"
-                                        data-testid="render-page-download-button" name="downloadRenderResultButton">
-                                        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
-                                            stroke-linecap="round" stroke-linejoin="round" class="text-base"
-                                            height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                            <polyline points="7 10 12 15 17 10"></polyline>
-                                            <line x1="12" x2="12" y1="15" y2="3"></line>
-                                        </svg>
-                                    </button>
-                                    <button
-                                        class="flex text-sm font-semibold leading-none relative transition-colors duration-75 items-center justify-center gap-1 md:gap-1.5 rounded-xl border-2 py-3 bg-darkgray border-darkgray text-white hover:bg-opacity-90 px-3">
-                                        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
-                                            stroke-linecap="round" stroke-linejoin="round" class="text-base"
-                                            height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M3 6h18"></path>
-                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                                        </svg>
-                                    </button>
-                                </div>
+
+
                             </div>
-                            <div class="carousel">
+                            <div class="carousel ">
                                 <div style="overflow-x: auto;" class="thumbs-wrapper axis-vertical">
                                     <button type="button" class="control-arrow control-prev control-disabled"
                                         aria-label="previous slide / item"></button>
