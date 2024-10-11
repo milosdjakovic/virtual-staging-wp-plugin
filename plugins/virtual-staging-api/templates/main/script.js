@@ -1,137 +1,106 @@
-const DEV = false; // Set this to true for development mode
+const DEV = false;
 
-// DOM-related functions
-const getDOMElement = (id) => document.getElementById(id);
-const querySelector = (selector) => document.querySelector(selector);
+// DOM Utility Functions
+const $ = (selector) => document.querySelector(selector);
+const $$ = (selector) => document.querySelectorAll(selector);
+const getById = (id) => document.getElementById(id);
 const hideElement = (element) => element.classList.add("hidden");
 const showElement = (element) => element.classList.remove("hidden");
-const getRoomType = () => document.querySelector(".room-type-select").value;
-const getFurnitureStyle = () =>
-  document.querySelector(".furniture-style-select").value;
 
-// URL-related functions
+// URL and Parameter Utilities
 const getUrlParams = () => new URLSearchParams(window.location.search);
-const getUrlParam = (params, key) => params.get(key);
+const getUrlParam = (name) => getUrlParams().get(name);
 
-// API-related functions
-const fetchRenderStatus = async (renderId) => {
-  const response = await fetch(
-    `${vsaiApiSettings.root}render?render_id=${renderId}`,
-    {
-      headers: { "X-WP-Nonce": vsaiApiSettings.nonce },
-    }
-  );
+// API Functions
+const fetchWithAuth = async (url, options = {}) => {
+  const defaultOptions = {
+    headers: {
+      "X-WP-Nonce": vsaiApiSettings.nonce,
+      "Content-Type": "application/json",
+    },
+  };
+  const response = await fetch(`${vsaiApiSettings.root}${url}`, {
+    ...defaultOptions,
+    ...options,
+  });
+  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
   return response.json();
 };
 
-// Image-related functions
-const preloadImage = (url) => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = resolve;
-    img.onerror = reject;
-    img.src = url;
-  });
-};
-
-const preloadImages = async (imageUrls) => {
-  const promises = imageUrls.map(preloadImage);
-  await Promise.all(promises);
-};
-
-// Utility functions
-const capitalizeFirstLetter = (string) =>
-  string.charAt(0).toUpperCase() + string.slice(1);
-
-// Main application logic
-const initializeApp = async () => {
-  const urlParams = getUrlParams();
-  const renderId = getUrlParam(urlParams, "render_id");
-  const imageUrl = getUrlParam(urlParams, "image_url");
-  const at = getUrlParam(urlParams, "at");
-
-  if (renderId) {
-    await pollRenderStatus(renderId);
-  } else if (imageUrl) {
-    setOriginalImage(imageUrl);
-    const carousel = new Carousel([imageUrl]);
-    setupDownloadButton(carousel);
-  } else {
-    console.error("No render_id or image_url found in URL parameters");
-  }
-
-  setupUploadAnotherImageButton(at);
-};
-
-const pollRenderStatus = async (renderId) => {
-  const loadingIndicator = getDOMElement("loading-indicator");
-
+const pollRenderStatus = async (renderId, onComplete) => {
   while (true) {
-    const data = await fetchRenderStatus(renderId);
+    const data = await fetchWithAuth(`render?render_id=${renderId}`);
     if (data.status === "done") {
-      hideElement(loadingIndicator);
-      updateUI(data);
+      onComplete(data);
       break;
     }
     await new Promise((resolve) => setTimeout(resolve, 1500));
   }
 };
 
-const updateUI = (data) => {
-  updateResultsTitle(data);
-  const imageUrl = getUrlParam(getUrlParams(), "image_url");
-  setOriginalImage(imageUrl);
-  const images = DEV
-    ? [...data.outputs, ...Array(10).fill(imageUrl)]
-    : data.outputs;
-  const carousel = new Carousel(images);
-  setupDownloadButton(carousel);
+const createVariation = async (renderId, style, roomType) => {
+  const body = JSON.stringify({
+    style,
+    roomType,
+    wait_for_completion: false,
+  });
+  return fetchWithAuth(`render/create-variation?render_id=${renderId}`, {
+    method: "POST",
+    body,
+  });
 };
 
-const updateResultsTitle = (data) => {
-  const resultsTitle = querySelector("#renderPageResultsContainer h3");
+// UI Update Functions
+const updateResultsTitle = (roomType, style) => {
+  const resultsTitle = $("#renderPageResultsContainer h3");
   if (resultsTitle) {
-    const roomType = capitalizeFirstLetter(data.outputs_room_types[0] || "");
-    const style = capitalizeFirstLetter(data.outputs_styles[0] || "");
-    resultsTitle.textContent = `Results (${roomType}, ${style})`;
+    resultsTitle.textContent = `Results (${capitalizeFirstLetter(
+      roomType
+    )}, ${capitalizeFirstLetter(style)})`;
   }
 };
 
 const setOriginalImage = (imageUrl) => {
-  if (!imageUrl) {
-    console.error("No image URL provided for original image");
-    return;
-  }
-  const container = querySelector("#renderPageOriginalContainer .group");
-  if (container) {
-    const img = document.createElement("img");
-    img.src = decodeURIComponent(imageUrl);
-    img.alt = "Original Image";
-    img.className =
-      "h-full w-full bg-gray-100 object-contain transition-opacity group-hover:opacity-70";
-    container.innerHTML = "";
-    container.appendChild(img);
-  } else {
-    console.error("Original image container not found");
+  const container = $("#renderPageOriginalContainer .group");
+  if (container && imageUrl) {
+    container.innerHTML = `
+      <img src="${decodeURIComponent(imageUrl)}" alt="Original Image" 
+           class="h-full w-full bg-gray-100 object-contain transition-opacity group-hover:opacity-70">
+    `;
   }
 };
 
+// Carousel Class
 class Carousel {
   constructor(imageUrls) {
     this.imageUrls = imageUrls;
     this.currentIndex = 0;
-    this.mainSlider = getDOMElement("main-slider");
-    this.thumbnailSlider = getDOMElement("thumbnail-slider");
-    this.initializeCarousel();
+    this.mainSlider = getById("main-slider");
+    this.thumbnailSlider = getById("thumbnail-slider");
   }
 
-  async initializeCarousel() {
-    await preloadImages(this.imageUrls);
+  async initialize() {
+    await this.preloadImages();
+    this.render();
+    this.attachEventListeners();
+    this.showDownloadOverlay();
+  }
+
+  async preloadImages() {
+    const loadImage = (url) =>
+      new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = url;
+      });
+    await Promise.all(this.imageUrls.map(loadImage));
+  }
+
+  render() {
     this.renderMainSlider();
     this.renderThumbnails();
     this.updateActiveSlide();
-    this.attachEventListeners();
-    this.showDownloadOverlay();
   }
 
   renderMainSlider() {
@@ -140,12 +109,12 @@ class Carousel {
         <div class="slide-container" style="position: relative; width: 100%; height: 100%;">
           ${this.imageUrls
             .map(
-              (imageUrl, index) => `
+              (url, index) => `
             <div class="slide" data-index="${index}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.3s ease;">
               <div class="relative">
                 <div class="group w-full overflow-hidden rounded-xl transition-all duration-0 opacity-100 relative">
                   <img class="h-full w-full bg-gray-100 object-contain transition-opacity"
-                    src="${imageUrl}" alt="Furnished image" loading="lazy">
+                    src="${url}" alt="Furnished image" loading="lazy">
                 </div>
               </div>
             </div>
@@ -161,14 +130,14 @@ class Carousel {
     if (this.thumbnailSlider) {
       this.thumbnailSlider.innerHTML = this.imageUrls
         .map(
-          (imageUrl, index) => `
+          (url, index) => `
         <li class="thumb" data-index="${index}" aria-label="slide item ${
             index + 1
           }" role="button" tabindex="0">
           <div class="relative w-24 transition-all duration-300">
             <div class="group w-full overflow-hidden rounded-xl relative">
               <img class="h-full w-full bg-gray-100 object-contain transition-opacity"
-                src="${imageUrl}" alt="Furnished image" loading="lazy">
+                src="${url}" alt="Furnished image" loading="lazy">
             </div>
           </div>
         </li>
@@ -179,20 +148,12 @@ class Carousel {
   }
 
   updateActiveSlide() {
-    const slides = this.mainSlider.querySelectorAll(".slide");
-    const thumbs = this.thumbnailSlider.querySelectorAll(".thumb");
+    $$(".slide").forEach((slide, index) => {
+      slide.style.opacity = index === this.currentIndex ? "1" : "0";
+      slide.style.zIndex = index === this.currentIndex ? "1" : "0";
+    });
 
-    for (const [index, slide] of slides.entries()) {
-      if (index === this.currentIndex) {
-        slide.style.opacity = "1";
-        slide.style.zIndex = "1";
-      } else {
-        slide.style.opacity = "0";
-        slide.style.zIndex = "0";
-      }
-    }
-
-    for (const [index, thumb] of thumbs.entries()) {
+    $$(".thumb").forEach((thumb, index) => {
       if (index === this.currentIndex) {
         thumb.classList.add("selected");
         thumb.querySelector("div").classList.remove("opacity-25");
@@ -202,19 +163,16 @@ class Carousel {
         thumb.querySelector("div").classList.remove("opacity-100");
         thumb.querySelector("div").classList.add("opacity-25");
       }
-    }
+    });
   }
 
   attachEventListeners() {
-    if (this.thumbnailSlider) {
-      this.thumbnailSlider.addEventListener("click", (event) => {
-        const thumb = event.target.closest(".thumb");
-        if (thumb) {
-          const index = Number.parseInt(thumb.dataset.index, 10);
-          this.setCurrentImage(index);
-        }
-      });
-    }
+    this.thumbnailSlider?.addEventListener("click", (event) => {
+      const thumb = event.target.closest(".thumb");
+      if (thumb) {
+        this.setCurrentImage(Number(thumb.dataset.index));
+      }
+    });
   }
 
   setCurrentImage(index) {
@@ -229,65 +187,128 @@ class Carousel {
   }
 
   showDownloadOverlay() {
-    const downloadOverlay = getDOMElement("download-image-overlay");
-    if (downloadOverlay) {
-      showElement(downloadOverlay);
-    }
+    showElement(getById("download-image-overlay"));
   }
 }
 
-const setupUploadAnotherImageButton = (at) => {
-  const uploadButton = getDOMElement("uploadAnotherImageButton");
-  if (uploadButton) {
-    uploadButton.addEventListener("click", () => {
-      const currentUrl = new URL(window.location.href);
-      const pathSegments = currentUrl.pathname
-        .split("/")
-        .filter((segment) => segment !== "");
-      pathSegments[pathSegments.length - 1] = "virtual-staging-upload";
-      currentUrl.pathname = `/${pathSegments.join("/")}`;
-      if (at) {
-        currentUrl.searchParams.set("at", at);
-      }
-      window.location.href = currentUrl.toString();
-    });
+// Main Application Logic
+const initializeApp = async () => {
+  const renderId = getUrlParam("render_id");
+  const imageUrl = getUrlParam("image_url");
+  const at = getUrlParam("at");
+
+  setOriginalImage(imageUrl);
+  setupUploadAnotherImageButton(at);
+  setupGenerateVariationButton();
+
+  if (renderId) {
+    await handleRenderProcess(renderId);
+  } else if (imageUrl) {
+    const carousel = new Carousel([imageUrl]);
+    await carousel.initialize();
+    setupDownloadButton(carousel);
   } else {
-    console.error("Upload Another Image button not found");
+    console.error("No render_id or image_url found in URL parameters");
   }
+};
+
+const handleRenderProcess = async (renderId) => {
+  showLoadingIndicator();
+  await pollRenderStatus(renderId, (data) => {
+    hideLoadingIndicator();
+    updateUIWithRenderResults(data);
+  });
+};
+
+const updateUIWithRenderResults = (data) => {
+  const imageUrl = getUrlParam("image_url");
+  const roomType = data.outputs_room_types[0] || "";
+  const style = data.outputs_styles[0] || "";
+  const reversedOutputs = data.outputs.reverse();
+  updateResultsTitle(roomType, style);
+  const images = DEV
+    ? [...reversedOutputs, ...Array(10).fill(imageUrl)]
+    : reversedOutputs;
+  const carousel = new Carousel(images);
+  carousel.initialize();
+  setupDownloadButton(carousel);
+};
+
+const setupGenerateVariationButton = () => {
+  const button = getById("generateVariationButton");
+  button?.addEventListener("click", handleGenerateVariation);
+};
+
+const handleGenerateVariation = async () => {
+  const renderId = getUrlParam("render_id");
+  const roomType = $(".room-type-select").value;
+  const style = $(".furniture-style-select").value;
+
+  showLoadingIndicator();
+  try {
+    const response = await createVariation(renderId, style, roomType);
+    if (response.render_id) {
+      await handleRenderProcess(response.render_id);
+    } else {
+      throw new Error("No render_id received from variation creation");
+    }
+  } catch (error) {
+    console.error("Error generating variation:", error);
+    hideLoadingIndicator();
+    alert("Failed to generate variation. Please try again.");
+  }
+};
+
+const setupUploadAnotherImageButton = (at) => {
+  const button = getById("uploadAnotherImageButton");
+  button?.addEventListener("click", () => {
+    const currentUrl = new URL(window.location.href);
+    const pathSegments = currentUrl.pathname.split("/").filter(Boolean);
+    pathSegments[pathSegments.length - 1] = "virtual-staging-upload";
+    currentUrl.pathname = `/${pathSegments.join("/")}`;
+    if (at) currentUrl.searchParams.set("at", at);
+    window.location.href = currentUrl.toString();
+  });
 };
 
 const setupDownloadButton = (carousel) => {
-  const downloadButton = getDOMElement("download-image-overlay");
-  if (downloadButton) {
-    downloadButton.addEventListener("click", async () => {
-      const imageUrl = carousel.getCurrentImageUrl();
-      const currentIndex = carousel.currentIndex;
-      if (imageUrl) {
-        try {
-          const response = await fetch(imageUrl);
-          const blob = await response.blob();
-          const blobUrl = window.URL.createObjectURL(blob);
-          const fileExtension = blob.type.split("/")[1]?.split("+")[0] || "jpg";
-          const filename = `virtual_staging_image_${
-            currentIndex + 1
-          }.${fileExtension}`;
-          const link = document.createElement("a");
-          link.href = blobUrl;
-          link.download = filename;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(blobUrl);
-        } catch (error) {
-          console.error("Error downloading image:", error);
-        }
-      } else {
-        console.error("No image selected for download");
-      }
-    });
-  } else {
-    console.error("Download button not found");
+  const button = getById("download-image-overlay");
+  button?.addEventListener("click", () => downloadCurrentImage(carousel));
+};
+
+const downloadCurrentImage = async (carousel) => {
+  const imageUrl = carousel.getCurrentImageUrl();
+  if (!imageUrl) {
+    console.error("No image selected for download");
+    return;
+  }
+
+  try {
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = `virtual_staging_image_${
+      carousel.currentIndex + 1
+    }.${getFileExtension(blob.type)}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error("Error downloading image:", error);
+    alert("Failed to download image. Please try again.");
   }
 };
 
+// Utility Functions
+const capitalizeFirstLetter = (string) =>
+  string.charAt(0).toUpperCase() + string.slice(1);
+const getFileExtension = (mimeType) =>
+  mimeType.split("/")[1]?.split("+")[0] || "jpg";
+const showLoadingIndicator = () => showElement(getById("loading-indicator"));
+const hideLoadingIndicator = () => hideElement(getById("loading-indicator"));
+
+// Initialize the application
 document.addEventListener("DOMContentLoaded", initializeApp);
