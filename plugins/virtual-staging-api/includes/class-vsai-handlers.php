@@ -11,10 +11,12 @@ require_once(ABSPATH . 'wp-admin/includes/media.php');
 class VSAI_Handlers
 {
   private $api_client;
+  private $token_handler;
 
-  public function __construct($api_client)
+  public function __construct($api_client, $token_handler)
   {
     $this->api_client = $api_client;
+    $this->token_handler = $token_handler;
   }
 
   public function hello_world_handler($request)
@@ -27,6 +29,16 @@ class VSAI_Handlers
   public function upload_image_handler($request)
   {
     error_log('VSAI: Starting image upload handler');
+
+    $token = $request->get_header('X-VSAI-Token');
+
+    if (!$token || !$this->token_handler->token_exists($token)) {
+      return new WP_Error('invalid_token', 'Invalid or missing token', array('status' => 401));
+    }
+
+    if ($this->token_handler->is_limit_breached($token)) {
+      return new WP_Error('limit_breached', 'Upload limit reached', array('status' => 403));
+    }
 
     $files = $request->get_file_params();
 
@@ -56,6 +68,11 @@ class VSAI_Handlers
     error_log('VSAI: File uploaded successfully. Result: ' . print_r($upload, true));
 
     wp_schedule_single_event(time() + 3600, 'vsai_delete_uploaded_image', array($upload['file']));
+
+    $increment_result = $this->token_handler->increment_count($token);
+    if (!$increment_result) {
+      error_log('VSAI: Failed to increment upload count for token: ' . $token);
+    }
 
     return array('url' => $upload['url']);
   }
