@@ -47,9 +47,7 @@ class VSAI_Plugin
   private function setup_hooks()
   {
     add_action('init', array($this, 'init'));
-    add_action('enqueue_block_editor_assets', array($this, 'enqueue_block_editor_assets'));
-    add_action('init', array($this, 'register_block'));
-    add_shortcode('vsai_test_form', array($this, 'test_form_shortcode'));
+    add_shortcode('vsai_template', array($this, 'vsai_template_shortcode'));
     add_action('vsai_delete_uploaded_image', array($this, 'delete_uploaded_image'));
   }
 
@@ -66,34 +64,25 @@ class VSAI_Plugin
     $this->template_renderer->register_template('test', plugin_dir_path(dirname(__FILE__)) . 'templates/test/index.php');
   }
 
-  public function enqueue_block_editor_assets()
+  public function vsai_template_shortcode($atts)
   {
-    wp_enqueue_script(
-      'vsai-template-block',
-      plugins_url('assets/js/vsai-template-block.js', dirname(__FILE__)),
-      array('wp-blocks', 'wp-element', 'wp-components'),
-      filemtime(plugin_dir_path(dirname(__FILE__)) . 'assets/js/vsai-template-block.js')
+    $atts = shortcode_atts(
+      array(
+        'type' => 'main',
+        'data' => '{}',
+      ),
+      $atts,
+      'vsai_template'
     );
-  }
 
-  public function register_block()
-  {
-    register_block_type('vsai/template-block', array(
-      'render_callback' => array($this, 'render_template_block')
-    ));
-  }
+    $type = $atts['type'];
+    $data = json_decode($atts['data'], true);
 
-  public function render_template_block($attributes)
-  {
-    $name = isset($attributes['name']) ? $attributes['name'] : '';
-    $data = isset($attributes['data']) ? $attributes['data'] : '{}';
+    if (!in_array($type, ['main', 'upload'])) {
+      return "Invalid template type specified.";
+    }
 
-    return $this->template_renderer->render_template($name, json_decode($data, true));
-  }
-
-  public function test_form_shortcode($atts)
-  {
-    return $this->template_renderer->render_template('test');
+    return $this->template_renderer->render_template($type, $data);
   }
 
   public function delete_uploaded_image($file_path)
@@ -105,7 +94,6 @@ class VSAI_Plugin
 
   public function activate_plugin()
   {
-    // Initialize components if they haven't been initialized yet
     if (!$this->token_handler) {
       $this->initialize_components();
     }

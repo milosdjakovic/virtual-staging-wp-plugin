@@ -12,7 +12,6 @@ class VSAI_Template_Renderer
   public function __construct($plugin_url)
   {
     $this->plugin_url = $plugin_url;
-    add_shortcode('vsai_template', array($this, 'render_template_shortcode'));
     add_action('wp_enqueue_scripts', array($this, 'register_template_assets'));
     add_action('wp_footer', array($this, 'enqueue_template_assets'), 5);
   }
@@ -32,7 +31,6 @@ class VSAI_Template_Renderer
       return "Template '$name' not found.";
     }
 
-    // Mark this template as used
     $this->used_templates[$name] = true;
 
     ob_start();
@@ -41,28 +39,8 @@ class VSAI_Template_Renderer
     return ob_get_clean();
   }
 
-  public function render_template_shortcode($atts)
-  {
-    $atts = shortcode_atts(array(
-      'name' => '',
-      'data' => '{}',
-    ), $atts);
-
-    if (empty($atts['name'])) {
-      return "Template name not specified.";
-    }
-
-    $data = json_decode($atts['data'], true);
-    if (json_last_error() !== JSON_ERROR_NONE) {
-      $data = [];
-    }
-
-    return $this->render_template($atts['name'], $data);
-  }
-
   public function register_template_assets()
   {
-    // Register (but don't enqueue) CSS and JS
     wp_register_style('vsai-main-style', $this->plugin_url . 'templates/main/snipped.css');
     wp_register_style('vsai-upload-style', $this->plugin_url . 'templates/upload/snipped.css');
 
@@ -73,7 +51,6 @@ class VSAI_Template_Renderer
 
   public function enqueue_template_assets()
   {
-    // Conditionally enqueue CSS and JavaScript based on used templates
     if (isset($this->used_templates['main'])) {
       wp_enqueue_style('vsai-main-style');
       wp_enqueue_script('vsai-main-script');
