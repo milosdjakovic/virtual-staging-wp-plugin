@@ -8,12 +8,13 @@ function initializeApp() {
 
   if (renderId) {
     pollRenderStatus(renderId);
-  } else {
-    console.error("No render_id found in URL parameters");
-  }
-
-  if (imageUrl) {
+  } else if (imageUrl) {
+    // If there's no render_id but there is an imageUrl, we can still show the original image
     setOriginalImage(imageUrl);
+    const carousel = new Carousel([imageUrl]);
+    setupDownloadButton(carousel);
+  } else {
+    console.error("No render_id or image_url found in URL parameters");
   }
 
   setupUploadAnotherImageButton(at);
@@ -60,7 +61,8 @@ function updateUI(data) {
   updateResultsTitle(data);
   const imageUrl = new URLSearchParams(window.location.search).get("image_url");
   const combinedImages = [...data.outputs, ...Array(10).fill(imageUrl)];
-  new Carousel(combinedImages);
+  const carousel = new Carousel(combinedImages);
+  setupDownloadButton(carousel);
 }
 
 function updateResultsTitle(data) {
@@ -195,6 +197,10 @@ class Carousel {
     this.preloadImages();
     this.initializeCarousel();
   }
+
+  getCurrentImageUrl() {
+    return this.imageUrls[this.currentIndex];
+  }
 }
 
 function setupUploadAnotherImageButton(at) {
@@ -225,5 +231,56 @@ function setupUploadAnotherImageButton(at) {
     });
   } else {
     console.error("Upload Another Image button not found");
+  }
+}
+
+function setupDownloadButton(carousel) {
+  const downloadButton = document.getElementById("download-image-overlay");
+  if (downloadButton) {
+    downloadButton.addEventListener("click", () => {
+      const imageUrl = carousel.getCurrentImageUrl();
+      const currentIndex = carousel.currentIndex;
+      if (imageUrl) {
+        // Fetch the image data
+        fetch(imageUrl)
+          .then((response) => response.blob())
+          .then((blob) => {
+            // Create a blob URL
+            const blobUrl = window.URL.createObjectURL(blob);
+
+            // Determine the file extension based on the blob's type
+            let fileExtension = "jpg"; // Default to jpg
+            if (blob.type) {
+              const mimeType = blob.type.split("/")[1];
+              if (mimeType) {
+                fileExtension = mimeType.split("+")[0]; // Handle cases like 'image/jpeg+xml'
+              }
+            }
+
+            // Create a filename with the index
+            const filename = `virtual_staging_image_${
+              currentIndex + 1
+            }.${fileExtension}`;
+
+            // Create a temporary anchor element
+            const link = document.createElement("a");
+            link.href = blobUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Release the blob URL
+            window.URL.revokeObjectURL(blobUrl);
+          })
+          .catch((error) => {
+            console.error("Error downloading image:", error);
+          });
+      } else {
+        console.error("No image selected for download");
+      }
+    });
+  } else {
+    console.error("Download button not found");
   }
 }
