@@ -54,7 +54,7 @@
                             </div>
                         </label>
                         <div
-                            class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
+                            class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf flex">
                             <button role="combobox" aria-expanded="false" aria-controls=":r16v:"
                                 aria-labelledby=":r16u:-label" id=":r16u:" name="radio-buttons-group"
                                 class="MuiSelect-button css-1qmzz5g" type="button">Bedroom</button><span
@@ -86,7 +86,7 @@
                             </div>
                         </label>
                         <div
-                            class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
+                            class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf flex">
                             <button role="combobox" aria-expanded="false" aria-controls=":r171:"
                                 aria-labelledby=":r170:-label" id=":r170:" name="radio-buttons-group"
                                 class="MuiSelect-button css-1qmzz5g" type="button">Midcentury</button><span
