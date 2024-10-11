@@ -27,8 +27,8 @@
                 <h3 class="font-semibold mb-2 text-gray-800 text-lg md:text-xl mt-0">Original</h3>
                 <div class="">
                     <div class="group w-full overflow-hidden rounded-xl cursor-pointer relative style-1oN9o"
-                        id="style-1oN9o"><img
-                            class="h-full w-full bg-gray-100 object-contain transition-opacity group-hover:opacity-70"
+                        id="style-1oN9o">
+                        <img class="h-full w-full bg-gray-100 object-contain transition-opacity group-hover:opacity-70"
                             src="./images/users%2F4M98ohnShtRr8b1v7JgoUgfczJL2%2Ffootage%2F63bdfa65-7f88-4cc6-abdc-35eebabe7a47-Main-bedroom.jpg?alt=media&amp;token=3d0b6d2f-09a8-4544-bb02-fbf52ae8a146"
                             alt="" loading="lazy"><svg stroke="currentColor" fill="none" stroke-width="2"
                             viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"
@@ -37,7 +37,8 @@
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" x2="12" y1="15" y2="3"></line>
-                        </svg></div>
+                        </svg>
+                    </div>
                 </div>
                 <div class="mt-4 style-o48r9" id="style-o48r9">
                     <div class="MuiFormControl-root MuiFormControl-vertical MuiFormControl-sizeMd css-9rix66"><label
