@@ -49,26 +49,41 @@ class VSAI_Token_Handler
     }
   }
 
-  public function add_token($limit = 5)
+  public function add_token($limit = 5, $max_attempts = 10)
   {
     global $wpdb;
-    $token = bin2hex(random_bytes(32)); // 64 character token
 
-    $result = $wpdb->insert(
-      $this->table_name,
-      array(
-        'token' => $token,
-        'image_upload_count' => 0,
-        'image_upload_limit' => $limit
-      ),
-      array('%s', '%d', '%d')
-    );
+    for ($attempt = 0; $attempt < $max_attempts; $attempt++) {
+      $token = bin2hex(random_bytes(32)); // 64 character token
 
-    if ($result === false) {
-      return false;
+      // Check if the token already exists
+      $exists = $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM {$this->table_name} WHERE token = %s",
+        $token
+      ));
+
+      if ($exists == 0) {
+        // Token is unique, insert it
+        $result = $wpdb->insert(
+          $this->table_name,
+          array(
+            'token' => $token,
+            'image_upload_count' => 0,
+            'image_upload_limit' => $limit
+          ),
+          array('%s', '%d', '%d')
+        );
+
+        if ($result === false) {
+          return false; // Insert failed
+        }
+
+        return $token; // Successfully inserted
+      }
     }
 
-    return $token;
+    // If we've reached here, we've failed to generate a unique token after max_attempts
+    return false;
   }
 
   public function token_exists($token)
