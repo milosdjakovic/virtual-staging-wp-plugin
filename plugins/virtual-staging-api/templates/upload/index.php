@@ -138,10 +138,11 @@ if (!defined('ABSPATH'))
                             </svg>
                             <div class="whitespace-nowrap text-base">Add furniture</div>
                             <input id="add-furniture-checkbox"
+                                style="visibility: hidden; position: absolute; opacity: 0;"
                                 class="ml-auto h-5 w-5 rounded border-gray-300 bg-white text-primary focus:ring-2"
                                 type="checkbox">
                         </div>
-                        <div id="furniture-options" class="transition-all duration-300 hidden">
+                        <div id="furniture-options" class="transition-all duration-300">
                             <div class="mt-4">
                                 <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2">
                                     <div
