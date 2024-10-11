@@ -65,7 +65,7 @@ function updateResultsTitle(data) {
   if (resultsTitle) {
     const roomType = capitalizeFirstLetter(data.outputs_room_types[0] || "");
     const style = capitalizeFirstLetter(data.outputs_styles[0] || "");
-    resultsTitle.textContent = `Results ${roomType}, ${style} style`;
+    resultsTitle.textContent = `Results (${roomType}, ${style})`;
   }
 }
 
@@ -85,10 +85,10 @@ class Carousel {
   }
 
   preloadImages() {
-    this.imageUrls.forEach((url) => {
+    for (const url of this.imageUrls) {
       const img = new Image();
       img.src = url;
-    });
+    }
   }
 
   initializeCarousel() {
