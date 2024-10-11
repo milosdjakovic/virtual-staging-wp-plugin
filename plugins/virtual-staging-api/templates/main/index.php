@@ -29,8 +29,7 @@
                     <div class="group w-full overflow-hidden rounded-xl cursor-pointer relative style-1oN9o"
                         id="style-1oN9o">
                         <img class="h-full w-full bg-gray-100 object-contain transition-opacity group-hover:opacity-70"
-                            src="./images/users%2F4M98ohnShtRr8b1v7JgoUgfczJL2%2Ffootage%2F63bdfa65-7f88-4cc6-abdc-35eebabe7a47-Main-bedroom.jpg?alt=media&amp;token=3d0b6d2f-09a8-4544-bb02-fbf52ae8a146"
-                            alt="" loading="lazy"><svg stroke="currentColor" fill="none" stroke-width="2"
+                            src="" alt="" loading="lazy"><svg stroke="currentColor" fill="none" stroke-width="2"
                             viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"
                             class="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 opacity-0 transition-all group-hover:opacity-80"
                             height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
@@ -109,7 +108,8 @@
                     <!-- Generate Variation Button -->
                     <div class="mb-4 mt-2 md:mb-0">
                         <button id="generateVariationButton"
-                            class="flex text-sm font-semibold leading-none relative transition-colors duration-75 items-center justify-center gap-1 md:gap-1.5 rounded-xl border-2 px-10 py-3 text-darkgray border-darkgray hover:bg-darkgray hover:text-white mb-2 w-full shrink-0 md:mt-2 md:w-full" disabled="true">
+                            class="flex text-sm font-semibold leading-none relative transition-colors duration-75 items-center justify-center gap-1 md:gap-1.5 rounded-xl border-2 px-10 py-3 text-darkgray border-darkgray hover:bg-darkgray hover:text-white mb-2 w-full shrink-0 md:mt-2 md:w-full"
+                            disabled="true">
                             <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
                                 stroke-linecap="round" stroke-linejoin="round" class="text-base" height="1em"
                                 width="1em" xmlns="http://www.w3.org/2000/svg">
@@ -139,7 +139,7 @@
                         <p class="text-lg">Loading...</p>
                     </div>
 
-                    <div class="overflow-hidden rounded-xl h-full">
+                    <div class="overflow-hidden h-full">
                         <div class="carousel-root render_carousel left-right-dim group rounded-lg flex flex-col h-full">
 
                             <div class="carousel carousel-slider " id="main-carousel" style="flex: 1;">
@@ -160,9 +160,9 @@
                                         </div>
                                     </div>
 
-                                    <ul class="slider animated" id="main-slider">
+                                    <div id="main-carousel-image" class="absolute inset-0">
                                         <!-- Main slides will be dynamically inserted here -->
-                                    </ul>
+                                    </div>
                                 </div>
 
 
