@@ -5,6 +5,9 @@ const getDOMElement = (id) => document.getElementById(id);
 const querySelector = (selector) => document.querySelector(selector);
 const hideElement = (element) => element.classList.add("hidden");
 const showElement = (element) => element.classList.remove("hidden");
+const getRoomType = () => document.querySelector(".room-type-select").value;
+const getFurnitureStyle = () =>
+  document.querySelector(".furniture-style-select").value;
 
 // URL-related functions
 const getUrlParams = () => new URLSearchParams(window.location.search);
