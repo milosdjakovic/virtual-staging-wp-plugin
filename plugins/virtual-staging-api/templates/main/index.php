@@ -53,14 +53,7 @@ if (!defined('ABSPATH'))
                         class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
                         <select role="combobox" aria-labelledby=":r16u:-label" id=":r16u:" name="radio-buttons-group"
                             class="MuiSelect-button css-1qmzz5g room-type-select w-full">
-                            <option value="bed">Bedroom</option>
-                            <option value="living">Living Room</option>
-                            <option value="kitchen">Kitchen</option>
-                            <option value="dining">Dining Room</option>
-                            <option value="bathroom">Bathroom</option>
-                            <option value="home_office">Home Office</option>
-                            <option value="outdoor">Outdoor</option>
-                            <option value="kids_room">Kids Room</option>
+                            <?php echo $this->generate_select_options($options['roomTypes']); ?>
                         </select>
                     </div>
                 </div>
@@ -86,14 +79,7 @@ if (!defined('ABSPATH'))
                         class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
                         <select role="combobox" aria-labelledby=":r170:-label" id=":r170:" name="radio-buttons-group"
                             class="MuiSelect-button css-1qmzz5g furniture-style-select w-full">
-                            <option value="modern">Modern</option>
-                            <option value="scandinavian">Scandinavian</option>
-                            <option value="industrial">Industrial</option>
-                            <option value="midcentury">Mid-Century</option>
-                            <option value="luxury">Luxury</option>
-                            <option value="farmhouse">Farmhouse</option>
-                            <option value="coastal">Coastal</option>
-                            <option value="standard">Standard</option>
+                            <?php echo $this->generate_select_options($options['styles']); ?>
                         </select>
                     </div>
                 </div>
