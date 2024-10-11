@@ -8,8 +8,21 @@
 </head>
 
 <body>
-    <main class="w-full container my-24 snipcss-YTm7a">
-        <div class="flex flex-col-reverse gap-4 md:flex-row">
+    <main class="w-full flex flex-col container my-24 snipcss-YTm7a">
+        <div class="flex w-full" style="align-items: flex-start;">
+            <button id="uploadAnotherImageButton"
+                class="flex items-center justify-center text-sm self-start font-semibold leading-none transition-colors duration-75 gap-1 md:gap-1.5 rounded-xl border-2 px-10 py-3 text-darkgray border-darkgray hover:bg-darkgray hover:text-white">
+                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
+                    stroke-linejoin="round" class="text-base" height="1em" width="1em"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 12H5"></path>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span>Upload Another Image</span>
+            </button>
+        </div>
+
+        <div class="flex flex-col-reverse gap-4 md:flex-row mt-4">
             <div class="md:w-1/3" id="renderPageOriginalContainer">
                 <h3 class="font-semibold mb-2 text-gray-800 text-lg md:text-xl mt-0">Original</h3>
                 <div class="">
@@ -86,18 +99,23 @@
                                 name="radio-buttons-group" id="style-dGT98" class="style-dGT98">
                         </div>
                     </div>
-                    <div class="mb-4 mt-2 md:mb-0"><button
-                            class="flex text-sm font-semibold leading-none relative transition-colors duration-75 items-center justify-center gap-1 md:gap-1.5 rounded-xl border-2 px-10 py-3 text-darkgray border-darkgray hover:bg-darkgray hover:text-white mb-2 w-full shrink-0 md:mt-2 md:w-full"><svg
-                                stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
+                    <div class="mb-4 mt-2 md:mb-0">
+                        <button
+                            class="flex text-sm font-semibold leading-none relative transition-colors duration-75 items-center justify-center gap-1 md:gap-1.5 rounded-xl border-2 px-10 py-3 text-darkgray border-darkgray hover:bg-darkgray hover:text-white mb-2 w-full shrink-0 md:mt-2 md:w-full">
+                            <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
                                 stroke-linecap="round" stroke-linejoin="round" class="text-base" height="1em"
                                 width="1em" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
                                 <path d="M3 3v5h5"></path>
                                 <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
                                 <path d="M16 16h5v5"></path>
-                            </svg><span>Create more</span></button><span
-                            class="flex items-center justify-center text-center text-sm text-gray-400">Unlimited
-                            variations and downloads included</span></div>
+                            </svg>
+                            <span>Generate Variation</span>
+                        </button>
+                        <span class="flex items-center justify-center text-center text-sm text-gray-400">
+                            Unlimited variations and downloads included
+                        </span>
+                    </div>
                 </div>
             </div>
             <div class="md:w-2/3" id="renderPageResultsContainer">
