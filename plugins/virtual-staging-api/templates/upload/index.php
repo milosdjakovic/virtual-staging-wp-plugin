@@ -76,7 +76,7 @@ if (!defined('ABSPATH'))
                         Virtual Staging
                     </button>
                     <button
-                        class="flex items-center justify-center gap-2 rounded-xl border border-black/15 p-2 text-center transition-all duration-100 text-black/90 hover:bg-black/10 break-all">
+                        class="hidden flex items-center justify-center gap-2 rounded-xl border border-black/15 p-2 text-center transition-all duration-100 text-black/90 hover:bg-black/10 break-all">
                         <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 256 256"
                             class="shrink-0 text-lg" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -86,7 +86,7 @@ if (!defined('ABSPATH'))
                         Enhancement
                     </button>
                     <button
-                        class="flex items-center justify-center gap-2 rounded-xl border border-black/15 p-2 text-center transition-all duration-100 text-black/90 hover:bg-black/10">
+                        class="hidden flex items-center justify-center gap-2 rounded-xl border border-black/15 p-2 text-center transition-all duration-100 text-black/90 hover:bg-black/10">
                         <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
                             stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-lg" height="1em"
                             width="1em" xmlns="http://www.w3.org/2000/svg">
@@ -104,7 +104,7 @@ if (!defined('ABSPATH'))
                 </div>
                 <div class="flex flex-col gap-2">
                     <div
-                        class="flex flex-col items-stretch overflow-hidden rounded-xl border p-4 transition-all duration-100 border-black/15 bg-white hover:bg-iceblue-100 cursor-pointer hover:border-navy-800">
+                        class="hidden flex flex-col items-stretch overflow-hidden rounded-xl border p-4 transition-all duration-100 border-black/15 bg-white hover:bg-iceblue-100 cursor-pointer hover:border-navy-800">
                         <div class="flex items-center gap-2"><svg stroke="currentColor" fill="none" stroke-width="2"
                                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"
                                 class="text-xl text-navy-800" height="1em" width="1em"
