@@ -11,6 +11,7 @@ class VSAI_Plugin
   private $handlers;
   private $router;
   private $template_renderer;
+  private $token_handler;
 
   public function __construct()
   {
@@ -27,6 +28,7 @@ class VSAI_Plugin
     require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-vsai-handlers.php';
     require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-vsai-router.php';
     require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-vsai-template-renderer.php';
+    require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-vsai-token-handler.php';
   }
 
   private function initialize_components()
@@ -34,7 +36,8 @@ class VSAI_Plugin
     $this->env_loader = new VSAI_Env_Loader();
     $this->authorizer = new VSAI_Authorizer($this->env_loader);
     $this->api_client = new VSAI_API_Client($this->env_loader);
-    $this->handlers = new VSAI_Handlers($this->api_client);
+    $this->token_handler = new VSAI_Token_Handler();
+    $this->handlers = new VSAI_Handlers($this->api_client, $this->token_handler);
     $this->router = new VSAI_Router($this->handlers, $this->authorizer);
 
     $plugin_url = plugin_dir_url(dirname(__FILE__));
@@ -98,5 +101,14 @@ class VSAI_Plugin
     if (file_exists($file_path)) {
       wp_delete_file($file_path);
     }
+  }
+
+  public function activate_plugin()
+  {
+    // Initialize components if they haven't been initialized yet
+    if (!$this->token_handler) {
+      $this->initialize_components();
+    }
+    $this->token_handler->initialize();
   }
 }
