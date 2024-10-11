@@ -110,7 +110,7 @@
                         <div class="carousel-root render_carousel left-right-dim group rounded-lg flex flex-col h-full">
                             <div class="carousel carousel-slider " id="main-carousel" style="flex: 1;">
 
-                                <div class="slider-wrapper axis-horizontal ">
+                                <div class="slider-wrapper axis-horizontal h-full">
                                     <ul class="slider animated" id="main-slider">
                                         <!-- Main slides will be dynamically inserted here -->
                                     </ul>
