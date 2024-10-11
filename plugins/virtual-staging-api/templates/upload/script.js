@@ -18,6 +18,15 @@ function initializeApp() {
   furnitureSelector.initialize();
 }
 
+function getUrlParameter(name) {
+  const paramName = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+  const regex = new RegExp(`[\\?&]${paramName}=([^&#]*)`);
+  const results = regex.exec(location.search);
+  return results === null
+    ? ""
+    : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
 class DropZone {
   constructor(dropZoneId, fileInputId) {
     this.dropZone = document.getElementById(dropZoneId);
@@ -95,39 +104,36 @@ class ProcessButton {
   }
 
   processPhoto() {
-    const removeFurniture =
-      document.querySelector('input[type="checkbox"][class*="ml-auto"]')
-        ?.checked || false;
-    const addFurniture =
-      document.getElementById("add-furniture-checkbox")?.checked || false;
+    const token = getUrlParameter("at");
+    if (!token) {
+      alert(
+        "Token error: Access token is not present. Please check your access link."
+      );
+      return;
+    }
+
     const roomType = document.getElementById("room-type")?.value;
     const furnitureStyle = document.getElementById("furniture-style")?.value;
 
     if (!roomType || !furnitureStyle) {
-      console.error("Room type or furniture style not selected");
-      return;
-    }
-
-    console.log("Remove furniture:", removeFurniture);
-    console.log("Add furniture:", addFurniture);
-    console.log("Room type:", roomType);
-    console.log("Furniture style:", furnitureStyle);
-
-    if (DEV_MODE) {
-      console.log("Using development image URL");
-      this.createRender(DEV_IMAGE_URL, roomType, furnitureStyle);
+      alert("Please select both room type and furniture style.");
       return;
     }
 
     if (!this.fileInput || !this.fileInput.files.length) {
-      console.error("No file selected");
+      alert("Please select an image to upload.");
       return;
     }
 
     const file = this.fileInput.files[0];
     const formData = new FormData();
     formData.append("image", file);
+    formData.append("token", token);
 
+    this.uploadImage(formData, roomType, furnitureStyle, token);
+  }
+
+  uploadImage(formData, roomType, furnitureStyle, token) {
     fetch(`${vsaiApiSettings.root}upload-image`, {
       method: "POST",
       body: formData,
@@ -137,24 +143,29 @@ class ProcessButton {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.url) {
+        if (data.success && data.url) {
           console.log("Uploaded image URL:", data.url);
-          this.createRender(data.url, roomType, furnitureStyle);
+          const imageUrl = DEV_MODE ? DEV_IMAGE_URL : data.url;
+          this.createRender(imageUrl, roomType, furnitureStyle, token);
         } else {
-          console.error("Error: No image URL received");
+          this.handleError(data.code, data.message);
         }
       })
       .catch((error) => {
         console.error("Error uploading image:", error);
+        alert(
+          "An unexpected error occurred while uploading the image. Please try again."
+        );
       });
   }
 
-  createRender(imageUrl, roomType, style) {
+  createRender(imageUrl, roomType, style, token) {
     const renderData = {
       image_url: imageUrl,
       room_type: roomType,
       style: style,
       wait_for_completion: false,
+      token: token,
     };
 
     console.log("Render payload:", JSON.stringify(renderData));
@@ -167,24 +178,52 @@ class ProcessButton {
         "X-WP-Nonce": vsaiApiSettings.nonce,
       },
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => {
         if (data.render_id) {
           console.log("Render ID:", data.render_id);
-          const encodedImageUrl = encodeURIComponent(imageUrl);
-          window.location.href = `/virtual-staging-main?render_id=${data.render_id}&image_url=${encodedImageUrl}`;
+          const finalImageUrl = DEV_MODE ? DEV_IMAGE_URL : imageUrl;
+          window.location.href = `/virtual-staging-main?render_id=${
+            data.render_id
+          }&image_url=${encodeURIComponent(finalImageUrl)}&at=${token}`;
+        } else if (data.code && data.message) {
+          this.handleError(data.code, data.message);
         } else {
-          console.error("Error: No render ID received", data);
+          throw new Error("Unexpected response format");
         }
       })
       .catch((error) => {
         console.error("Error creating render:", error);
+        alert(
+          "An unexpected error occurred while creating the render. Please try again."
+        );
       });
+  }
+
+  handleError(code, message) {
+    switch (code) {
+      case "invalid_token":
+      case "missing_token":
+        alert(
+          "Authentication error: Your access token is invalid or missing. Please request a new access link."
+        );
+        break;
+      case "limit_breached":
+        alert(
+          "Upload limit reached: You have reached your maximum number of uploads. Please contact support for more information."
+        );
+        break;
+      case "missing_image":
+        alert("No image selected: Please select an image to upload.");
+        break;
+      case "upload_error":
+        alert(
+          `Error uploading image: ${message}. Please try again or contact support if the problem persists.`
+        );
+        break;
+      default:
+        alert(message || "An unexpected error occurred. Please try again.");
+    }
   }
 
   static enable() {
