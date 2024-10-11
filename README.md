@@ -39,6 +39,22 @@ DEV_MODE: Set to `true` to bypass authorization for the plugin's API endpoints d
 
 ## Form Shortcodes
 
+### Upload Form
+
+To use the upload form, you can use the following form shortcode:
+
+```php
+[vsai_template type="upload" next_page_url="/virtual-staging-main"]
+```
+
+### Main Form
+
+To use the main form, you can use the following form shortcode:
+
+```php
+[vsai_template type="main" next_page_url="/virtual-staging-upload"]
+```
+
 To test the REST API, you can use the following form shortcode:
 
 ```php
