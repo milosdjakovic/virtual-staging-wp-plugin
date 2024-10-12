@@ -4,7 +4,8 @@ if (!defined('ABSPATH'))
     exit;
 ?>
 
-<div id="token-status" class="mb-4">
+<div id="token-status" class="mb-4" style="width: max-content;
+    margin-inline: auto;">
     <div id="token-status-message" class="hidden rounded-xl border p-4 transition-all duration-100"
         style="display: flex; align-items: center;">
         <svg id="token-status-icon" class="mr-2 shrink-0" style="width: 24px; height: 24px;" viewBox="0 0 24 24"
