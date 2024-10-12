@@ -1,8 +1,73 @@
-const DEV_MODE = false;
-
+// Constants
+const DEV_MODE = true;
 const DEV_IMAGE_URL =
   "https://img.freepik.com/free-photo/modern-empty-room_23-2150528563.jpg?t=st=1728732147~exp=1728735747~hmac=014440306239606372948ce56acb6e5625ba052fef0338a2a299b569549eef93&w=1800";
 
+// Utility functions
+const updateUrlParameter = (key, value) => {
+  const url = new URL(window.location.href);
+  url.searchParams.set(key, value);
+  window.history.replaceState({}, "", url);
+};
+
+const getUrlParameter = (name) => {
+  const url = new URL(window.location.href);
+  return url.searchParams.get(name);
+};
+
+const getImageUrl = (url) => (DEV_MODE ? DEV_IMAGE_URL : url);
+
+// API Service
+class ApiService {
+  static async checkTokenStatus(token) {
+    try {
+      const response = await fetch(
+        `${vsaiApiSettings.root}token-status?at=${token}`,
+        {
+          method: "GET",
+          headers: { "X-WP-Nonce": vsaiApiSettings.nonce },
+        }
+      );
+      return await response.json();
+    } catch (error) {
+      console.error("Error checking token status:", error);
+      throw error;
+    }
+  }
+
+  static async uploadImage(formData) {
+    try {
+      const response = await fetch(`${vsaiApiSettings.root}upload-image`, {
+        method: "POST",
+        body: formData,
+        headers: { "X-WP-Nonce": vsaiApiSettings.nonce },
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      throw error;
+    }
+  }
+
+  static async createRender(renderData) {
+    try {
+      const response = await fetch(`${vsaiApiSettings.root}render/create`, {
+        method: "POST",
+        body: JSON.stringify(renderData),
+        headers: {
+          "Content-Type": "application/json",
+          "X-WP-Nonce": vsaiApiSettings.nonce,
+        },
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Error creating render:", error);
+      throw error;
+    }
+  }
+}
+
+// UI Components
 class StatusMessage {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
@@ -11,41 +76,25 @@ class StatusMessage {
   }
 
   display(type, message) {
-    this.container.className =
-      "rounded-xl border p-4 transition-all duration-100 flex items-center";
-
     const styles = {
-      info: {
-        bg: "#E0F2FE",
-        border: "#38BDF8",
-        color: "#0369A1",
-      },
-      success: {
-        bg: "#DCFCE7",
-        border: "#4ADE80",
-        color: "#166534",
-      },
-      error: {
-        bg: "#FEE2E2",
-        border: "#F87171",
-        color: "#B91C1C",
-      },
-      warning: {
-        bg: "#FEF3C7",
-        border: "#FBBF24",
-        color: "#B45309",
-      },
+      info: { bg: "#E0F2FE", border: "#38BDF8", color: "#0369A1" },
+      success: { bg: "#DCFCE7", border: "#4ADE80", color: "#166534" },
+      error: { bg: "#FEE2E2", border: "#F87171", color: "#B91C1C" },
+      warning: { bg: "#FEF3C7", border: "#FBBF24", color: "#B45309" },
     };
 
     const style = styles[type] || styles.info;
 
-    this.container.style.backgroundColor = style.bg;
-    this.container.style.borderColor = style.border;
-    this.container.style.color = style.color;
+    this.container.className =
+      "rounded-xl border p-4 transition-all duration-100 flex items-center";
+    Object.assign(this.container.style, {
+      backgroundColor: style.bg,
+      borderColor: style.border,
+      color: style.color,
+    });
 
     this.iconElement.style.color = "currentColor";
     this.textElement.textContent = message;
-
     this.container.classList.remove("hidden");
   }
 
@@ -55,9 +104,10 @@ class StatusMessage {
 }
 
 class DropZone {
-  constructor(dropZoneId, fileInputId) {
+  constructor(dropZoneId, fileInputId, onFileSelected) {
     this.dropZone = document.getElementById(dropZoneId);
     this.fileInput = document.getElementById(fileInputId);
+    this.onFileSelected = onFileSelected;
   }
 
   initialize() {
@@ -72,6 +122,7 @@ class DropZone {
     const file = event.target.files[0];
     if (file) {
       this.displayImagePreview(file);
+      this.onFileSelected(file);
     }
   }
 
@@ -84,15 +135,14 @@ class DropZone {
       img.style.maxHeight = "100%";
       this.dropZone.innerHTML = "";
       this.dropZone.appendChild(img);
-      ProcessButton.enable();
     };
     reader.readAsDataURL(file);
   }
 
   setupDragAndDrop() {
-    for (const eventName of ["dragenter", "dragover", "dragleave", "drop"]) {
+    ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
       this.dropZone.addEventListener(eventName, this.preventDefaults, false);
-    }
+    });
     this.dropZone.addEventListener("drop", (e) => this.handleDrop(e));
   }
 
@@ -104,151 +154,230 @@ class DropZone {
   handleDrop(e) {
     const file = e.dataTransfer.files[0];
     if (file) {
-      this.fileInput.files = e.dataTransfer.files; // Set the files to the input
+      this.fileInput.files = e.dataTransfer.files;
       this.displayImagePreview(file);
+      this.onFileSelected(file);
     }
   }
 }
 
-class ProcessButton {
-  constructor(buttonId) {
-    this.button = document.getElementById(buttonId);
-    this.fileInput =
-      document.getElementById("file-input") ||
-      document.querySelector('input[type="file"]');
-    if (!this.button) {
-      console.error("Process button not found");
-    }
-    if (!this.fileInput) {
-      console.error("File input not found");
-    }
+class FurnitureSelector {
+  constructor(checkboxId, optionsId, roomTypeId, furnitureStyleId) {
+    this.checkbox = document.getElementById(checkboxId);
+    this.options = document.getElementById(optionsId);
+    this.roomType = document.getElementById(roomTypeId);
+    this.furnitureStyle = document.getElementById(furnitureStyleId);
   }
 
   initialize() {
-    if (this.button) {
-      this.button.addEventListener("click", () => this.processPhoto());
+    this.checkbox.addEventListener("change", () => this.toggleOptions());
+    this.roomType.addEventListener("change", () =>
+      this.updateSelection("room", this.roomType.value)
+    );
+    this.furnitureStyle.addEventListener("change", () =>
+      this.updateSelection("style", this.furnitureStyle.value)
+    );
+
+    const roomParam = getUrlParameter("room");
+    const styleParam = getUrlParameter("style");
+    if (roomParam) this.roomType.value = roomParam;
+    if (styleParam) this.furnitureStyle.value = styleParam;
+  }
+
+  toggleOptions() {
+    this.options.classList.toggle("hidden", !this.checkbox.checked);
+  }
+
+  updateSelection(type, value) {
+    updateUrlParameter(type, value);
+  }
+
+  getSelections() {
+    return {
+      roomType: this.roomType.value,
+      furnitureStyle: this.furnitureStyle.value,
+    };
+  }
+}
+
+// Main Application Logic
+class App {
+  constructor() {
+    this.statusMessage = new StatusMessage("token-status-message");
+    this.dropZone = new DropZone(
+      "drop-zone",
+      "file-input",
+      this.handleFileSelected.bind(this)
+    );
+    this.furnitureSelector = new FurnitureSelector(
+      "add-furniture-checkbox",
+      "furniture-options",
+      "room-type",
+      "furniture-style"
+    );
+    this.processButton = document.getElementById("process-button");
+    this.selectedFile = null;
+  }
+
+  async initialize() {
+    this.dropZone.initialize();
+    this.furnitureSelector.initialize();
+    this.processButton.addEventListener("click", () => this.processPhoto());
+    await this.checkTokenStatus();
+  }
+
+  async checkTokenStatus() {
+    const token = getUrlParameter("at");
+    if (!token) {
+      this.statusMessage.display(
+        "error",
+        "No access token provided. Please check your access link."
+      );
+      return;
+    }
+
+    try {
+      const data = await ApiService.checkTokenStatus(token);
+      if (data.code === "invalid_token") {
+        this.statusMessage.display(
+          "error",
+          "Your access token is no longer valid. Please request a new one."
+        );
+      } else if (data.renders_left <= 0) {
+        this.statusMessage.display(
+          "warning",
+          "You have reached your upload limit."
+        );
+      } else {
+        this.statusMessage.display(
+          "info",
+          `You have ${data.renders_left} upload${
+            data.renders_left !== 1 ? "s" : ""
+          } remaining out of ${data.limit}.`
+        );
+      }
+    } catch (error) {
+      this.statusMessage.display(
+        "error",
+        "An error occurred while checking your token status. Please try again later."
+      );
     }
   }
 
-  processPhoto() {
+  handleFileSelected(file) {
+    this.selectedFile = file;
+    this.processButton.disabled = false;
+    this.processButton.classList.remove("cursor-not-allowed", "opacity-50");
+    this.processButton.classList.add("cursor-pointer", "hover:bg-primary-dark");
+  }
+
+  async processPhoto() {
     const token = getUrlParameter("at");
     if (!token) {
-      statusMessage.display(
+      this.statusMessage.display(
         "error",
         "Token error: Access token is not present. Please check your access link."
       );
       return;
     }
 
-    const roomType = document.getElementById("room-type")?.value;
-    const furnitureStyle = document.getElementById("furniture-style")?.value;
-
+    const { roomType, furnitureStyle } = this.furnitureSelector.getSelections();
     if (!roomType || !furnitureStyle) {
-      statusMessage.display(
+      this.statusMessage.display(
         "error",
         "Please select both room type and furniture style."
       );
       return;
     }
 
-    if (!this.fileInput || !this.fileInput.files.length) {
-      statusMessage.display("error", "Please select an image to upload.");
+    if (!this.selectedFile) {
+      this.statusMessage.display("error", "Please select an image to upload.");
       return;
     }
 
-    // Disable the button
-    this.disableButton();
+    this.disableProcessButton();
 
-    const file = this.fileInput.files[0];
+    try {
+      const uploadedImageData = await this.uploadImage(
+        this.selectedFile,
+        token
+      );
+      if (uploadedImageData.success && uploadedImageData.url) {
+        await this.createRender(
+          uploadedImageData.url,
+          roomType,
+          furnitureStyle,
+          token
+        );
+      } else {
+        throw new Error("Upload failed");
+      }
+    } catch (error) {
+      this.handleError(
+        "upload_error",
+        "We couldn't upload your image at this time."
+      );
+      this.enableProcessButton();
+    }
+  }
+
+  async uploadImage(file, token) {
     const formData = new FormData();
     formData.append("image", file);
     formData.append("token", token);
-
-    this.uploadImage(formData, roomType, furnitureStyle, token);
+    return await ApiService.uploadImage(formData);
   }
 
-  uploadImage(formData, roomType, furnitureStyle, token) {
-    fetch(`${vsaiApiSettings.root}upload-image`, {
-      method: "POST",
-      body: formData,
-      headers: {
-        "X-WP-Nonce": vsaiApiSettings.nonce,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success && data.url) {
-          console.log("Uploaded image URL:", data.url);
-          const imageUrl = DEV_MODE ? DEV_IMAGE_URL : data.url;
-          this.createRender(imageUrl, roomType, furnitureStyle, token);
-        } else {
-          this.handleError(
-            "upload_error",
-            "We couldn't upload your image at this time."
-          );
-          this.enableButton();
-        }
-      })
-      .catch((error) => {
-        console.error("Error uploading image:", error);
-        this.handleError(
-          "upload_error",
-          "We encountered an issue while uploading your image."
-        );
-        this.enableButton();
-      });
-  }
-
-  createRender(imageUrl, roomType, style, token) {
+  async createRender(imageUrl, roomType, style, token) {
+    console.log(
+      "🚀 ~ App ~ createRender ~ getImageUrl(imageUrl):",
+      getImageUrl(imageUrl)
+    );
     const renderData = {
-      image_url: imageUrl,
+      image_url: getImageUrl(imageUrl),
       room_type: roomType,
-      style: style,
+      style,
       wait_for_completion: false,
-      token: token,
+      token,
     };
-
-    console.log("Render payload:", JSON.stringify(renderData));
-
-    fetch(`${vsaiApiSettings.root}render/create`, {
-      method: "POST",
-      body: JSON.stringify(renderData),
-      headers: {
-        "Content-Type": "application/json",
-        "X-WP-Nonce": vsaiApiSettings.nonce,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.render_id) {
-          console.log("Render ID:", data.render_id);
-          const finalImageUrl = DEV_MODE ? DEV_IMAGE_URL : imageUrl;
-          const nextPageUrl =
-            vsaiApiSettings.nextPageUrl || "/virtual-staging-main";
-          window.location.href = `${nextPageUrl}?render_id=${
-            data.render_id
-          }&image_url=${encodeURIComponent(finalImageUrl)}&at=${token}`;
-        } else {
-          this.handleError(
-            "render_error",
-            "We couldn't process your image at this moment."
-          );
-          this.enableButton();
-        }
-      })
-      .catch((error) => {
-        console.error("Error creating render:", error);
-        this.handleError(
-          "render_error",
-          "We encountered an issue while processing your image."
+    try {
+      const data = await ApiService.createRender(renderData);
+      if (data.render_id) {
+        this.redirectToNextPage(
+          data.render_id,
+          imageUrl,
+          token,
+          roomType,
+          style
         );
-        this.enableButton();
-      });
+      } else {
+        throw new Error("No render_id received");
+      }
+    } catch (error) {
+      this.handleError(
+        "render_error",
+        "We couldn't process your image at this moment."
+      );
+      this.enableProcessButton();
+    }
+  }
+
+  redirectToNextPage(renderId, imageUrl, token, roomType, style) {
+    const nextPageUrl = vsaiApiSettings.nextPageUrl || "/virtual-staging-main";
+    const url = new URL(nextPageUrl, window.location.origin);
+    url.searchParams.set("render_id", renderId);
+    url.searchParams.set(
+      "image_url",
+      encodeURIComponent(getImageUrl(imageUrl))
+    );
+    url.searchParams.set("at", token);
+    url.searchParams.set("room", roomType);
+    url.searchParams.set("style", style);
+    window.location.href = url.toString();
   }
 
   handleError(code, defaultMessage) {
     console.error(`Error code: ${code}, Message: ${defaultMessage}`);
-
     const errorMessages = {
       invalid_token:
         "Your session has expired. Please refresh the page and try again.",
@@ -262,127 +391,31 @@ class ProcessButton {
       render_error:
         "We're having trouble processing your image right now. Please try again in a few moments.",
     };
-
     const message = errorMessages[code] || defaultMessage;
-    const fullMessage = `${message} If this problem persists, please contact our support team.`;
-
-    statusMessage.display("error", fullMessage);
-  }
-
-  disableButton() {
-    if (this.button) {
-      this.button.disabled = true;
-      this.button.classList.add("cursor-not-allowed", "opacity-50");
-      this.button.classList.remove("cursor-pointer", "hover:bg-primary-dark");
-    }
-  }
-
-  enableButton() {
-    if (this.button) {
-      this.button.disabled = false;
-      this.button.classList.remove("cursor-not-allowed", "opacity-50");
-      this.button.classList.add("cursor-pointer", "hover:bg-primary-dark");
-    }
-  }
-
-  static enable() {
-    const button = document.getElementById("process-button");
-    if (button) {
-      button.disabled = false;
-      button.classList.remove("cursor-not-allowed", "opacity-50");
-      button.classList.add("cursor-pointer", "hover:bg-primary-dark");
-    }
-  }
-}
-
-class FurnitureSelector {
-  constructor(checkboxId, optionsId) {
-    this.checkbox = document.getElementById(checkboxId);
-    this.options = document.getElementById(optionsId);
-  }
-
-  initialize() {
-    this.checkbox.addEventListener("change", () => this.toggleOptions());
-  }
-
-  toggleOptions() {
-    if (this.checkbox.checked) {
-      this.options.classList.remove("hidden");
-    } else {
-      this.options.classList.add("hidden");
-    }
-  }
-}
-
-function getUrlParameter(name) {
-  const paramName = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-  const regex = new RegExp(`[\\?&]${paramName}=([^&#]*)`);
-  const results = regex.exec(location.search);
-  return results === null
-    ? ""
-    : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-
-function checkTokenStatus() {
-  const token = getUrlParameter("at");
-  if (!token) {
-    statusMessage.display(
+    this.statusMessage.display(
       "error",
-      "No access token provided. Please check your access link."
+      `${message} If this problem persists, please contact our support team.`
     );
-    return;
   }
 
-  fetch(`${vsaiApiSettings.root}token-status?at=${token}`, {
-    method: "GET",
-    headers: {
-      "X-WP-Nonce": vsaiApiSettings.nonce,
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.code === "invalid_token") {
-        statusMessage.display(
-          "error",
-          "Your access token is no longer valid. Please request a new one."
-        );
-      } else if (data.renders_left <= 0) {
-        statusMessage.display("warning", "You have reached your upload limit.");
-      } else {
-        statusMessage.display(
-          "info",
-          `You have ${data.renders_left} upload${
-            data.renders_left !== 1 ? "s" : ""
-          } remaining out of ${data.limit}.`
-        );
-      }
-    })
-    .catch((error) => {
-      console.error("Error checking token status:", error);
-      statusMessage.display(
-        "error",
-        "An error occurred while checking your token status. Please try again later."
-      );
-    });
+  disableProcessButton() {
+    this.processButton.disabled = true;
+    this.processButton.classList.add("cursor-not-allowed", "opacity-50");
+    this.processButton.classList.remove(
+      "cursor-pointer",
+      "hover:bg-primary-dark"
+    );
+  }
+
+  enableProcessButton() {
+    this.processButton.disabled = false;
+    this.processButton.classList.remove("cursor-not-allowed", "opacity-50");
+    this.processButton.classList.add("cursor-pointer", "hover:bg-primary-dark");
+  }
 }
 
-const statusMessage = new StatusMessage("token-status-message");
-
-function initializeApp() {
-  checkTokenStatus();
-  const dropZone = new DropZone("drop-zone", "file-input");
-  const processButton = new ProcessButton("process-button");
-  const furnitureSelector = new FurnitureSelector(
-    "add-furniture-checkbox",
-    "furniture-options"
-  );
-
-  dropZone.initialize();
-  processButton.initialize();
-  furnitureSelector.initialize();
-
-  // Display initial message
-  statusMessage.display("info", "Please upload an image to begin.");
-}
-
-document.addEventListener("DOMContentLoaded", initializeApp);
+// Initialize the application
+document.addEventListener("DOMContentLoaded", async () => {
+  const app = new App();
+  await app.initialize();
+});
