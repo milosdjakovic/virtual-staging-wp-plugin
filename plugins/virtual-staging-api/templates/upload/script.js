@@ -1,111 +1,57 @@
 const DEV_MODE = false;
 
 const DEV_IMAGE_URL =
-  "https://static.vecteezy.com/system/resources/previews/005/727/726/non_2x/minimalist-empty-room-with-gray-wall-and-wood-floor-3d-rendering-free-photo.jpg";
+  "https://img.freepik.com/free-photo/modern-empty-room_23-2150528563.jpg?t=st=1728732147~exp=1728735747~hmac=014440306239606372948ce56acb6e5625ba052fef0338a2a299b569549eef93&w=1800";
 
-document.addEventListener("DOMContentLoaded", initializeApp);
-
-function initializeApp() {
-  checkTokenStatus();
-  const dropZone = new DropZone("drop-zone", "file-input");
-  const processButton = new ProcessButton("process-button");
-  const furnitureSelector = new FurnitureSelector(
-    "add-furniture-checkbox",
-    "furniture-options"
-  );
-
-  dropZone.initialize();
-  processButton.initialize();
-  furnitureSelector.initialize();
-}
-
-function getUrlParameter(name) {
-  const paramName = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-  const regex = new RegExp(`[\\?&]${paramName}=([^&#]*)`);
-  const results = regex.exec(location.search);
-  return results === null
-    ? ""
-    : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-
-function checkTokenStatus() {
-  const token = getUrlParameter("at");
-  if (!token) {
-    displayTokenStatus(
-      "error",
-      "No access token provided. Please check your access link."
-    );
-    return;
+class StatusMessage {
+  constructor(containerId) {
+    this.container = document.getElementById(containerId);
+    this.iconElement = this.container.querySelector("#token-status-icon");
+    this.textElement = this.container.querySelector("#token-status-text");
   }
 
-  fetch(`${vsaiApiSettings.root}token-status?at=${token}`, {
-    method: "GET",
-    headers: {
-      "X-WP-Nonce": vsaiApiSettings.nonce,
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.code === "invalid_token") {
-        displayTokenStatus(
-          "error",
-          "Your access token is no longer valid. Please request a new one."
-        );
-      } else if (data.renders_left <= 0) {
-        displayTokenStatus(
-          "warning",
-          "You have reached your render limit. No more renders are available."
-        );
-      } else {
-        displayTokenStatus(
-          "info",
-          `You have ${data.renders_left} render${
-            data.renders_left !== 1 ? "s" : ""
-          } remaining.`
-        );
-      }
-    })
-    .catch((error) => {
-      console.error("Error checking token status:", error);
-      displayTokenStatus(
-        "error",
-        "An error occurred while checking your token status. Please try again later."
-      );
-    });
-}
+  display(type, message) {
+    this.container.className =
+      "rounded-xl border p-4 transition-all duration-100 flex items-center";
 
-function displayTokenStatus(severity, message) {
-  const statusElement = document.getElementById("token-status-message");
-  const iconElement = document.getElementById("token-status-icon");
-  const textElement = document.getElementById("token-status-text");
+    const styles = {
+      info: {
+        bg: "#E0F2FE",
+        border: "#38BDF8",
+        color: "#0369A1",
+      },
+      success: {
+        bg: "#DCFCE7",
+        border: "#4ADE80",
+        color: "#166534",
+      },
+      error: {
+        bg: "#FEE2E2",
+        border: "#F87171",
+        color: "#B91C1C",
+      },
+      warning: {
+        bg: "#FEF3C7",
+        border: "#FBBF24",
+        color: "#B45309",
+      },
+    };
 
-  // Reset classes
-  statusElement.className = "rounded-xl border p-4 transition-all duration-100";
-  statusElement.style.display = "flex";
-  statusElement.style.alignItems = "center";
+    const style = styles[type] || styles.info;
 
-  // Set color and background based on severity
-  switch (severity) {
-    case "error":
-      statusElement.style.backgroundColor = "#FEE2E2";
-      statusElement.style.borderColor = "#F87171";
-      statusElement.style.color = "#B91C1C";
-      break;
-    case "warning":
-      statusElement.style.backgroundColor = "#FEF3C7";
-      statusElement.style.borderColor = "#FBBF24";
-      statusElement.style.color = "#B45309";
-      break;
-    default:
-      statusElement.style.backgroundColor = "#E0F2FE";
-      statusElement.style.borderColor = "#38BDF8";
-      statusElement.style.color = "#0369A1";
+    this.container.style.backgroundColor = style.bg;
+    this.container.style.borderColor = style.border;
+    this.container.style.color = style.color;
+
+    this.iconElement.style.color = "currentColor";
+    this.textElement.textContent = message;
+
+    this.container.classList.remove("hidden");
   }
 
-  iconElement.style.color = "currentColor";
-  textElement.textContent = message;
-
-  statusElement.classList.remove("hidden");
+  hide() {
+    this.container.classList.add("hidden");
+  }
 }
 
 class DropZone {
@@ -187,7 +133,8 @@ class ProcessButton {
   processPhoto() {
     const token = getUrlParameter("at");
     if (!token) {
-      alert(
+      statusMessage.display(
+        "error",
         "Token error: Access token is not present. Please check your access link."
       );
       return;
@@ -197,14 +144,20 @@ class ProcessButton {
     const furnitureStyle = document.getElementById("furniture-style")?.value;
 
     if (!roomType || !furnitureStyle) {
-      alert("Please select both room type and furniture style.");
+      statusMessage.display(
+        "error",
+        "Please select both room type and furniture style."
+      );
       return;
     }
 
     if (!this.fileInput || !this.fileInput.files.length) {
-      alert("Please select an image to upload.");
+      statusMessage.display("error", "Please select an image to upload.");
       return;
     }
+
+    // Disable the button
+    this.disableButton();
 
     const file = this.fileInput.files[0];
     const formData = new FormData();
@@ -230,13 +183,16 @@ class ProcessButton {
           this.createRender(imageUrl, roomType, furnitureStyle, token);
         } else {
           this.handleError(data.code, data.message);
+          this.enableButton(); // Re-enable the button on error
         }
       })
       .catch((error) => {
         console.error("Error uploading image:", error);
-        alert(
+        statusMessage.display(
+          "error",
           "An unexpected error occurred while uploading the image. Please try again."
         );
+        this.enableButton(); // Re-enable the button on error
       });
   }
 
@@ -271,15 +227,18 @@ class ProcessButton {
           }&image_url=${encodeURIComponent(finalImageUrl)}&at=${token}`;
         } else if (data.code && data.message) {
           this.handleError(data.code, data.message);
+          this.enableButton(); // Re-enable the button on error
         } else {
           throw new Error("Unexpected response format");
         }
       })
       .catch((error) => {
         console.error("Error creating render:", error);
-        alert(
+        statusMessage.display(
+          "error",
           "An unexpected error occurred while creating the render. Please try again."
         );
+        this.enableButton(); // Re-enable the button on error
       });
   }
 
@@ -287,25 +246,47 @@ class ProcessButton {
     switch (code) {
       case "invalid_token":
       case "missing_token":
-        alert(
+        statusMessage.display(
+          "error",
           "Authentication error: Your access token is invalid or missing. Please request a new access link."
         );
         break;
       case "limit_breached":
-        alert(
-          "Upload limit reached: You have reached your maximum number of uploads. Please contact support for more information."
-        );
+        statusMessage.display("warning", "Upload limit reached.");
         break;
       case "missing_image":
-        alert("No image selected: Please select an image to upload.");
+        statusMessage.display(
+          "error",
+          "No image selected: Please select an image to upload."
+        );
         break;
       case "upload_error":
-        alert(
+        statusMessage.display(
+          "error",
           `Error uploading image: ${message}. Please try again or contact support if the problem persists.`
         );
         break;
       default:
-        alert(message || "An unexpected error occurred. Please try again.");
+        statusMessage.display(
+          "error",
+          message || "An unexpected error occurred. Please try again."
+        );
+    }
+  }
+
+  disableButton() {
+    if (this.button) {
+      this.button.disabled = true;
+      this.button.classList.add("cursor-not-allowed", "opacity-50");
+      this.button.classList.remove("cursor-pointer", "hover:bg-primary-dark");
+    }
+  }
+
+  enableButton() {
+    if (this.button) {
+      this.button.disabled = false;
+      this.button.classList.remove("cursor-not-allowed", "opacity-50");
+      this.button.classList.add("cursor-pointer", "hover:bg-primary-dark");
     }
   }
 
@@ -337,3 +318,76 @@ class FurnitureSelector {
     }
   }
 }
+
+function getUrlParameter(name) {
+  const paramName = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+  const regex = new RegExp(`[\\?&]${paramName}=([^&#]*)`);
+  const results = regex.exec(location.search);
+  return results === null
+    ? ""
+    : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+function checkTokenStatus() {
+  const token = getUrlParameter("at");
+  if (!token) {
+    statusMessage.display(
+      "error",
+      "No access token provided. Please check your access link."
+    );
+    return;
+  }
+
+  fetch(`${vsaiApiSettings.root}token-status?at=${token}`, {
+    method: "GET",
+    headers: {
+      "X-WP-Nonce": vsaiApiSettings.nonce,
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.code === "invalid_token") {
+        statusMessage.display(
+          "error",
+          "Your access token is no longer valid. Please request a new one."
+        );
+      } else if (data.renders_left <= 0) {
+        statusMessage.display("warning", "You have reached your upload limit.");
+      } else {
+        statusMessage.display(
+          "info",
+          `You have ${data.renders_left} upload${
+            data.renders_left !== 1 ? "s" : ""
+          } remaining out of ${data.limit}.`
+        );
+      }
+    })
+    .catch((error) => {
+      console.error("Error checking token status:", error);
+      statusMessage.display(
+        "error",
+        "An error occurred while checking your token status. Please try again later."
+      );
+    });
+}
+
+const statusMessage = new StatusMessage("token-status-message");
+
+function initializeApp() {
+  checkTokenStatus();
+  const dropZone = new DropZone("drop-zone", "file-input");
+  const processButton = new ProcessButton("process-button");
+  const furnitureSelector = new FurnitureSelector(
+    "add-furniture-checkbox",
+    "furniture-options"
+  );
+
+  dropZone.initialize();
+  processButton.initialize();
+  furnitureSelector.initialize();
+
+  // Display initial message
+  statusMessage.display("info", "Please upload an image to begin.");
+}
+
+document.addEventListener("DOMContentLoaded", initializeApp);
