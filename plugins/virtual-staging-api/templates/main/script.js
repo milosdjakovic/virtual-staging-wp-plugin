@@ -230,6 +230,7 @@ const initializeApp = async () => {
   setOriginalImage(imageUrl);
   setupUploadAnotherImageButton(at);
   setupGenerateVariationButton();
+  await updateTokenStatus(); // Add this line to update token status on page load
 
   if (renderId) {
     await handleInitialRenderProcess(renderId);
@@ -239,6 +240,26 @@ const initializeApp = async () => {
     setupDownloadButton(carousel);
   } else {
     console.error("No render_id or image_url found in URL parameters");
+  }
+};
+
+const updateTokenStatus = async () => {
+  const at = getUrlParam("at");
+  if (!at) {
+    console.error("No access token found in URL parameters");
+    return;
+  }
+
+  try {
+    const response = await fetchWithAuth(`token-status?at=${at}`);
+    if (response.renders_left !== undefined) {
+      const statusDisplay = document.getElementById("tokenStatusDisplay");
+      if (statusDisplay) {
+        statusDisplay.textContent = `(${response.renders_left} left)`;
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching token status:", error);
   }
 };
 

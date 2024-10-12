@@ -14,6 +14,7 @@ if (!defined('ABSPATH'))
                 <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
             <span>Upload Another Image</span>
+            <span id="tokenStatusDisplay" class="ml-2 text-xs"></span>
         </button>
     </div>
 
