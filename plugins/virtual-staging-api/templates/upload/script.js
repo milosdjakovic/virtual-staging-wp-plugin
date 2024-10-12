@@ -1,4 +1,4 @@
-const DEV_MODE = true;
+const DEV_MODE = false;
 
 const DEV_IMAGE_URL =
   "https://static.vecteezy.com/system/resources/previews/005/727/726/non_2x/minimalist-empty-room-with-gray-wall-and-wood-floor-3d-rendering-free-photo.jpg";
