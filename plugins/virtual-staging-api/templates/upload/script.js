@@ -1,4 +1,4 @@
-const DEV_MODE = false;
+const DEV_MODE = true;
 
 const DEV_IMAGE_URL =
   "https://static.vecteezy.com/system/resources/previews/005/727/726/non_2x/minimalist-empty-room-with-gray-wall-and-wood-floor-3d-rendering-free-photo.jpg";
@@ -6,6 +6,7 @@ const DEV_IMAGE_URL =
 document.addEventListener("DOMContentLoaded", initializeApp);
 
 function initializeApp() {
+  checkTokenStatus();
   const dropZone = new DropZone("drop-zone", "file-input");
   const processButton = new ProcessButton("process-button");
   const furnitureSelector = new FurnitureSelector(
@@ -25,6 +26,86 @@ function getUrlParameter(name) {
   return results === null
     ? ""
     : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+function checkTokenStatus() {
+  const token = getUrlParameter("at");
+  if (!token) {
+    displayTokenStatus(
+      "error",
+      "No access token provided. Please check your access link."
+    );
+    return;
+  }
+
+  fetch(`${vsaiApiSettings.root}token-status?at=${token}`, {
+    method: "GET",
+    headers: {
+      "X-WP-Nonce": vsaiApiSettings.nonce,
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.code === "invalid_token") {
+        displayTokenStatus(
+          "error",
+          "Your access token is no longer valid. Please request a new one."
+        );
+      } else if (data.uploads_left <= 0) {
+        displayTokenStatus(
+          "warning",
+          "You have reached your upload limit. No more uploads are available."
+        );
+      } else {
+        displayTokenStatus(
+          "info",
+          `You have ${data.uploads_left} upload${
+            data.uploads_left !== 1 ? "s" : ""
+          } remaining.`
+        );
+      }
+    })
+    .catch((error) => {
+      console.error("Error checking token status:", error);
+      displayTokenStatus(
+        "error",
+        "An error occurred while checking your token status. Please try again later."
+      );
+    });
+}
+
+function displayTokenStatus(severity, message) {
+  const statusElement = document.getElementById("token-status-message");
+  const iconElement = document.getElementById("token-status-icon");
+  const textElement = document.getElementById("token-status-text");
+
+  // Reset classes
+  statusElement.className = "rounded-xl border p-4 transition-all duration-100";
+  statusElement.style.display = "flex";
+  statusElement.style.alignItems = "center";
+
+  // Set color and background based on severity
+  switch (severity) {
+    case "error":
+      statusElement.style.backgroundColor = "#FEE2E2";
+      statusElement.style.borderColor = "#F87171";
+      statusElement.style.color = "#B91C1C";
+      break;
+    case "warning":
+      statusElement.style.backgroundColor = "#FEF3C7";
+      statusElement.style.borderColor = "#FBBF24";
+      statusElement.style.color = "#B45309";
+      break;
+    default:
+      statusElement.style.backgroundColor = "#E0F2FE";
+      statusElement.style.borderColor = "#38BDF8";
+      statusElement.style.color = "#0369A1";
+  }
+
+  iconElement.style.color = "currentColor";
+  textElement.textContent = message;
+
+  statusElement.classList.remove("hidden");
 }
 
 class DropZone {
