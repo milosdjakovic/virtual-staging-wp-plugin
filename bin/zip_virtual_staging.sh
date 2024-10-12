@@ -15,7 +15,7 @@ fi
 
 # Create the zip file
 echo "Creating zip file..."
-(cd "$ROOT_DIR/plugins" && zip -r "$DEST_ZIP" virtual-staging-api -x "*.DS_Store" -x "*/.*")
+(cd "$ROOT_DIR/plugins" && zip -r "$DEST_ZIP" virtual-staging-api -x "*.DS_Store" -x "**/.DS_Store" -x "**/__MACOSX/*")
 
 # Check if the zip was created successfully
 if [ $? -eq 0 ]; then
