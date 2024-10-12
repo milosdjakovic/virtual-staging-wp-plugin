@@ -4,6 +4,19 @@ if (!defined('ABSPATH'))
     exit;
 ?>
 
+<div id="token-status" class="mb-4">
+    <div id="token-status-message" class="hidden rounded-xl border p-4 transition-all duration-100"
+        style="display: flex; align-items: center;">
+        <svg id="token-status-icon" class="mr-2 shrink-0" style="width: 24px; height: 24px;" viewBox="0 0 24 24"
+            fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z">
+            </path>
+        </svg>
+        <span id="token-status-text"></span>
+    </div>
+</div>
+
+
 <div class="ReactModal__Content ReactModal__Content--after-open z-20 flex h-full max-h-screen w-full justify-center overflow-auto bg-white p-4 pt-12 font-outfit outline-none sm:overflow-hidden md:h-auto md:w-auto md:max-w-[90vw] md:rounded-2xl md:p-6 md:pt-6 md:shadow-sm sm:overflow-visible snipcss-7K6H4"
     tabindex="-1" role="dialog" aria-modal="true">
     <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
