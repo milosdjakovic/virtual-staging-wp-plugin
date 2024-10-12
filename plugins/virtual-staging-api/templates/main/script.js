@@ -352,6 +352,7 @@ class App {
 
         if (data.status !== "done") {
           buttonSpan.textContent = "Generating...";
+          this.showGeneratingVariationIndicator();
         } else {
           generateButton.disabled = false;
           break;
@@ -366,6 +367,7 @@ class App {
           hideLoadingIndicator();
           generateButton.disabled = false;
           buttonSpan.textContent = originalText;
+          this.hideGeneratingVariationIndicator();
         }, 500);
         break;
       }
@@ -411,6 +413,7 @@ class App {
     const originalText = buttonSpan.textContent;
     buttonSpan.textContent = "Generating...";
     button.disabled = true;
+    this.showGeneratingVariationIndicator();
 
     const renderId = getUrlParam("render_id");
     const roomType = $(".room-type-select").value;
@@ -429,6 +432,7 @@ class App {
             setTimeout(() => {
               buttonSpan.textContent = originalText;
               button.disabled = false;
+              this.hideGeneratingVariationIndicator();
             }, 500);
           }
         });
@@ -440,6 +444,7 @@ class App {
       alert("Failed to generate variation. Please try again.");
       buttonSpan.textContent = originalText;
       button.disabled = false;
+      this.hideGeneratingVariationIndicator();
     }
   }
 
@@ -472,6 +477,14 @@ class App {
       console.error("Error downloading image:", error);
       alert("Failed to download image. Please try again.");
     }
+  }
+
+  showGeneratingVariationIndicator() {
+    showElement(getById("generating-variation-indicator"));
+  }
+
+  hideGeneratingVariationIndicator() {
+    hideElement(getById("generating-variation-indicator"));
   }
 }
 

@@ -148,14 +148,16 @@ if (!defined('ABSPATH'))
 
                         </div>
                         <div class="carousel ">
-                            <div style="overflow-x: auto;" class="thumbs-wrapper axis-vertical">
-                                <button type="button" class="control-arrow control-prev control-disabled"
-                                    aria-label="previous slide / item"></button>
+                            <div style="overflow-x: auto;" class="thumbs-wrapper axis-vertical flex">
+                                <div id="generating-variation-indicator"
+                                    style="background: rgba(0, 0, 0, 0.8); padding: 6px 12px;"
+                                    class="rounded-xl flex justify-center items-center mr-2 hidden">
+                                    <p class="text-white">Generating variation...</p>
+                                </div>
+
                                 <ul class="thumbs animated" id="thumbnail-slider">
                                     <!-- Thumbnails will be dynamically inserted here -->
                                 </ul>
-                                <button type="button" class="control-arrow control-next control-disabled"
-                                    aria-label="next slide / item"></button>
                             </div>
                         </div>
                     </div>
