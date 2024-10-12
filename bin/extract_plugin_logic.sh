@@ -1,7 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Set the output file
-output_file="virtual_staging_api_plugin_logic.md"
+# Get the root directory (one level up from the bin directory)
+ROOT_DIR="$(dirname "$(dirname "$0")")"
+
+# Set the output file in the root directory
+output_file="$ROOT_DIR/virtual_staging_api_plugin_logic.md"
 
 # Clear or create the output file
 >"$output_file"
@@ -33,8 +36,8 @@ process_file() {
 }
 
 # Find and process PHP, JS, YML, and INI files
-find . -type f \( -name "*.php" -o -name "*.js" -o -name "*.yml" -o -name "*.ini" \) | sort | while read -r file; do
+(cd "$ROOT_DIR" && find . -type f \( -name "*.php" -o -name "*.js" -o -name "*.yml" -o -name "*.ini" \) | sort | while read -r file; do
   process_file "$file"
-done
+done)
 
 echo "Plugin logic has been extracted into $output_file"
