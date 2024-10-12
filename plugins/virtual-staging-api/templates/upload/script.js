@@ -182,17 +182,20 @@ class ProcessButton {
           const imageUrl = DEV_MODE ? DEV_IMAGE_URL : data.url;
           this.createRender(imageUrl, roomType, furnitureStyle, token);
         } else {
-          this.handleError(data.code, data.message);
-          this.enableButton(); // Re-enable the button on error
+          this.handleError(
+            "upload_error",
+            "We couldn't upload your image at this time."
+          );
+          this.enableButton();
         }
       })
       .catch((error) => {
         console.error("Error uploading image:", error);
-        statusMessage.display(
-          "error",
-          "An unexpected error occurred while uploading the image. Please try again."
+        this.handleError(
+          "upload_error",
+          "We encountered an issue while uploading your image."
         );
-        this.enableButton(); // Re-enable the button on error
+        this.enableButton();
       });
   }
 
@@ -225,53 +228,45 @@ class ProcessButton {
           window.location.href = `${nextPageUrl}?render_id=${
             data.render_id
           }&image_url=${encodeURIComponent(finalImageUrl)}&at=${token}`;
-        } else if (data.code && data.message) {
-          this.handleError(data.code, data.message);
-          this.enableButton(); // Re-enable the button on error
         } else {
-          throw new Error("Unexpected response format");
+          this.handleError(
+            "render_error",
+            "We couldn't process your image at this moment."
+          );
+          this.enableButton();
         }
       })
       .catch((error) => {
         console.error("Error creating render:", error);
-        statusMessage.display(
-          "error",
-          "An unexpected error occurred while creating the render. Please try again."
+        this.handleError(
+          "render_error",
+          "We encountered an issue while processing your image."
         );
-        this.enableButton(); // Re-enable the button on error
+        this.enableButton();
       });
   }
 
-  handleError(code, message) {
-    switch (code) {
-      case "invalid_token":
-      case "missing_token":
-        statusMessage.display(
-          "error",
-          "Authentication error: Your access token is invalid or missing. Please request a new access link."
-        );
-        break;
-      case "limit_breached":
-        statusMessage.display("warning", "Upload limit reached.");
-        break;
-      case "missing_image":
-        statusMessage.display(
-          "error",
-          "No image selected: Please select an image to upload."
-        );
-        break;
-      case "upload_error":
-        statusMessage.display(
-          "error",
-          `Error uploading image: ${message}. Please try again or contact support if the problem persists.`
-        );
-        break;
-      default:
-        statusMessage.display(
-          "error",
-          message || "An unexpected error occurred. Please try again."
-        );
-    }
+  handleError(code, defaultMessage) {
+    console.error(`Error code: ${code}, Message: ${defaultMessage}`);
+
+    const errorMessages = {
+      invalid_token:
+        "Your session has expired. Please refresh the page and try again.",
+      missing_token:
+        "There's an issue with your access. Please try reloading the page.",
+      limit_breached:
+        "You've reached the maximum number of uploads for now. Please try again later or contact support for more information.",
+      missing_image: "Please select an image before proceeding.",
+      upload_error:
+        "We couldn't upload your image at this time. Please try again or use a different image.",
+      render_error:
+        "We're having trouble processing your image right now. Please try again in a few moments.",
+    };
+
+    const message = errorMessages[code] || defaultMessage;
+    const fullMessage = `${message} If this problem persists, please contact our support team.`;
+
+    statusMessage.display("error", fullMessage);
   }
 
   disableButton() {
