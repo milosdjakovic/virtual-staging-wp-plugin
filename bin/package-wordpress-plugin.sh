@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Get the directory where the script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -13,6 +15,8 @@ PLUGIN_DIR="plugins/virtual-staging-api"
 # Name of the output zip file
 ZIP_FILE="virtual-staging-api.zip"
 
+echo "Starting to package the Virtual Staging API plugin..."
+
 # Create the zip file
 (
   cd "$PLUGIN_DIR" && zip -r "$PROJECT_ROOT/$ZIP_FILE" . \
@@ -20,7 +24,16 @@ ZIP_FILE="virtual-staging-api.zip"
     -x "*/._*" \
     -x "*/__MACOSX/*" \
     -x "*.AppleDouble" \
-    -x "*.LSOverride"
+    -x "*.LSOverride" \
+    >/dev/null 2>&1
 )
 
-echo "Plugin has been packaged as $ZIP_FILE in the project root directory."
+# Check if the zip was created successfully
+if [ $? -eq 0 ] && [ -f "$PROJECT_ROOT/$ZIP_FILE" ]; then
+  echo "Packaging complete!"
+  echo "Plugin has been packaged as $ZIP_FILE"
+  echo "Location: $PROJECT_ROOT/$ZIP_FILE"
+else
+  echo "Error: Packaging failed. Please check for any issues."
+  exit 1
+fi
