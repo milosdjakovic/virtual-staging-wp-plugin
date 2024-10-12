@@ -89,7 +89,7 @@ if (!defined('ABSPATH'))
                 <div class="mb-4 mt-2 md:mb-0">
                     <button id="generateVariationButton"
                         class="flex text-sm font-semibold leading-none relative transition-colors duration-75 items-center justify-center gap-1 md:gap-1.5 rounded-xl border-2 px-10 py-3 text-darkgray border-darkgray hover:bg-darkgray hover:text-white mb-2 w-full shrink-0 md:mt-2 md:w-full"
-                        disabled="true">
+                        style="white-space: nowrap;" disabled="true">
                         <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
                             stroke-linecap="round" stroke-linejoin="round" class="text-base" height="1em" width="1em"
                             xmlns="http://www.w3.org/2000/svg">
@@ -148,11 +148,19 @@ if (!defined('ABSPATH'))
 
                         </div>
                         <div class="carousel ">
-                            <div style="overflow-x: auto;" class="thumbs-wrapper axis-vertical flex">
+                            <div style="overflow-x: auto; height: 66px;" class="thumbs-wrapper axis-vertical flex">
                                 <div id="generating-variation-indicator"
-                                    style="background: rgba(0, 0, 0, 0.8); padding: 6px 12px;"
-                                    class="rounded-xl flex justify-center items-center mr-2 hidden">
-                                    <p class="text-white">Generating variation...</p>
+                                    style="background: rgba(0, 0, 0, 0.8); padding: 6px 12px; height: 56px; margin-top: 1px; flex-shrink: 0;"
+                                    class="rounded-xl flex justify-center items-center mr-2 text-white w-24 hidden">
+                                    <svg id="generating-variation-indicator-spinner" stroke="currentColor" fill="none"
+                                        stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
+                                        stroke-linejoin="round" class="text-base" height="2em" width="2em"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                                        <path d="M3 3v5h5"></path>
+                                        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+                                        <path d="M16 16h5v5"></path>
+                                    </svg>
                                 </div>
 
                                 <ul class="thumbs animated" id="thumbnail-slider">
@@ -174,3 +182,19 @@ if (!defined('ABSPATH'))
         nextPageUrl: '<?php echo esc_js($next_page_url); ?>'
     };
 </script>
+
+<style>
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    #generating-variation-indicator-spinner {
+        animation: spin 2s linear infinite;
+    }
+</style>
