@@ -1,53 +1,21 @@
 const DEV_MODE = false;
+const DEV_IMAGE_URL =
+  "https://img.freepik.com/free-photo/modern-empty-room_23-2150528563.jpg?t=st=1728732147~exp=1728735747~hmac=014440306239606372948ce56acb6e5625ba052fef0338a2a299b569549eef93&w=1800";
 
-// DOM Utility Functions
+// Utility functions
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
 const getById = (id) => document.getElementById(id);
 const hideElement = (element) => element.classList.add("hidden");
 const showElement = (element) => element.classList.remove("hidden");
 
-// URL and Parameter Utilities
 const getUrlParams = () => new URLSearchParams(window.location.search);
 const getUrlParam = (name) => getUrlParams().get(name);
 
-// API Functions
-const fetchWithAuth = async (url, options = {}) => {
-  const defaultOptions = {
-    headers: {
-      "X-WP-Nonce": vsaiApiSettings.nonce,
-      "Content-Type": "application/json",
-    },
-  };
-  const response = await fetch(`${vsaiApiSettings.root}${url}`, {
-    ...defaultOptions,
-    ...options,
-  });
-  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  return response.json();
-};
-
-const pollRenderStatus = async (renderId, onComplete) => {
-  while (true) {
-    const data = await fetchWithAuth(`render?render_id=${renderId}`);
-    if (data.status === "done") {
-      onComplete(data);
-      break;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-  }
-};
-
-const createVariation = async (renderId, style, roomType) => {
-  const body = JSON.stringify({
-    style,
-    roomType,
-    wait_for_completion: false,
-  });
-  return fetchWithAuth(`render/create-variation?render_id=${renderId}`, {
-    method: "POST",
-    body,
-  });
+const updateUrlParameter = (key, value) => {
+  const url = new URL(window.location.href);
+  url.searchParams.set(key, value);
+  window.history.replaceState({}, "", url);
 };
 
 const formatTitleString = (string) => {
@@ -57,27 +25,69 @@ const formatTitleString = (string) => {
     .join(" ");
 };
 
-const updateResultsTitle = (roomType, style) => {
-  const resultsTitle = $("#renderPageResultsContainer h3");
-  if (resultsTitle) {
-    resultsTitle.textContent = `Results (${formatTitleString(
-      roomType
-    )}, ${formatTitleString(style)})`;
-  }
-};
+const capitalizeFirstLetter = (string) =>
+  string.charAt(0).toUpperCase() + string.slice(1);
+const getFileExtension = (mimeType) =>
+  mimeType.split("/")[1]?.split("+")[0] || "jpg";
 
-const setOriginalImage = (imageUrl) => {
-  const container = $("#renderPageOriginalContainer .group");
-  if (container && imageUrl) {
-    container.innerHTML = `
-      <img src="${decodeURIComponent(
-        imageUrl
-      )}" alt="Original Image" class="h-full w-full bg-gray-100 transition-opacity group-hover:opacity-70" style="object-fit: cover;">
-    `;
+// API Service
+class ApiService {
+  static async fetchWithAuth(url, options = {}) {
+    const defaultOptions = {
+      headers: {
+        "X-WP-Nonce": vsaiApiSettings.nonce,
+        "Content-Type": "application/json",
+      },
+    };
+    const response = await fetch(`${vsaiApiSettings.root}${url}`, {
+      ...defaultOptions,
+      ...options,
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return response.json();
   }
-};
 
-// Carousel Class
+  static async pollRenderStatus(renderId, onComplete) {
+    while (true) {
+      const data = await this.fetchWithAuth(`render?render_id=${renderId}`);
+      if (data.status === "done") {
+        onComplete(data);
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+    }
+  }
+
+  static async createVariation(renderId, style, roomType) {
+    const body = JSON.stringify({
+      style,
+      roomType,
+      wait_for_completion: false,
+    });
+    return this.fetchWithAuth(`render/create-variation?render_id=${renderId}`, {
+      method: "POST",
+      body,
+    });
+  }
+
+  static async checkTokenStatus(at) {
+    return this.fetchWithAuth(`token-status?at=${at}`);
+  }
+}
+
+// UI Components
+class StatusMessage {
+  constructor(containerId) {
+    this.container = getById(containerId);
+  }
+
+  display(message) {
+    if (this.container) {
+      this.container.textContent = message;
+    }
+  }
+}
+
 class Carousel {
   constructor(imageUrls, roomTypes, styles) {
     this.imageUrls = imageUrls;
@@ -156,24 +166,20 @@ class Carousel {
   updateActiveSlide() {
     const slides = this.mainSlider.querySelectorAll("img");
     slides.forEach((slide, index) => {
-      if (index === this.currentIndex) {
-        slide.style.opacity = "1";
-        slide.style.zIndex = "1";
-      } else {
-        slide.style.opacity = "0";
-        slide.style.zIndex = "0";
-      }
+      slide.style.opacity = index === this.currentIndex ? "1" : "0";
+      slide.style.zIndex = index === this.currentIndex ? "1" : "0";
     });
 
     $$(".thumb").forEach((thumb, index) => {
+      const div = thumb.querySelector("div");
       if (index === this.currentIndex) {
         thumb.classList.add("selected");
-        thumb.querySelector("div").classList.remove("opacity-25");
-        thumb.querySelector("div").classList.add("opacity-100");
+        div.classList.remove("opacity-25");
+        div.classList.add("opacity-100");
       } else {
         thumb.classList.remove("selected");
-        thumb.querySelector("div").classList.remove("opacity-100");
-        thumb.querySelector("div").classList.add("opacity-25");
+        div.classList.remove("opacity-100");
+        div.classList.add("opacity-25");
       }
     });
 
@@ -222,211 +228,267 @@ class Carousel {
 }
 
 // Main Application Logic
-const initializeApp = async () => {
-  const renderId = getUrlParam("render_id");
-  const imageUrl = getUrlParam("image_url");
-  const at = getUrlParam("at");
-
-  setOriginalImage(imageUrl);
-  setupUploadAnotherImageButton(at);
-  setupGenerateVariationButton();
-  await updateTokenStatus(); // Add this line to update token status on page load
-
-  if (renderId) {
-    await handleInitialRenderProcess(renderId);
-  } else if (imageUrl) {
-    const carousel = new Carousel([imageUrl]);
-    await carousel.initialize();
-    setupDownloadButton(carousel);
-  } else {
-    console.error("No render_id or image_url found in URL parameters");
-  }
-};
-
-const updateTokenStatus = async () => {
-  const at = getUrlParam("at");
-  if (!at) {
-    console.error("No access token found in URL parameters");
-    return;
+class App {
+  constructor() {
+    this.statusMessage = new StatusMessage("tokenStatusDisplay");
+    this.carousel = null;
   }
 
-  try {
-    const response = await fetchWithAuth(`token-status?at=${at}`);
-    if (response.renders_left !== undefined) {
-      const statusDisplay = document.getElementById("tokenStatusDisplay");
-      if (statusDisplay) {
-        statusDisplay.textContent = `(${response.renders_left} left)`;
-      }
-    }
-  } catch (error) {
-    console.error("Error fetching token status:", error);
-  }
-};
+  async initialize() {
+    const renderId = getUrlParam("render_id");
+    const imageUrl = getUrlParam("image_url");
+    const at = getUrlParam("at");
+    const room = getUrlParam("room");
+    const style = getUrlParam("style");
 
-const handleInitialRenderProcess = async (renderId) => {
-  showLoadingIndicator();
-  const generateButton = getById("generateVariationButton");
-  const buttonSpan = generateButton.querySelector("span");
-  const originalText = buttonSpan.textContent;
+    this.setOriginalImage(imageUrl);
+    this.setupUploadAnotherImageButton(at);
+    this.setupGenerateVariationButton();
+    await this.updateTokenStatus(at);
 
-  let initialDataLoaded = false;
+    this.setInitialRoomAndStyle(room, style);
 
-  while (true) {
-    const data = await fetchWithAuth(`render?render_id=${renderId}`);
-
-    if (!initialDataLoaded && data.outputs && data.outputs.length > 0) {
-      updateUIWithRenderResults(data, true); // Pass true for isInitialLoad
-      hideLoadingIndicator();
-      initialDataLoaded = true;
-
-      if (data.status !== "done") {
-        buttonSpan.textContent = "Generating...";
-      } else {
-        generateButton.disabled = false;
-        break; // Exit the loop if status is done
-      }
-    }
-
-    if (data.status === "done") {
-      if (!initialDataLoaded) {
-        updateUIWithRenderResults(data, true); // Only update UI if not already loaded
-      }
-      setTimeout(() => {
-        hideLoadingIndicator();
-        generateButton.disabled = false;
-        buttonSpan.textContent = originalText;
-      }, 500);
-      break;
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-  }
-};
-
-const updateUIWithRenderResults = (data, isInitialLoad = false) => {
-  console.log(
-    `Updating UI with render results. Initial load: ${isInitialLoad}`
-  );
-
-  const imageUrl = getUrlParam("image_url");
-  const reversedOutputs = [...data.outputs].reverse();
-  const reversedRoomTypes = [...data.outputs_room_types].reverse();
-  const reversedStyles = [...data.outputs_styles].reverse();
-
-  const images = DEV_MODE
-    ? [...reversedOutputs, ...Array(10).fill(imageUrl)]
-    : reversedOutputs;
-  const roomTypes = DEV_MODE
-    ? [...reversedRoomTypes, ...Array(10).fill("")]
-    : reversedRoomTypes;
-  const styles = DEV_MODE
-    ? [...reversedStyles, ...Array(10).fill("")]
-    : reversedStyles;
-
-  if (isInitialLoad || !window.currentCarousel) {
-    console.log("Creating new carousel");
-    window.currentCarousel = new Carousel(images, roomTypes, styles);
-    window.currentCarousel.initialize();
-    setupDownloadButton(window.currentCarousel);
-  } else {
-    console.log("Updating existing carousel");
-    window.currentCarousel.updateImages(images, roomTypes, styles);
-  }
-};
-
-const setupGenerateVariationButton = () => {
-  const button = getById("generateVariationButton");
-  button?.addEventListener("click", handleGenerateVariation);
-};
-
-const handleGenerateVariation = async () => {
-  const button = getById("generateVariationButton");
-  const buttonSpan = button.querySelector("span");
-  const originalText = buttonSpan.textContent;
-  buttonSpan.textContent = "Generating...";
-  button.disabled = true;
-
-  const renderId = getUrlParam("render_id");
-  const roomType = $(".room-type-select").value;
-  const style = $(".furniture-style-select").value;
-
-  try {
-    const response = await createVariation(renderId, style, roomType);
-    if (response.render_id) {
-      await pollRenderStatus(response.render_id, (data) => {
-        if (data.status === "done") {
-          updateUIWithRenderResults(data);
-          setTimeout(() => {
-            buttonSpan.textContent = originalText;
-            button.disabled = false;
-          }, 500);
-        }
-      });
+    if (renderId) {
+      await this.handleInitialRenderProcess(renderId);
+    } else if (imageUrl) {
+      this.carousel = new Carousel([imageUrl], [], []);
+      await this.carousel.initialize();
+      this.setupDownloadButton();
     } else {
-      throw new Error("No render_id received from variation creation");
+      console.error("No render_id or image_url found in URL parameters");
     }
-  } catch (error) {
-    console.error("Error generating variation:", error);
-    alert("Failed to generate variation. Please try again.");
-    buttonSpan.textContent = originalText;
-    button.disabled = false;
   }
-};
 
-const setupUploadAnotherImageButton = (at) => {
-  const button = getById("uploadAnotherImageButton");
-  button?.addEventListener("click", () => {
-    const nextPageUrl =
-      vsaiApiSettings.nextPageUrl || "/virtual-staging-upload";
-    const url = new URL(nextPageUrl, window.location.origin);
+  setInitialRoomAndStyle(room, style) {
+    const roomTypeSelect = $(".room-type-select");
+    const furnitureStyleSelect = $(".furniture-style-select");
 
-    // Add only the 'at' parameter if it exists
-    if (at) {
-      url.searchParams.set("at", at);
+    if (room && roomTypeSelect) roomTypeSelect.value = room;
+    if (style && furnitureStyleSelect) furnitureStyleSelect.value = style;
+
+    if (roomTypeSelect) {
+      roomTypeSelect.addEventListener("change", (e) =>
+        updateUrlParameter("room", e.target.value)
+      );
+    }
+    if (furnitureStyleSelect) {
+      furnitureStyleSelect.addEventListener("change", (e) =>
+        updateUrlParameter("style", e.target.value)
+      );
+    }
+  }
+
+  setOriginalImage(imageUrl) {
+    const container = $("#renderPageOriginalContainer .group");
+    if (container && imageUrl) {
+      container.innerHTML = `
+        <img src="${decodeURIComponent(
+          imageUrl
+        )}" alt="Original Image" class="h-full w-full bg-gray-100 transition-opacity group-hover:opacity-70" style="object-fit: cover;">
+      `;
+    }
+  }
+
+  setupUploadAnotherImageButton(at) {
+    const button = getById("uploadAnotherImageButton");
+    button?.addEventListener("click", () => {
+      const nextPageUrl =
+        vsaiApiSettings.nextPageUrl || "/virtual-staging-upload";
+      const url = new URL(nextPageUrl, window.location.origin);
+
+      // Add the access token
+      if (at) url.searchParams.set("at", at);
+
+      // Get current values of room and style
+      const currentRoom = $(".room-type-select")?.value;
+      const currentStyle = $(".furniture-style-select")?.value;
+
+      // Add current room and style to URL if they exist
+      if (currentRoom) url.searchParams.set("room", currentRoom);
+      if (currentStyle) url.searchParams.set("style", currentStyle);
+
+      window.location.href = url.toString();
+    });
+  }
+
+  setupGenerateVariationButton() {
+    const button = getById("generateVariationButton");
+    button?.addEventListener("click", () => this.handleGenerateVariation());
+  }
+
+  async updateTokenStatus(at) {
+    if (!at) {
+      console.error("No access token found in URL parameters");
+      return;
     }
 
-    window.location.href = url.toString();
-  });
-};
-
-const setupDownloadButton = (carousel) => {
-  const button = getById("download-image-overlay");
-  button?.addEventListener("click", () => downloadCurrentImage(carousel));
-};
-
-const downloadCurrentImage = async (carousel) => {
-  const imageUrl = carousel.getCurrentImageUrl();
-  if (!imageUrl) {
-    console.error("No image selected for download");
-    return;
+    try {
+      const response = await ApiService.checkTokenStatus(at);
+      if (response.renders_left !== undefined) {
+        this.statusMessage.display(`(${response.renders_left} left)`);
+      }
+    } catch (error) {
+      console.error("Error fetching token status:", error);
+    }
   }
 
-  try {
-    const response = await fetch(imageUrl);
-    const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = blobUrl;
-    link.download = `virtual_staging_image_${
-      carousel.currentIndex + 1
-    }.${getFileExtension(blob.type)}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(blobUrl);
-  } catch (error) {
-    console.error("Error downloading image:", error);
-    alert("Failed to download image. Please try again.");
+  async handleInitialRenderProcess(renderId) {
+    showLoadingIndicator();
+    const generateButton = getById("generateVariationButton");
+    const buttonSpan = generateButton.querySelector("span");
+    const originalText = buttonSpan.textContent;
+
+    let initialDataLoaded = false;
+
+    while (true) {
+      const data = await ApiService.fetchWithAuth(
+        `render?render_id=${renderId}`
+      );
+
+      if (!initialDataLoaded && data.outputs && data.outputs.length > 0) {
+        this.updateUIWithRenderResults(data, true);
+        hideLoadingIndicator();
+        initialDataLoaded = true;
+
+        if (data.status !== "done") {
+          buttonSpan.textContent = "Generating...";
+        } else {
+          generateButton.disabled = false;
+          break;
+        }
+      }
+
+      if (data.status === "done") {
+        if (!initialDataLoaded) {
+          this.updateUIWithRenderResults(data, true);
+        }
+        setTimeout(() => {
+          hideLoadingIndicator();
+          generateButton.disabled = false;
+          buttonSpan.textContent = originalText;
+        }, 500);
+        break;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+    }
+  }
+
+  updateUIWithRenderResults(data, isInitialLoad = false) {
+    console.log(
+      `Updating UI with render results. Initial load: ${isInitialLoad}`
+    );
+
+    const imageUrl = getUrlParam("image_url");
+    const reversedOutputs = [...data.outputs].reverse();
+    const reversedRoomTypes = [...data.outputs_room_types].reverse();
+    const reversedStyles = [...data.outputs_styles].reverse();
+
+    const images = DEV_MODE
+      ? [...reversedOutputs, ...Array(10).fill(imageUrl)]
+      : reversedOutputs;
+    const roomTypes = DEV_MODE
+      ? [...reversedRoomTypes, ...Array(10).fill("")]
+      : reversedRoomTypes;
+    const styles = DEV_MODE
+      ? [...reversedStyles, ...Array(10).fill("")]
+      : reversedStyles;
+
+    if (isInitialLoad || !this.carousel) {
+      console.log("Creating new carousel");
+      this.carousel = new Carousel(images, roomTypes, styles);
+      this.carousel.initialize();
+      this.setupDownloadButton();
+    } else {
+      console.log("Updating existing carousel");
+      this.carousel.updateImages(images, roomTypes, styles);
+    }
+  }
+
+  async handleGenerateVariation() {
+    const button = getById("generateVariationButton");
+    const buttonSpan = button.querySelector("span");
+    const originalText = buttonSpan.textContent;
+    buttonSpan.textContent = "Generating...";
+    button.disabled = true;
+
+    const renderId = getUrlParam("render_id");
+    const roomType = $(".room-type-select").value;
+    const style = $(".furniture-style-select").value;
+
+    try {
+      const response = await ApiService.createVariation(
+        renderId,
+        style,
+        roomType
+      );
+      if (response.render_id) {
+        await ApiService.pollRenderStatus(response.render_id, (data) => {
+          if (data.status === "done") {
+            this.updateUIWithRenderResults(data);
+            setTimeout(() => {
+              buttonSpan.textContent = originalText;
+              button.disabled = false;
+            }, 500);
+          }
+        });
+      } else {
+        throw new Error("No render_id received from variation creation");
+      }
+    } catch (error) {
+      console.error("Error generating variation:", error);
+      alert("Failed to generate variation. Please try again.");
+      buttonSpan.textContent = originalText;
+      button.disabled = false;
+    }
+  }
+
+  setupDownloadButton() {
+    const button = getById("download-image-overlay");
+    button?.addEventListener("click", () => this.downloadCurrentImage());
+  }
+
+  async downloadCurrentImage() {
+    const imageUrl = this.carousel.getCurrentImageUrl();
+    if (!imageUrl) {
+      console.error("No image selected for download");
+      return;
+    }
+
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `virtual_staging_image_${
+        this.carousel.currentIndex + 1
+      }.${getFileExtension(blob.type)}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Error downloading image:", error);
+      alert("Failed to download image. Please try again.");
+    }
+  }
+}
+
+const updateResultsTitle = (roomType, style) => {
+  const resultsTitle = $("#renderPageResultsContainer h3");
+  if (resultsTitle) {
+    resultsTitle.textContent = `Results (${formatTitleString(
+      roomType
+    )}, ${formatTitleString(style)})`;
   }
 };
 
-// Utility Functions
-const capitalizeFirstLetter = (string) =>
-  string.charAt(0).toUpperCase() + string.slice(1);
-const getFileExtension = (mimeType) =>
-  mimeType.split("/")[1]?.split("+")[0] || "jpg";
 const showLoadingIndicator = () => showElement(getById("loading-indicator"));
 const hideLoadingIndicator = () => hideElement(getById("loading-indicator"));
 
 // Initialize the application
-document.addEventListener("DOMContentLoaded", initializeApp);
+document.addEventListener("DOMContentLoaded", () => {
+  const app = new App();
+  app.initialize();
+});
