@@ -140,9 +140,9 @@ class DropZone {
   }
 
   setupDragAndDrop() {
-    ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+    for (const eventName of ["dragenter", "dragover", "dragleave", "drop"]) {
       this.dropZone.addEventListener(eventName, this.preventDefaults, false);
-    });
+    }
     this.dropZone.addEventListener("drop", (e) => this.handleDrop(e));
   }
 
