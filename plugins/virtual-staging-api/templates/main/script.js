@@ -31,8 +31,8 @@ const getFileExtension = (mimeType) =>
   mimeType.split("/")[1]?.split("+")[0] || "jpg";
 
 // API Service
-class ApiService {
-  static async fetchWithAuth(url, options = {}) {
+const ApiService = {
+  async fetchWithAuth(url, options = {}) {
     const defaultOptions = {
       headers: {
         "X-WP-Nonce": vsaiApiSettings.nonce,
@@ -45,9 +45,9 @@ class ApiService {
     });
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return response.json();
-  }
+  },
 
-  static async pollRenderStatus(renderId, onComplete) {
+  async pollRenderStatus(renderId, onComplete) {
     while (true) {
       const data = await this.fetchWithAuth(`render?render_id=${renderId}`);
       if (data.status === "done") {
@@ -56,9 +56,9 @@ class ApiService {
       }
       await new Promise((resolve) => setTimeout(resolve, 1500));
     }
-  }
+  },
 
-  static async createVariation(renderId, style, roomType) {
+  async createVariation(renderId, style, roomType) {
     const body = JSON.stringify({
       style,
       roomType,
@@ -68,12 +68,12 @@ class ApiService {
       method: "POST",
       body,
     });
-  }
+  },
 
-  static async checkTokenStatus(at) {
+  async checkTokenStatus(at) {
     return this.fetchWithAuth(`token-status?at=${at}`);
   }
-}
+};
 
 // UI Components
 class StatusMessage {
