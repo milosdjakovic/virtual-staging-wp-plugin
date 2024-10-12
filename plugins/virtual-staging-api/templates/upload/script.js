@@ -1,5 +1,5 @@
 // Constants
-const DEV_MODE = true;
+const DEV_MODE = false;
 const DEV_IMAGE_URL =
   "https://img.freepik.com/free-photo/modern-empty-room_23-2150528563.jpg?t=st=1728732147~exp=1728735747~hmac=014440306239606372948ce56acb6e5625ba052fef0338a2a299b569549eef93&w=1800";
 
@@ -18,8 +18,8 @@ const getUrlParameter = (name) => {
 const getImageUrl = (url) => (DEV_MODE ? DEV_IMAGE_URL : url);
 
 // API Service
-class ApiService {
-  static async checkTokenStatus(token) {
+const ApiService = {
+  async checkTokenStatus(token) {
     try {
       const response = await fetch(
         `${vsaiApiSettings.root}token-status?at=${token}`,
@@ -33,9 +33,9 @@ class ApiService {
       console.error("Error checking token status:", error);
       throw error;
     }
-  }
+  },
 
-  static async uploadImage(formData) {
+  async uploadImage(formData) {
     try {
       const response = await fetch(`${vsaiApiSettings.root}upload-image`, {
         method: "POST",
@@ -47,9 +47,9 @@ class ApiService {
       console.error("Error uploading image:", error);
       throw error;
     }
-  }
+  },
 
-  static async createRender(renderData) {
+  async createRender(renderData) {
     try {
       const response = await fetch(`${vsaiApiSettings.root}render/create`, {
         method: "POST",
@@ -64,8 +64,8 @@ class ApiService {
       console.error("Error creating render:", error);
       throw error;
     }
-  }
-}
+  },
+};
 
 // UI Components
 class StatusMessage {
