@@ -41,7 +41,7 @@ class VSAI_Handlers
     }
 
     if ($this->token_handler->is_limit_breached($token)) {
-      return new WP_Error('limit_breached', 'Upload limit reached', array('status' => 403));
+      return new WP_Error('limit_breached', 'Render limit reached', array('status' => 403));
     }
 
     $files = $request->get_file_params();
@@ -73,16 +73,12 @@ class VSAI_Handlers
 
     wp_schedule_single_event(time() + 3600, 'vsai_delete_uploaded_image', array($upload['file']));
 
-    $increment_result = $this->token_handler->increment_count($token);
-    if (!$increment_result) {
-      error_log('VSAI: Failed to increment upload count for token: ' . $token);
-    }
-
     return array(
       'success' => true,
       'url' => $upload['url']
     );
   }
+
 
   public function get_posts_handler($request)
   {
@@ -117,8 +113,17 @@ class VSAI_Handlers
   {
     $params = $request->get_params();
 
-    if (!isset($params['image_url']) || !isset($params['room_type']) || !isset($params['style'])) {
+    if (!isset($params['image_url']) || !isset($params['room_type']) || !isset($params['style']) || !isset($params['token'])) {
       return new WP_Error('missing_params', 'Missing required parameters', array('status' => 400));
+    }
+
+    // Check if the token is valid and limit is not breached
+    if (!$this->token_handler->token_exists($params['token'])) {
+      return new WP_Error('invalid_token', 'Invalid access token', array('status' => 401));
+    }
+
+    if ($this->token_handler->is_limit_breached($params['token'])) {
+      return new WP_Error('limit_breached', 'Render limit reached', array('status' => 403));
     }
 
     // Prepare data for Virtual Staging API
@@ -130,9 +135,15 @@ class VSAI_Handlers
     );
 
     // Make request to Virtual Staging API
-    return $this->api_client->request('render/create', 'POST', $data);
-  }
+    $response = $this->api_client->request('render/create', 'POST', $data);
 
+    // If the render creation was successful, increment the count
+    if (isset($response['render_id'])) {
+      $this->token_handler->increment_render_count($params['token']);
+    }
+
+    return $response;
+  }
 
   public function get_render_status_handler($request)
   {

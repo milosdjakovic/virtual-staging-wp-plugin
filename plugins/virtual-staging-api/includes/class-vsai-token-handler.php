@@ -32,8 +32,8 @@ class VSAI_Token_Handler
     $sql = "CREATE TABLE $this->table_name (
           id mediumint(9) NOT NULL AUTO_INCREMENT,
           token varchar(255) NOT NULL,
-          image_upload_count int(11) NOT NULL DEFAULT 0,
-          image_upload_limit int(11) NOT NULL DEFAULT 5,
+          render_count int(11) NOT NULL DEFAULT 0,
+          render_limit int(11) NOT NULL DEFAULT 5,
           created_at datetime DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY  (id),
           UNIQUE KEY token (token)
@@ -68,8 +68,8 @@ class VSAI_Token_Handler
           $this->table_name,
           array(
             'token' => $token,
-            'image_upload_count' => 0,
-            'image_upload_limit' => $limit
+            'render_count' => 0,
+            'render_limit' => $limit
           ),
           array('%s', '%d', '%d')
         );
@@ -86,6 +86,7 @@ class VSAI_Token_Handler
     return false;
   }
 
+
   public function token_exists($token)
   {
     global $wpdb;
@@ -97,21 +98,22 @@ class VSAI_Token_Handler
   {
     global $wpdb;
     $query = $wpdb->prepare(
-      "SELECT image_upload_count >= image_upload_limit AS limit_breached 
-           FROM $this->table_name 
-           WHERE token = %s",
+      "SELECT render_count >= render_limit AS limit_breached
+         FROM $this->table_name
+         WHERE token = %s",
       $token
     );
     return (bool) $wpdb->get_var($query);
   }
 
-  public function increment_count($token)
+
+  public function increment_render_count($token)
   {
     global $wpdb;
     $result = $wpdb->query($wpdb->prepare(
-      "UPDATE $this->table_name 
-           SET image_upload_count = image_upload_count + 1 
-           WHERE token = %s",
+      "UPDATE $this->table_name
+         SET render_count = render_count + 1
+         WHERE token = %s",
       $token
     ));
     return $result !== false;
@@ -121,9 +123,9 @@ class VSAI_Token_Handler
   {
     global $wpdb;
     $query = $wpdb->prepare(
-      "SELECT image_upload_limit, image_upload_count, (image_upload_limit - image_upload_count) AS uploads_left
-             FROM {$this->table_name}
-             WHERE token = %s",
+      "SELECT render_limit, render_count, (render_limit - render_count) AS renders_left
+         FROM {$this->table_name}
+         WHERE token = %s",
       $token
     );
     $result = $wpdb->get_row($query);
@@ -133,9 +135,9 @@ class VSAI_Token_Handler
     }
 
     return array(
-      'limit' => (int) $result->image_upload_limit,
-      'count' => (int) $result->image_upload_count,
-      'uploads_left' => (int) $result->uploads_left
+      'limit' => (int) $result->render_limit,
+      'count' => (int) $result->render_count,
+      'renders_left' => (int) $result->renders_left
     );
   }
 }
