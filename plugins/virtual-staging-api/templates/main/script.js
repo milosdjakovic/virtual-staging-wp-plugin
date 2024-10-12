@@ -1,4 +1,4 @@
-const DEV = false;
+const DEV_MODE = false;
 
 // DOM Utility Functions
 const $ = (selector) => document.querySelector(selector);
@@ -292,13 +292,13 @@ const updateUIWithRenderResults = (data, isInitialLoad = false) => {
   const reversedRoomTypes = [...data.outputs_room_types].reverse();
   const reversedStyles = [...data.outputs_styles].reverse();
 
-  const images = DEV
+  const images = DEV_MODE
     ? [...reversedOutputs, ...Array(10).fill(imageUrl)]
     : reversedOutputs;
-  const roomTypes = DEV
+  const roomTypes = DEV_MODE
     ? [...reversedRoomTypes, ...Array(10).fill("")]
     : reversedRoomTypes;
-  const styles = DEV
+  const styles = DEV_MODE
     ? [...reversedStyles, ...Array(10).fill("")]
     : reversedStyles;
 
