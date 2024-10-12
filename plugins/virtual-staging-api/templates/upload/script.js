@@ -51,16 +51,16 @@ function checkTokenStatus() {
           "error",
           "Your access token is no longer valid. Please request a new one."
         );
-      } else if (data.uploads_left <= 0) {
+      } else if (data.renders_left <= 0) {
         displayTokenStatus(
           "warning",
-          "You have reached your upload limit. No more uploads are available."
+          "You have reached your render limit. No more renders are available."
         );
       } else {
         displayTokenStatus(
           "info",
-          `You have ${data.uploads_left} upload${
-            data.uploads_left !== 1 ? "s" : ""
+          `You have ${data.renders_left} render${
+            data.renders_left !== 1 ? "s" : ""
           } remaining.`
         );
       }
