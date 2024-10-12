@@ -94,6 +94,21 @@ class VSAI_Router
       'permission_callback' => array($this->authorizer, 'check_authorization')
     ));
 
+    register_rest_route('vsai/v1', '/token-status', array(
+      'methods' => 'GET',
+      'callback' => array($this->handlers, 'token_status_handler'),
+      'permission_callback' => array($this->authorizer, 'check_authorization'),
+      'args' => array(
+        'at' => array(
+          'required' => true,
+          'type' => 'string',
+          'validate_callback' => function ($param, $request, $key) {
+            return is_string($param) && !empty($param);
+          }
+        ),
+      ),
+    ));
+
     // Add more routes here as needed
   }
 }

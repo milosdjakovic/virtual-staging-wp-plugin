@@ -116,4 +116,26 @@ class VSAI_Token_Handler
     ));
     return $result !== false;
   }
+
+  public function get_token_status($token)
+  {
+    global $wpdb;
+    $query = $wpdb->prepare(
+      "SELECT image_upload_limit, image_upload_count, (image_upload_limit - image_upload_count) AS uploads_left
+             FROM {$this->table_name}
+             WHERE token = %s",
+      $token
+    );
+    $result = $wpdb->get_row($query);
+
+    if (!$result) {
+      return null; // Token not found
+    }
+
+    return array(
+      'limit' => (int) $result->image_upload_limit,
+      'count' => (int) $result->image_upload_count,
+      'uploads_left' => (int) $result->uploads_left
+    );
+  }
 }

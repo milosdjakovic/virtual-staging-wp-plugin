@@ -177,5 +177,22 @@ class VSAI_Handlers
     }
   }
 
+  public function token_status_handler($request)
+  {
+    $token = $request->get_param('at');
+
+    if (!$token) {
+      return new WP_Error('missing_token', 'Access token is missing', array('status' => 400));
+    }
+
+    $status = $this->token_handler->get_token_status($token);
+
+    if ($status === null) {
+      return new WP_Error('invalid_token', 'Invalid access token', array('status' => 404));
+    }
+
+    return $status;
+  }
+
   // Add more handler methods here as needed
 }
