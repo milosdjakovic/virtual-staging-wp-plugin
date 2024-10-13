@@ -25,6 +25,7 @@ services:
     volumes:
       - ./plugins/virtual-staging-api:/var/www/html/wp-content/plugins/virtual-staging-api
       - ./plugins/virtual-staging-form-adapter:/var/www/html/wp-content/plugins/virtual-staging-form-adapter
+      - ./plugins/api-test-plugin:/var/www/html/wp-content/plugins/api-test-plugin
       - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     ports:
       - "8080:80"
