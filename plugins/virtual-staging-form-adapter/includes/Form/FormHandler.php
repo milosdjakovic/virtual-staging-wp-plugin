@@ -27,7 +27,8 @@ class FormHandler
       $renders_value = '';
       foreach ($fields as $field) {
         if ($field['id'] == $vsa_renders_field_id) {
-          if (preg_match($vsa_renders_regex, $field['value'], $matches)) {
+          $value_to_check = $this->getValueToCheck($field['value']);
+          if (preg_match($vsa_renders_regex, $value_to_check, $matches)) {
             $renders_value = $matches[1];
           }
           break;
@@ -38,5 +39,22 @@ class FormHandler
         $this->redirectService->redirect($vsa_redirect_path, $renders_value);
       }
     }
+  }
+
+  private function getValueToCheck($fieldValue)
+  {
+    if (is_string($fieldValue)) {
+      return $fieldValue;
+    } elseif (is_array($fieldValue)) {
+      if (isset($fieldValue['value'])) {
+        // It's an associative array
+        return $fieldValue['value'];
+      } elseif (isset($fieldValue[0]) && is_array($fieldValue[0]) && isset($fieldValue[0]['value'])) {
+        // It's an array of associative arrays
+        return $fieldValue[0]['value'];
+      }
+    }
+    // If we can't determine the value, return an empty string
+    return '';
   }
 }
