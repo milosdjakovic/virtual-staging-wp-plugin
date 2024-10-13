@@ -87,6 +87,7 @@ class VSAI_Token_Handler
   }
 
 
+
   public function token_exists($token)
   {
     global $wpdb;

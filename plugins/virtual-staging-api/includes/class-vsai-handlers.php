@@ -177,16 +177,19 @@ class VSAI_Handlers
 
   public function generate_token_handler($request)
   {
-    $token = $this->token_handler->add_token(5);
+    $limit = $request->get_param('limit');
+    $token = $this->token_handler->add_token($limit);
     if ($token) {
       return array(
         'success' => true,
-        'token' => $token
+        'token' => $token,
+        'limit' => $limit
       );
     } else {
       return new WP_Error('token_generation_failed', 'Failed to generate a unique token after multiple attempts', array('status' => 500));
     }
   }
+
 
   public function token_status_handler($request)
   {

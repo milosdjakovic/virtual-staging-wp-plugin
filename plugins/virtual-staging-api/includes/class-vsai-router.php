@@ -91,7 +91,15 @@ class VSAI_Router
     register_rest_route('vsai/v1', '/generate-token', array(
       'methods' => 'GET',
       'callback' => array($this->handlers, 'generate_token_handler'),
-      'permission_callback' => array($this->authorizer, 'check_authorization')
+      'permission_callback' => array($this->authorizer, 'check_authorization'),
+      'args' => array(
+        'limit' => array(
+          'default' => 5,
+          'validate_callback' => function ($param, $request, $key) {
+            return is_numeric($param) && $param > 0;
+          }
+        ),
+      ),
     ));
 
     register_rest_route('vsai/v1', '/token-status', array(
