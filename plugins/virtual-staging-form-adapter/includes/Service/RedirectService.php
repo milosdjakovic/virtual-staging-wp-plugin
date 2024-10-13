@@ -13,10 +13,9 @@ class RedirectService
     $this->config = $config;
   }
 
-  public function redirect($path)
+  public function redirect($path, $at_value)
   {
-    // Add the 'at' query parameter with value 'test'
-    $redirectUrl = add_query_arg('at', 'test', home_url($path));
+    $redirectUrl = add_query_arg('at', $at_value, home_url($path));
 
     wp_redirect($redirectUrl);
     exit;
