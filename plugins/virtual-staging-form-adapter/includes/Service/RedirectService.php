@@ -20,12 +20,14 @@ class RedirectService
     $token = $this->tokenService->generateToken($limit);
 
     if ($token) {
+      // Successful token generation
       $redirectUrl = add_query_arg('at', urlencode($token), home_url($path));
       wp_redirect($redirectUrl);
       exit;
     } else {
-      // Handle the error case, maybe redirect to an error page
-      wp_redirect(home_url('/error-page'));
+      // Token generation failed
+      $errorPath = $this->config->get('vsa_error_path', '/error');
+      wp_redirect(home_url($errorPath));
       exit;
     }
   }

@@ -13,8 +13,6 @@ class TokenService
 
   public function generateToken($limit)
   {
-    $url = $this->api_base_url . "/generate-token?limit=" . urlencode($limit);
-
     $request = new \WP_REST_Request('GET', '/vsai/v1/generate-token');
     $request->set_query_params(['limit' => $limit]);
 
@@ -27,11 +25,11 @@ class TokenService
 
     $data = $response->get_data();
 
-    if (isset($data['token'])) {
+    if (isset($data['success']) && $data['success'] === true && isset($data['token'])) {
       return $data['token'];
     }
 
-    error_log('Token not found in the response: ' . print_r($data, true));
+    error_log('Token generation unsuccessful or token not found in the response: ' . print_r($data, true));
     return null;
   }
 }
