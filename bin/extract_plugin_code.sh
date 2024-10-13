@@ -9,8 +9,8 @@ fi
 
 PLUGIN_NAME="$1"
 
-# Get the root directory (two levels up from the bin directory)
-ROOT_DIR="$(dirname "$(dirname "$(dirname "$0")")")"
+# Get the root directory (one level up from the bin directory)
+ROOT_DIR="$(dirname "$(dirname "$0")")"
 
 # Set the output file in the root directory
 output_file="$ROOT_DIR/${PLUGIN_NAME}_code.md"
