@@ -10,6 +10,9 @@ if (!defined('ABSPATH')) {
   exit;
 }
 
+// Include the constants file
+require_once __DIR__ . '/constants.php';
+
 // Autoloader function
 spl_autoload_register(function ($class) {
   $prefix = 'VirtualStagingAdapter\\';
