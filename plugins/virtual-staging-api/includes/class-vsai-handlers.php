@@ -178,6 +178,7 @@ class VSAI_Handlers
   public function generate_token_handler($request)
   {
     $limit = $request->get_param('limit');
+    $limit = $this->normalize_limit($limit);
     $token = $this->token_handler->add_token($limit);
     if ($token) {
       return array(
@@ -190,6 +191,16 @@ class VSAI_Handlers
     }
   }
 
+  private function normalize_limit($limit)
+  {
+    $limit = intval($limit);
+    if ($limit < 5) {
+      return 5;
+    } elseif ($limit > 10) {
+      return 10;
+    }
+    return $limit;
+  }
 
   public function token_status_handler($request)
   {

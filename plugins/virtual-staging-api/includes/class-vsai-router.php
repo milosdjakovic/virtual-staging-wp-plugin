@@ -96,7 +96,7 @@ class VSAI_Router
         'limit' => array(
           'default' => 5,
           'validate_callback' => function ($param, $request, $key) {
-            return is_numeric($param) && $param > 0;
+            return is_numeric($param);
           }
         ),
       ),

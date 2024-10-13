@@ -53,6 +53,9 @@ class VSAI_Token_Handler
   {
     global $wpdb;
 
+    // Ensure limit is between 5 and 10
+    $limit = max(5, min(10, intval($limit)));
+
     for ($attempt = 0; $attempt < $max_attempts; $attempt++) {
       $token = bin2hex(random_bytes(32)); // 64 character token
 
@@ -85,8 +88,6 @@ class VSAI_Token_Handler
     // If we've reached here, we've failed to generate a unique token after max_attempts
     return false;
   }
-
-
 
   public function token_exists($token)
   {
