@@ -7,6 +7,7 @@ use VirtualStagingAdapter\Admin\SettingsManager;
 use VirtualStagingAdapter\Config\WordPressConfig;
 use VirtualStagingAdapter\Form\FormHandler;
 use VirtualStagingAdapter\Service\RedirectService;
+use VirtualStagingAdapter\Service\TokenService;
 
 class Plugin
 {
@@ -18,10 +19,11 @@ class Plugin
   {
     $config = new WordPressConfig();
     $redirectService = new RedirectService($config);
+    $tokenService = new TokenService();
 
     $this->settingsManager = new SettingsManager($config);
     $this->adminPage = new AdminPage($this->settingsManager);
-    $this->formHandler = new FormHandler($config, $redirectService);
+    $this->formHandler = new FormHandler($config, $redirectService, $tokenService);
   }
 
   public function run()
