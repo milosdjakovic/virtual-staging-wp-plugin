@@ -3,7 +3,7 @@
 Plugin Name: Virtual Staging API Form Adapter
 Description: Redirects to a specified path after WPForms submission
 Version: 2.0
-Author: Your Name
+Author: Milos Djakovic
 */
 
 if (!defined('ABSPATH')) {
