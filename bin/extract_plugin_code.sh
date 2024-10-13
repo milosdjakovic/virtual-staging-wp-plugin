@@ -1,35 +1,18 @@
 #!/usr/bin/env bash
 
-# Check if plugin name is provided
-if [ $# -eq 0 ]; then
-  echo "Error: Plugin name is required."
-  echo "Usage: $0 <plugin_name>"
-  exit 1
-fi
-
-PLUGIN_NAME="$1"
-
 # Get the root directory (one level up from the bin directory)
 ROOT_DIR="$(dirname "$(dirname "$0")")"
-
-# Set the output file in the root directory
-output_file="$ROOT_DIR/${PLUGIN_NAME}_code.md"
-
-# Clear or create the output file
->"$output_file"
-
-# Add the heading
-echo "# $PLUGIN_NAME Plugin Code" >>"$output_file"
-echo "" >>"$output_file"
+PLUGINS_DIR="$ROOT_DIR/plugins"
 
 # Function to process each file
 process_file() {
   local file="$1"
+  local output_file="$2"
   local relative_path="${file#$ROOT_DIR/}"
   local extension="${file##*.}"
 
-  # Write the file path
-  echo "## $relative_path" >>"$output_file"
+  # Write the file path as H3
+  echo "### $relative_path" >>"$output_file"
   echo "" >>"$output_file"
 
   # Write the opening code block with file type
@@ -45,23 +28,56 @@ process_file() {
   echo "" >>"$output_file"
 }
 
-# Process root config files
-root_files=(".gitignore" "docker-compose.yml" "uploads.ini")
-for file in "${root_files[@]}"; do
-  if [ -f "$ROOT_DIR/$file" ]; then
-    process_file "$ROOT_DIR/$file"
-  fi
-done
+# Function to process a single plugin
+process_plugin() {
+  local plugin_name="$1"
+  local output_file="$2"
 
-# Find and process PHP and JS files in the plugin directory
-plugin_dir="$ROOT_DIR/plugins/$PLUGIN_NAME"
-if [ -d "$plugin_dir" ]; then
-  find "$plugin_dir" -type f \( -name "*.php" -o -name "*.js" \) | sort | while read -r file; do
-    process_file "$file"
+  # Add the plugin heading
+  echo "## $plugin_name" >>"$output_file"
+  echo "" >>"$output_file"
+
+  # Process root config files
+  root_files=(".gitignore" "docker-compose.yml" "uploads.ini")
+  for file in "${root_files[@]}"; do
+    if [ -f "$ROOT_DIR/$file" ]; then
+      process_file "$ROOT_DIR/$file" "$output_file"
+    fi
+  done
+
+  # Find and process PHP and JS files in the plugin directory
+  plugin_dir="$PLUGINS_DIR/$plugin_name"
+  if [ -d "$plugin_dir" ]; then
+    find "$plugin_dir" -type f \( -name "*.php" -o -name "*.js" \) | sort | while read -r file; do
+      process_file "$file" "$output_file"
+    done
+  else
+    echo "Warning: Plugin directory not found: $plugin_dir"
+  fi
+}
+
+# Main execution
+if [ $# -eq 0 ]; then
+  # No arguments provided, process all plugins
+  output_file="$ROOT_DIR/plugins_code.md"
+  >"$output_file"
+  echo "# All Plugins Code" >>"$output_file"
+  echo "" >>"$output_file"
+
+  for plugin_dir in "$PLUGINS_DIR"/*; do
+    if [ -d "$plugin_dir" ]; then
+      plugin_name=$(basename "$plugin_dir")
+      process_plugin "$plugin_name" "$output_file"
+    fi
   done
 else
-  echo "Error: Plugin directory not found: $plugin_dir"
-  exit 1
+  # Plugin name provided
+  PLUGIN_NAME="$1"
+  output_file="$ROOT_DIR/${PLUGIN_NAME}_code.md"
+  >"$output_file"
+  echo "# $PLUGIN_NAME Plugin Code" >>"$output_file"
+  echo "" >>"$output_file"
+  process_plugin "$PLUGIN_NAME" "$output_file"
 fi
 
 echo "Plugin code has been extracted into $output_file"
