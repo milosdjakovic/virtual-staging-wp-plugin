@@ -3,7 +3,7 @@
 Plugin Name: Virtual Staging API
 Description: WordPress plugin to interact with Virtual Staging AI API
 Version: 1.0
-Author: Your Name
+Author: Milos Djakovic
 */
 
 // Exit if accessed directly
