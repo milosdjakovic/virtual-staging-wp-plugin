@@ -18,12 +18,12 @@ class Plugin
   public function __construct()
   {
     $config = new WordPressConfig();
-    $redirectService = new RedirectService($config);
     $tokenService = new TokenService();
+    $redirectService = new RedirectService($config, $tokenService);
 
     $this->settingsManager = new SettingsManager($config);
     $this->adminPage = new AdminPage($this->settingsManager);
-    $this->formHandler = new FormHandler($config, $redirectService, $tokenService);
+    $this->formHandler = new FormHandler($config, $redirectService);
   }
 
   public function run()

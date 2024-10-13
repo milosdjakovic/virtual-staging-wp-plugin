@@ -4,19 +4,16 @@ namespace VirtualStagingAdapter\Form;
 
 use VirtualStagingAdapter\Config\ConfigInterface;
 use VirtualStagingAdapter\Service\RedirectService;
-use VirtualStagingAdapter\Service\TokenService;
 
 class FormHandler
 {
   private $config;
   private $redirectService;
-  private $tokenService;
 
-  public function __construct(ConfigInterface $config, RedirectService $redirectService, TokenService $tokenService)
+  public function __construct(ConfigInterface $config, RedirectService $redirectService)
   {
     $this->config = $config;
     $this->redirectService = $redirectService;
-    $this->tokenService = $tokenService;
   }
 
   public function handleSubmission($fields, $entry, $form_data, $entry_id)
@@ -38,8 +35,7 @@ class FormHandler
       }
 
       if (!empty($renders_value)) {
-        $token_url = $this->tokenService->getTokenUrl($renders_value);
-        $this->redirectService->redirect($vsa_redirect_path, $token_url);
+        $this->redirectService->redirect($vsa_redirect_path, $renders_value);
       }
     }
   }
