@@ -12,7 +12,7 @@ class VSAI_Authorizer
     $this->env_loader = $env_loader;
   }
 
-  public function check_authorization()
+  public function check_authorization($request)
   {
     $dev_mode = $this->env_loader->get_env('DEV_MODE', 'false');
 
@@ -20,13 +20,12 @@ class VSAI_Authorizer
       return true;
     }
 
-    // Check for valid WordPress cookie
-    return $this->is_user_logged_in();
-  }
+    // Check for valid WordPress nonce
+    $nonce = $request->get_header('X-WP-Nonce');
+    if (!wp_verify_nonce($nonce, 'wp_rest')) {
+      return new WP_Error('rest_forbidden', 'Invalid nonce', array('status' => 403));
+    }
 
-  private function is_user_logged_in()
-  {
-    // This function will check for a valid WordPress user session
-    return is_user_logged_in();
+    return true;
   }
 }

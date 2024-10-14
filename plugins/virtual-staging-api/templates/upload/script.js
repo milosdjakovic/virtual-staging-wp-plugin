@@ -17,7 +17,6 @@ const getUrlParameter = (name) => {
 
 const getImageUrl = (url) => (DEV_MODE ? DEV_IMAGE_URL : url);
 
-// API Service
 const ApiService = {
   async checkTokenStatus(token) {
     try {
@@ -25,7 +24,10 @@ const ApiService = {
         `${vsaiApiSettings.root}token-status?at=${token}`,
         {
           method: "GET",
-          headers: { "X-WP-Nonce": vsaiApiSettings.nonce },
+          headers: {
+            "X-WP-Nonce": vsaiApiSettings.nonce,
+            "Content-Type": "application/json",
+          },
         }
       );
       return await response.json();

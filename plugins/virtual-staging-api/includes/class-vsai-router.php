@@ -19,43 +19,57 @@ class VSAI_Router
     register_rest_route('vsai/v1', '/hello-world', array(
       'methods' => 'GET',
       'callback' => array($this->handlers, 'hello_world_handler'),
-      'permission_callback' => array($this->authorizer, 'check_authorization')
+      'permission_callback' => function ($request) {
+        return $this->authorizer->check_authorization($request);
+      }
     ));
 
     register_rest_route('vsai/v1', '/get-env', array(
       'methods' => 'GET',
       'callback' => array($this->handlers, 'get_env_handler'),
-      'permission_callback' => array($this->authorizer, 'check_authorization')
+      'permission_callback' => function ($request) {
+        return $this->authorizer->check_authorization($request);
+      }
     ));
 
     register_rest_route('vsai/v1', '/get-posts', array(
       'methods' => 'GET',
       'callback' => array($this->handlers, 'get_posts_handler'),
-      'permission_callback' => array($this->authorizer, 'check_authorization')
+      'permission_callback' => function ($request) {
+        return $this->authorizer->check_authorization($request);
+      }
     ));
 
     register_rest_route('vsai/v1', '/options', array(
       'methods' => 'GET',
       'callback' => array($this->handlers, 'options_handler'),
-      'permission_callback' => array($this->authorizer, 'check_authorization')
+      'permission_callback' => function ($request) {
+        return $this->authorizer->check_authorization($request);
+      }
     ));
 
     register_rest_route('vsai/v1', '/ping', array(
       'methods' => 'GET',
       'callback' => array($this->handlers, 'ping_handler'),
-      'permission_callback' => array($this->authorizer, 'check_authorization')
+      'permission_callback' => function ($request) {
+        return $this->authorizer->check_authorization($request);
+      }
     ));
 
     register_rest_route('vsai/v1', '/render/create', array(
       'methods' => 'POST',
       'callback' => array($this->handlers, 'create_render_handler'),
-      'permission_callback' => array($this->authorizer, 'check_authorization')
+      'permission_callback' => function ($request) {
+        return $this->authorizer->check_authorization($request);
+      }
     ));
 
     register_rest_route('vsai/v1', '/render', array(
       'methods' => 'GET',
       'callback' => array($this->handlers, 'get_render_status_handler'),
-      'permission_callback' => array($this->authorizer, 'check_authorization'),
+      'permission_callback' => function ($request) {
+        return $this->authorizer->check_authorization($request);
+      },
       'args' => array(
         'render_id' => array(
           'required' => true,
@@ -70,7 +84,9 @@ class VSAI_Router
     register_rest_route('vsai/v1', '/render/create-variation', array(
       'methods' => 'POST',
       'callback' => array($this->handlers, 'create_render_variation_handler'),
-      'permission_callback' => array($this->authorizer, 'check_authorization'),
+      'permission_callback' => function ($request) {
+        return $this->authorizer->check_authorization($request);
+      },
       'args' => array(
         'render_id' => array(
           'required' => true,
@@ -85,13 +101,17 @@ class VSAI_Router
     register_rest_route('vsai/v1', '/upload-image', array(
       'methods' => 'POST',
       'callback' => array($this->handlers, 'upload_image_handler'),
-      'permission_callback' => array($this->authorizer, 'check_authorization')
+      'permission_callback' => function ($request) {
+        return $this->authorizer->check_authorization($request);
+      }
     ));
 
     register_rest_route('vsai/v1', '/generate-token', array(
       'methods' => 'GET',
       'callback' => array($this->handlers, 'generate_token_handler'),
-      'permission_callback' => array($this->authorizer, 'check_authorization'),
+      'permission_callback' => function ($request) {
+        return $this->authorizer->check_authorization($request);
+      },
       'args' => array(
         'limit' => array(
           'default' => 5,
@@ -105,7 +125,9 @@ class VSAI_Router
     register_rest_route('vsai/v1', '/token-status', array(
       'methods' => 'GET',
       'callback' => array($this->handlers, 'token_status_handler'),
-      'permission_callback' => array($this->authorizer, 'check_authorization'),
+      'permission_callback' => function ($request) {
+        return $this->authorizer->check_authorization($request);
+      },
       'args' => array(
         'at' => array(
           'required' => true,

@@ -72,7 +72,7 @@ const ApiService = {
 
   async checkTokenStatus(at) {
     return this.fetchWithAuth(`token-status?at=${at}`);
-  }
+  },
 };
 
 // UI Components

@@ -15,6 +15,7 @@ class TokenService
   {
     $request = new \WP_REST_Request('GET', '/vsai/v1/generate-token');
     $request->set_query_params(['limit' => $limit]);
+    $request->set_header('X-WP-Nonce', wp_create_nonce('wp_rest'));
 
     $response = rest_do_request($request);
 
