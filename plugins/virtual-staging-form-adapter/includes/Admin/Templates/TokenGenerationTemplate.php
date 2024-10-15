@@ -31,13 +31,13 @@ class TokenGenerationTemplate
   {
     ?>
     <h2>Token Generation</h2>
-    <p>Use this section to generate a token and view the resulting redirect URL.</p>
+    <p>Use this section to generate a token and view the resulting redirect URLs for all configured forms.</p>
     <form method="post" action="">
       <?php wp_nonce_field('vsa_generate_token', 'vsa_token_nonce'); ?>
       <label for="render_limit">Render Limit (5-10):</label>
       <input type="number" id="render_limit" name="render_limit" min="5" max="10" value="5"
         style="width: 60px; margin-right: 10px;" />
-      <input type="submit" name="generate_token" class="button button-primary" value="Generate Token and URL" />
+      <input type="submit" name="generate_token" class="button button-primary" value="Generate Token and URLs" />
     </form>
 
     <?php $this->renderCustomStyledResult(); ?>
@@ -61,6 +61,23 @@ class TokenGenerationTemplate
         padding: 5px;
         font-family: monospace;
         word-break: break-all;
+      }
+
+      .vsa-result table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      .vsa-result th,
+      .vsa-result td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+
+      .vsa-result th {
+        background-color: #f2f2f2;
       }
 
       .vsa-result .vsa-url {
@@ -89,12 +106,23 @@ class TokenGenerationTemplate
     $token = $this->tokenService->generateToken($limit);
 
     if ($token) {
-      $redirectPath = $this->config->get('vsa_redirect_path');
-      $redirectUrl = $this->redirectService->getRedirectUrl($redirectPath, $token);
+      $forms = $this->config->get('vsa_forms', []);
+      $redirectUrls = [];
+
+      foreach ($forms as $form) {
+        $redirectPath = $form['redirect_path'] ?? '';
+        if (!empty($redirectPath)) {
+          $redirectUrls[] = [
+            'form_id' => $form['form_id'],
+            'url' => $this->redirectService->getRedirectUrl($redirectPath, $token)
+          ];
+        }
+      }
+
       $this->generationResult = [
         'success' => true,
         'token' => $token,
-        'redirectUrl' => $redirectUrl
+        'redirectUrls' => $redirectUrls
       ];
     } else {
       $this->generationResult = [
@@ -120,12 +148,26 @@ class TokenGenerationTemplate
     }
 
     $token = esc_html($this->generationResult['token']);
-    $redirectUrl = esc_url($this->generationResult['redirectUrl']);
+    $content = "<p><strong>Token generated successfully!</strong></p>";
+    $content .= "<p><strong>Token:</strong> <span class='vsa-token'>{$token}</span></p>";
 
-    return "
-            <p><strong>Token generated successfully!</strong></p>
-            <p><strong>Token:</strong> <span class='vsa-token'>{$token}</span></p>
-            <p><strong>Redirect URL:</strong> <br><a href='{$redirectUrl}' target='_blank' class='vsa-url'>{$redirectUrl}</a></p>
-        ";
+    if (!empty($this->generationResult['redirectUrls'])) {
+      $content .= "<p><strong>Redirect URLs for configured forms:</strong></p>";
+      $content .= "<table>";
+      $content .= "<tr><th>Form ID</th><th>Redirect URL</th></tr>";
+      foreach ($this->generationResult['redirectUrls'] as $redirectData) {
+        $formId = esc_html($redirectData['form_id']);
+        $url = esc_url($redirectData['url']);
+        $content .= "<tr>";
+        $content .= "<td>{$formId}</td>";
+        $content .= "<td><a href='{$url}' target='_blank' class='vsa-url'>{$url}</a></td>";
+        $content .= "</tr>";
+      }
+      $content .= "</table>";
+    } else {
+      $content .= "<p>No forms configured for redirection.</p>";
+    }
+
+    return $content;
   }
 }
