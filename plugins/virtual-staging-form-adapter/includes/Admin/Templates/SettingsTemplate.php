@@ -33,34 +33,40 @@ class SettingsTemplate
       <?php submit_button('Save All Changes'); ?>
     </form>
 
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
     <script>
       jQuery(document).ready(function ($) {
+        tippy('.vsa-tooltip', {
+          content: (reference) => reference.getAttribute('title'),
+          allowHTML: true,
+        });
         let formIndex = <?php echo count($forms); ?>;
 
         $('#vsa-add-form').on('click', function () {
           const newForm = `
-                            <div class="vsa-form-fields">
-                                <h3>Form Configuration</h3>
-                                <input type="hidden" name="vsa_forms[${formIndex}][id]" value="${formIndex}">
-                                <p>
-                                    <label>Form ID:</label>
-                                    <input type="text" name="vsa_forms[${formIndex}][form_id]" value="">
-                                </p>
-                                <p>
-                                    <label>Renders Field ID:</label>
-                                    <input type="text" name="vsa_forms[${formIndex}][renders_field_id]" value="">
-                                </p>
-                                <p>
-                                    <label>Renders Regex:</label>
-                                    <input type="text" name="vsa_forms[${formIndex}][renders_regex]" value="">
-                                </p>
-                                <p>
-                                    <label>Redirect Path:</label>
-                                    <input type="text" name="vsa_forms[${formIndex}][redirect_path]" value="">
-                                </p>
-                                <button type="button" class="button vsa-remove-form">Remove Form Hook</button>
-                            </div>
-                        `;
+                                            <div class="vsa-form-fields">
+                                                <h3>Form Configuration</h3>
+                                                <input type="hidden" name="vsa_forms[${formIndex}][id]" value="${formIndex}">
+                                                <p>
+                                                    <label>Form ID:</label>
+                                                    <input type="text" name="vsa_forms[${formIndex}][form_id]" value="">
+                                                </p>
+                                                <p>
+                                                    <label>Renders Field ID:</label>
+                                                    <input type="text" name="vsa_forms[${formIndex}][renders_field_id]" value="">
+                                                </p>
+                                                <p>
+                                                    <label>Renders Regex:</label>
+                                                    <input type="text" name="vsa_forms[${formIndex}][renders_regex]" value="">
+                                                </p>
+                                                <p>
+                                                    <label>Redirect Path:</label>
+                                                    <input type="text" name="vsa_forms[${formIndex}][redirect_path]" value="">
+                                                </p>
+                                                <button type="button" class="button vsa-remove-form">Remove Form Hook</button>
+                                            </div>
+                                        `;
           $('#vsa-forms-container').append(newForm);
           formIndex++;
         });
@@ -82,7 +88,21 @@ class SettingsTemplate
         display: inline-block;
         width: 150px;
       }
+
+      .vsa-tooltip {
+        cursor: help;
+        color: #0073aa;
+        margin-left: 5px;
+      }
+
+      .tippy-box {
+        background-color: #333;
+        color: #fff;
+        border-radius: 4px;
+        font-size: 14px;
+      }
     </style>
+
     <?php
   }
 
@@ -90,30 +110,40 @@ class SettingsTemplate
   {
     ?>
     <div class="vsa-form-fields">
-      <h3>Form Configuration</h3>
+      <h3>Form Hook Configuration</h3>
       <input type="hidden" name="vsa_forms[<?php echo $index; ?>][id]" value="<?php echo $index; ?>">
       <p>
-        <label>Form ID:</label>
-        <input type="text" name="vsa_forms[<?php echo $index; ?>][form_id]"
+        <label for="form_id_<?php echo $index; ?>">Target Form ID:</label>
+        <input type="text" id="form_id_<?php echo $index; ?>" name="vsa_forms[<?php echo $index; ?>][form_id]"
           value="<?php echo esc_attr($form['form_id'] ?? ''); ?>">
+        <span class="vsa-tooltip"
+          title="The ID of the WPForm to observe for successful submissions and trigger token generation.">?</span>
       </p>
       <p>
-        <label>Renders Field ID:</label>
-        <input type="text" name="vsa_forms[<?php echo $index; ?>][renders_field_id]"
+        <label for="renders_field_id_<?php echo $index; ?>">Renders Field ID:</label>
+        <input type="text" id="renders_field_id_<?php echo $index; ?>"
+          name="vsa_forms[<?php echo $index; ?>][renders_field_id]"
           value="<?php echo esc_attr($form['renders_field_id'] ?? ''); ?>">
+        <span class="vsa-tooltip"
+          title="The ID of the field within the target form that contains the number of renders for the authorization token.">?</span>
       </p>
       <p>
-        <label>Renders Regex:</label>
-        <input type="text" name="vsa_forms[<?php echo $index; ?>][renders_regex]"
+        <label for="renders_regex_<?php echo $index; ?>">Renders Extraction Regex:</label>
+        <input type="text" id="renders_regex_<?php echo $index; ?>" name="vsa_forms[<?php echo $index; ?>][renders_regex]"
           value="<?php echo esc_attr($form['renders_regex'] ?? ''); ?>">
+        <span class="vsa-tooltip"
+          title="Optional regex to extract the number of renders from the field value. Leave empty if the field value is already a number.">?</span>
       </p>
       <p>
-        <label>Redirect Path:</label>
-        <input type="text" name="vsa_forms[<?php echo $index; ?>][redirect_path]"
+        <label for="redirect_path_<?php echo $index; ?>">Success Redirect Path:</label>
+        <input type="text" id="redirect_path_<?php echo $index; ?>" name="vsa_forms[<?php echo $index; ?>][redirect_path]"
           value="<?php echo esc_attr($form['redirect_path'] ?? ''); ?>">
+        <span class="vsa-tooltip"
+          title="The path to redirect users after successful form submission and token generation.">?</span>
       </p>
       <button type="button" class="button vsa-remove-form">Remove Form Hook</button>
     </div>
     <?php
   }
+
 }
