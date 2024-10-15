@@ -150,7 +150,7 @@ if (!defined('ABSPATH'))
                         <div class="carousel ">
                             <div style="overflow-x: auto; height: 66px;" class="thumbs-wrapper axis-vertical flex">
                                 <div id="generating-variation-indicator"
-                                    style="background: rgba(0, 0, 0, 0.8); padding: 6px 12px; height: 56px; margin-top: 1px; flex-shrink: 0;"
+                                    style="background: rgba(0, 0, 0, 0.8); padding: 6px 12px; margin-top: 1px; flex-shrink: 0;"
                                     class="rounded-xl flex justify-center items-center mr-2 text-white w-24 hidden">
                                     <svg id="generating-variation-indicator-spinner" stroke="currentColor" fill="none"
                                         stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
