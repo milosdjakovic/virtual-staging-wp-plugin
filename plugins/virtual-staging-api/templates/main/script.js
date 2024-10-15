@@ -260,11 +260,15 @@ class App {
   }
 
   setInitialRoomAndStyle(room, style) {
-    const roomTypeSelect = $(".room-type-select");
-    const furnitureStyleSelect = $(".furniture-style-select");
+    const roomTypeSelect = document.getElementById("room-type");
+    const furnitureStyleSelect = document.getElementById("furniture-style");
 
-    if (room && roomTypeSelect) roomTypeSelect.value = room;
-    if (style && furnitureStyleSelect) furnitureStyleSelect.value = style;
+    if (room && roomTypeSelect) {
+      roomTypeSelect.value = room;
+    }
+    if (style && furnitureStyleSelect) {
+      furnitureStyleSelect.value = style;
+    }
 
     if (roomTypeSelect) {
       roomTypeSelect.addEventListener("change", (e) =>
