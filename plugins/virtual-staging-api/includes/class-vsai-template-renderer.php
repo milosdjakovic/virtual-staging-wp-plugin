@@ -67,14 +67,15 @@ class VSAI_Template_Renderer
 
   public function generate_select_options($options, $selected = '')
   {
+    $formatted_options = VSAI_Label_Manager::get_formatted_options($options);
     $html = '';
-    foreach ($options as $value) {
-      $label = ucwords(str_replace('_', ' ', $value));
-      $selected_attr = ($value === $selected) ? ' selected' : '';
-      $html .= "<option value=\"{$value}\"{$selected_attr}>{$label}</option>";
+    foreach ($formatted_options as $option) {
+      $selected_attr = ($option['value'] === $selected) ? ' selected' : '';
+      $html .= "<option value=\"{$option['value']}\"{$selected_attr}>{$option['label']}</option>";
     }
     return $html;
   }
+
   public function register_template_assets()
   {
     wp_register_style('vsai-main-style', $this->plugin_url . 'templates/main/snipped.css');
