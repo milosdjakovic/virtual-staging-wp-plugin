@@ -24,16 +24,12 @@ class SettingsTemplate
       <?php settings_fields('vsa_settings'); ?>
       <div id="vsa-forms-container">
         <?php
-        if (empty($forms)) {
-          $this->renderFormFields();
-        } else {
-          foreach ($forms as $index => $form) {
-            $this->renderFormFields($index, $form);
-          }
+        foreach ($forms as $index => $form) {
+          $this->renderFormFields($index, $form);
         }
         ?>
       </div>
-      <button type="button" class="button" id="vsa-add-form">Add Form</button>
+      <button type="button" class="button" id="vsa-add-form">Add Form Hook</button>
       <?php submit_button('Save All Changes'); ?>
     </form>
 
@@ -62,7 +58,7 @@ class SettingsTemplate
                                     <label>Redirect Path:</label>
                                     <input type="text" name="vsa_forms[${formIndex}][redirect_path]" value="">
                                 </p>
-                                <button type="button" class="button vsa-remove-form">Remove Form</button>
+                                <button type="button" class="button vsa-remove-form">Remove Form Hook</button>
                             </div>
                         `;
           $('#vsa-forms-container').append(newForm);
@@ -90,7 +86,7 @@ class SettingsTemplate
     <?php
   }
 
-  private function renderFormFields($index = 0, $form = [])
+  private function renderFormFields($index, $form)
   {
     ?>
     <div class="vsa-form-fields">
@@ -116,9 +112,7 @@ class SettingsTemplate
         <input type="text" name="vsa_forms[<?php echo $index; ?>][redirect_path]"
           value="<?php echo esc_attr($form['redirect_path'] ?? ''); ?>">
       </p>
-      <?php if ($index > 0 || !empty($form)): ?>
-        <button type="button" class="button vsa-remove-form">Remove Form</button>
-      <?php endif; ?>
+      <button type="button" class="button vsa-remove-form">Remove Form Hook</button>
     </div>
     <?php
   }
