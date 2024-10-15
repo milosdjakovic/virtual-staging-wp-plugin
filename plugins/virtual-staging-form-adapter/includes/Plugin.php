@@ -4,6 +4,8 @@ namespace VirtualStagingAdapter;
 
 use VirtualStagingAdapter\Admin\AdminPage;
 use VirtualStagingAdapter\Admin\SettingsManager;
+use VirtualStagingAdapter\Admin\Components\SettingsComponent;
+use VirtualStagingAdapter\Admin\Components\TokenGenerationComponent;
 use VirtualStagingAdapter\Config\WordPressConfig;
 use VirtualStagingAdapter\Form\FormHandler;
 use VirtualStagingAdapter\Service\RedirectService;
@@ -22,7 +24,10 @@ class Plugin
     $redirectService = new RedirectService($config, $tokenService);
 
     $this->settingsManager = new SettingsManager($config);
-    $this->adminPage = new AdminPage($this->settingsManager, $tokenService, $redirectService, $config);
+    $settingsComponent = new SettingsComponent($this->settingsManager);
+    $tokenGenerationComponent = new TokenGenerationComponent($tokenService, $redirectService, $config);
+
+    $this->adminPage = new AdminPage($settingsComponent, $tokenGenerationComponent);
     $this->formHandler = new FormHandler($config, $redirectService);
   }
 
