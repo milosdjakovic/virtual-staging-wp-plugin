@@ -1,10 +1,10 @@
 <?php
 
-namespace VirtualStagingAdapter\Admin\Components;
+namespace VirtualStagingAdapter\Admin\Templates;
 
 use VirtualStagingAdapter\Admin\SettingsManager;
 
-class SettingsComponent
+class SettingsTemplate
 {
   private $settingsManager;
 

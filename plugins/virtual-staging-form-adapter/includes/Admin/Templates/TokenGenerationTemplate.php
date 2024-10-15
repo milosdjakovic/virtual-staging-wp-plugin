@@ -1,12 +1,12 @@
 <?php
 
-namespace VirtualStagingAdapter\Admin\Components;
+namespace VirtualStagingAdapter\Admin\Templates;
 
 use VirtualStagingAdapter\Service\TokenService;
 use VirtualStagingAdapter\Service\RedirectService;
 use VirtualStagingAdapter\Config\ConfigInterface;
 
-class TokenGenerationComponent
+class TokenGenerationTemplate
 {
   private $tokenService;
   private $redirectService;

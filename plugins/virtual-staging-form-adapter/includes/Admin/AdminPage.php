@@ -2,18 +2,42 @@
 
 namespace VirtualStagingAdapter\Admin;
 
-use VirtualStagingAdapter\Admin\Components\SettingsComponent;
-use VirtualStagingAdapter\Admin\Components\TokenGenerationComponent;
+use VirtualStagingAdapter\Admin\Templates\SettingsTemplate;
+use VirtualStagingAdapter\Admin\Templates\TokenGenerationTemplate;
+use VirtualStagingAdapter\Config\ConfigInterface;
+use VirtualStagingAdapter\Service\TokenService;
+use VirtualStagingAdapter\Service\RedirectService;
 
 class AdminPage
 {
-  private $settingsComponent;
-  private $tokenGenerationComponent;
+  private $config;
+  private $settingsManager;
+  private $tokenService;
+  private $redirectService;
+  private $templates = [];
 
-  public function __construct(SettingsComponent $settingsComponent, TokenGenerationComponent $tokenGenerationComponent)
+  public function __construct(
+    ConfigInterface $config,
+    SettingsManager $settingsManager,
+    TokenService $tokenService,
+    RedirectService $redirectService
+  ) {
+    $this->config = $config;
+    $this->settingsManager = $settingsManager;
+    $this->tokenService = $tokenService;
+    $this->redirectService = $redirectService;
+
+    $this->registerTemplates();
+  }
+
+  private function registerTemplates()
   {
-    $this->settingsComponent = $settingsComponent;
-    $this->tokenGenerationComponent = $tokenGenerationComponent;
+    $this->templates['settings'] = new SettingsTemplate($this->settingsManager);
+    $this->templates['tokenGeneration'] = new TokenGenerationTemplate(
+      $this->tokenService,
+      $this->redirectService,
+      $this->config
+    );
   }
 
   public function addMenuPage()
@@ -31,17 +55,17 @@ class AdminPage
 
   public function renderPage()
   {
-    $this->tokenGenerationComponent->handleRequest();
+    $this->templates['tokenGeneration']->handleRequest();
 
     ?>
     <div class="wrap">
       <h1>Virtual Staging API Form Adapter</h1>
 
-      <?php $this->tokenGenerationComponent->renderTopNotice(); ?>
+      <?php $this->templates['tokenGeneration']->renderTopNotice(); ?>
 
-      <?php $this->settingsComponent->render(); ?>
+      <?php $this->templates['settings']->render(); ?>
 
-      <?php $this->tokenGenerationComponent->render(); ?>
+      <?php $this->templates['tokenGeneration']->render(); ?>
     </div>
     <?php
   }
