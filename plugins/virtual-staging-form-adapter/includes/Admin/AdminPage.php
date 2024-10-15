@@ -12,6 +12,7 @@ class AdminPage
   private $tokenService;
   private $redirectService;
   private $config;
+  private $generationResult = '';
 
   public function __construct(SettingsManager $settingsManager, TokenService $tokenService, RedirectService $redirectService, ConfigInterface $config)
   {
@@ -36,6 +37,10 @@ class AdminPage
 
   public function renderPage()
   {
+    if (isset($_POST['generate_token']) && check_admin_referer('vsa_generate_token', 'vsa_token_nonce')) {
+      $this->handleTokenGeneration();
+    }
+
     ?>
     <div class="wrap">
       <h1>Virtual Staging API Form Adapter</h1>
@@ -51,19 +56,20 @@ class AdminPage
         ?>
       </form>
 
-      <h2>Token Generation Test</h2>
-      <p>Use this section to test token generation and view the resulting redirect URL.</p>
+      <h2>Token Generation</h2>
+      <p>Use this section to generate a token and view the resulting redirect URL. After submitting, the results will appear
+        in a notice at the top of the page.</p>
       <form method="post" action="">
         <?php wp_nonce_field('vsa_generate_token', 'vsa_token_nonce'); ?>
-        <input type="number" name="render_limit" min="5" max="10" value="5" />
+        <label for="render_limit">Render Limit (5-10):</label>
+        <input type="number" id="render_limit" name="render_limit" min="5" max="10" value="5"
+          style="width: 60px; margin-right: 10px;" />
         <input type="submit" name="generate_token" class="button button-primary" value="Generate Token and URL" />
       </form>
 
-      <?php
-      if (isset($_POST['generate_token']) && check_admin_referer('vsa_generate_token', 'vsa_token_nonce')) {
-        $this->handleTokenGeneration();
-      }
-      ?>
+      <div id="token-generation-result" style="margin-top: 20px;">
+        <?php echo $this->generationResult; ?>
+      </div>
     </div>
     <?php
   }
@@ -79,11 +85,13 @@ class AdminPage
       $redirectPath = $this->config->get('vsa_redirect_path');
       $redirectUrl = $this->redirectService->getRedirectUrl($redirectPath, $token);
 
-      echo '<div class="notice notice-success"><p>Token generated successfully!</p>';
-      echo '<p>Token: ' . esc_html($token) . '</p>';
-      echo '<p>Redirect URL: <a href="' . esc_url($redirectUrl) . '" target="_blank">' . esc_html($redirectUrl) . '</a></p></div>';
+      $this->generationResult = '<div class="notice notice-success">';
+      $this->generationResult .= '<p><strong>Token generated successfully!</strong></p>';
+      $this->generationResult .= '<p><strong>Token:</strong> ' . esc_html($token) . '</p>';
+      $this->generationResult .= '<p><strong>Redirect URL:</strong> <a href="' . esc_url($redirectUrl) . '" target="_blank">' . esc_html($redirectUrl) . '</a></p>';
+      $this->generationResult .= '</div>';
     } else {
-      echo '<div class="notice notice-error"><p>Failed to generate token. Please try again.</p></div>';
+      $this->generationResult = '<div class="notice notice-error"><p>Failed to generate token. Please try again.</p></div>';
     }
   }
 }
