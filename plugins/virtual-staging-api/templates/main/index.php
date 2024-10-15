@@ -53,7 +53,7 @@ if (!defined('ABSPATH'))
                     <div
                         class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
                         <select id="room-type" name="room-type"
-                            class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
+                            class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral w-full MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
                             <?php echo $this->generate_select_options($options['roomTypes']); ?>
                         </select>
                     </div>
@@ -79,7 +79,7 @@ if (!defined('ABSPATH'))
                     <div
                         class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
                         <select id="furniture-style" name="furniture-style"
-                            class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
+                            class="MuiSelect-root MuiSelect-variantOutlined w-full MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
                             <?php echo $this->generate_select_options($options['styles']); ?>
                         </select>
                     </div>
