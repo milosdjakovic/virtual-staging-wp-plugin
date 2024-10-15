@@ -4,10 +4,10 @@ namespace VirtualStagingAdapter\Admin;
 
 use VirtualStagingAdapter\Admin\Templates\SettingsTemplate;
 use VirtualStagingAdapter\Admin\Templates\TokenGenerationTemplate;
+use VirtualStagingAdapter\Admin\Templates\EnvironmentInfoTemplate;
 use VirtualStagingAdapter\Config\ConfigInterface;
 use VirtualStagingAdapter\Service\TokenService;
 use VirtualStagingAdapter\Service\RedirectService;
-use VirtualStagingAdapter\Plugin;
 
 class AdminPage
 {
@@ -39,6 +39,7 @@ class AdminPage
       $this->redirectService,
       $this->config
     );
+    $this->templates['environmentInfo'] = new EnvironmentInfoTemplate();
   }
 
   public function addMenuPage()
@@ -62,7 +63,7 @@ class AdminPage
     <div class="wrap">
       <h1>Virtual Staging API Form Adapter</h1>
 
-      <?php $this->renderEnvironmentInfo(); ?>
+      <?php $this->templates['environmentInfo']->render(); ?>
 
       <?php $this->templates['tokenGeneration']->renderTopNotice(); ?>
 
@@ -71,26 +72,5 @@ class AdminPage
       <?php $this->templates['tokenGeneration']->render(); ?>
     </div>
     <?php
-  }
-
-  private function renderEnvironmentInfo()
-  {
-    $envManager = Plugin::getEnvironmentManager();
-    $isDev = $envManager->isDev();
-
-    if ($isDev) {
-      $pluginRoot = dirname(dirname(dirname(__FILE__))); // Go up two levels to the plugin root
-      $envFile = $pluginRoot . '/.env';
-      $fileExists = file_exists($envFile) ? 'Yes' : 'No';
-
-      ?>
-      <div class="notice notice-warning">
-        <h2>Development Environment</h2>
-        <p>Plugin is running in development environment.</p>
-        <p><strong>DEV_MODE:</strong> true</p>
-        <p><strong>.env File Path:</strong> <?php echo esc_html($envFile); ?></p>
-      </div>
-      <?php
-    }
   }
 }
