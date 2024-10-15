@@ -22,7 +22,7 @@ class Plugin
     $redirectService = new RedirectService($config, $tokenService);
 
     $this->settingsManager = new SettingsManager($config);
-    $this->adminPage = new AdminPage($this->settingsManager);
+    $this->adminPage = new AdminPage($this->settingsManager, $tokenService, $redirectService, $config);
     $this->formHandler = new FormHandler($config, $redirectService);
   }
 
