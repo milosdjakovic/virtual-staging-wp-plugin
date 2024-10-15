@@ -77,15 +77,20 @@ class AdminPage
   {
     $envManager = Plugin::getEnvironmentManager();
     $isDev = $envManager->isDev();
-    $devModeValue = $isDev ? 'true' : 'false';
-    $envClass = $isDev ? 'notice-warning' : 'notice-info';
 
-    ?>
-    <div class="notice <?php echo $envClass; ?> is-dismissible">
-      <h2>Environment Information</h2>
-      <p>This section displays the current environment settings for the plugin.</p>
-      <p><strong>DEV_MODE:</strong> <?php echo $devModeValue; ?></p>
-    </div>
-    <?php
+    if ($isDev) {
+      $pluginRoot = dirname(dirname(dirname(__FILE__))); // Go up two levels to the plugin root
+      $envFile = $pluginRoot . '/.env';
+      $fileExists = file_exists($envFile) ? 'Yes' : 'No';
+
+      ?>
+      <div class="notice notice-warning">
+        <h2>Development Environment</h2>
+        <p>Plugin is running in development environment.</p>
+        <p><strong>DEV_MODE:</strong> true</p>
+        <p><strong>.env File Path:</strong> <?php echo esc_html($envFile); ?></p>
+      </div>
+      <?php
+    }
   }
 }
