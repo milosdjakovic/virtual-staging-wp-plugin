@@ -29,6 +29,7 @@ class VSAI_Plugin
     require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-vsai-router.php';
     require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-vsai-template-renderer.php';
     require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-vsai-token-handler.php';
+    require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-vsai-label-manager.php';
   }
 
   private function initialize_components()
