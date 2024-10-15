@@ -52,8 +52,8 @@ if (!defined('ABSPATH'))
                     </label>
                     <div
                         class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
-                        <select role="combobox" aria-labelledby=":r16u:-label" id=":r16u:" name="radio-buttons-group"
-                            class="MuiSelect-button css-1qmzz5g room-type-select w-full">
+                        <select id="room-type" name="room-type"
+                            class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
                             <?php echo $this->generate_select_options($options['roomTypes']); ?>
                         </select>
                     </div>
@@ -78,8 +78,8 @@ if (!defined('ABSPATH'))
                     </label>
                     <div
                         class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
-                        <select role="combobox" aria-labelledby=":r170:-label" id=":r170:" name="radio-buttons-group"
-                            class="MuiSelect-button css-1qmzz5g furniture-style-select w-full">
+                        <select id="furniture-style" name="furniture-style"
+                            class="MuiSelect-root MuiSelect-variantOutlined MuiSelect-colorNeutral MuiSelect-sizeMd !rounded-xl !border-iceblue-100 !px-3 !py-2 !text-heavyblack !backdrop-blur-md transition-colors duration-500 css-1peitnf">
                             <?php echo $this->generate_select_options($options['styles']); ?>
                         </select>
                     </div>
