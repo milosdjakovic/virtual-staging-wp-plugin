@@ -154,7 +154,7 @@ class TokenGenerationTemplate
     if (!empty($this->generationResult['redirectUrls'])) {
       $content .= "<p><strong>Redirect URLs for configured forms:</strong></p>";
       $content .= "<table>";
-      $content .= "<tr><th>Form ID</th><th>Redirect URL</th></tr>";
+      $content .= "<tr style=\"text-align: left\"><th>Form ID</th><th>Redirect URL</th></tr>";
       foreach ($this->generationResult['redirectUrls'] as $redirectData) {
         $formId = esc_html($redirectData['form_id']);
         $url = esc_url($redirectData['url']);
