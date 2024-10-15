@@ -7,6 +7,7 @@ use VirtualStagingAdapter\Admin\Templates\TokenGenerationTemplate;
 use VirtualStagingAdapter\Config\ConfigInterface;
 use VirtualStagingAdapter\Service\TokenService;
 use VirtualStagingAdapter\Service\RedirectService;
+use VirtualStagingAdapter\Plugin;
 
 class AdminPage
 {
@@ -61,11 +62,29 @@ class AdminPage
     <div class="wrap">
       <h1>Virtual Staging API Form Adapter</h1>
 
+      <?php $this->renderEnvironmentInfo(); ?>
+
       <?php $this->templates['tokenGeneration']->renderTopNotice(); ?>
 
       <?php $this->templates['settings']->render(); ?>
 
       <?php $this->templates['tokenGeneration']->render(); ?>
+    </div>
+    <?php
+  }
+
+  private function renderEnvironmentInfo()
+  {
+    $envManager = Plugin::getEnvironmentManager();
+    $isDev = $envManager->isDev();
+    $devModeValue = $isDev ? 'true' : 'false';
+    $envClass = $isDev ? 'notice-warning' : 'notice-info';
+
+    ?>
+    <div class="notice <?php echo $envClass; ?> is-dismissible">
+      <h2>Environment Information</h2>
+      <p>This section displays the current environment settings for the plugin.</p>
+      <p><strong>DEV_MODE:</strong> <?php echo $devModeValue; ?></p>
     </div>
     <?php
   }
