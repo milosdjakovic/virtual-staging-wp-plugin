@@ -30,6 +30,14 @@ const capitalizeFirstLetter = (string) =>
 const getFileExtension = (mimeType) =>
   mimeType.split("/")[1]?.split("+")[0] || "jpg";
 
+function getLabelForValue(value, selectId) {
+  const select = document.getElementById(selectId);
+  if (!select) return value;
+
+  const option = select.querySelector(`option[value="${value}"]`);
+  return option ? option.textContent : value;
+}
+
 // API Service
 const ApiService = {
   async fetchWithAuth(url, options = {}) {
@@ -260,8 +268,8 @@ class App {
   }
 
   setInitialRoomAndStyle(room, style) {
-    const roomTypeSelect = document.getElementById("room-type");
-    const furnitureStyleSelect = document.getElementById("furniture-style");
+    const roomTypeSelect = document.getElementById("room-type-select");
+    const furnitureStyleSelect = document.getElementById("furniture-style-select");
 
     if (room && roomTypeSelect) {
       roomTypeSelect.value = room;
@@ -304,8 +312,8 @@ class App {
       if (at) url.searchParams.set("at", at);
 
       // Get current values of room and style
-      const currentRoom = $(".room-type-select")?.value;
-      const currentStyle = $(".furniture-style-select")?.value;
+      const currentRoom = document.getElementById("room-type-select")?.value;
+      const currentStyle = document.getElementById("furniture-style-select")?.value;
 
       // Add current room and style to URL if they exist
       if (currentRoom) url.searchParams.set("room", currentRoom);
@@ -381,10 +389,6 @@ class App {
   }
 
   updateUIWithRenderResults(data, isInitialLoad = false) {
-    console.log(
-      `Updating UI with render results. Initial load: ${isInitialLoad}`
-    );
-
     const imageUrl = getUrlParam("image_url");
     const reversedOutputs = [...data.outputs].reverse();
     const reversedRoomTypes = [...data.outputs_room_types].reverse();
@@ -409,6 +413,10 @@ class App {
       console.log("Updating existing carousel");
       this.carousel.updateImages(images, roomTypes, styles);
     }
+
+    if (roomTypes.length > 0 && styles.length > 0) {
+      updateResultsTitle(roomTypes[0], styles[0]);
+    }
   }
 
   async handleGenerateVariation() {
@@ -420,8 +428,8 @@ class App {
     this.showGeneratingVariationIndicator();
 
     const renderId = getUrlParam("render_id");
-    const roomType = $(".room-type-select").value;
-    const style = $(".furniture-style-select").value;
+    const roomType = document.getElementById("room-type-select").value;
+    const style = document.getElementById("furniture-style-select").value;
 
     try {
       const response = await ApiService.createVariation(
@@ -495,9 +503,9 @@ class App {
 const updateResultsTitle = (roomType, style) => {
   const resultsTitle = $("#renderPageResultsContainer h3");
   if (resultsTitle) {
-    resultsTitle.textContent = `Results (${formatTitleString(
-      roomType
-    )}, ${formatTitleString(style)})`;
+    const roomLabel = getLabelForValue(roomType, "room-type-select");
+    const styleLabel = getLabelForValue(style, "furniture-style-select");
+    resultsTitle.textContent = `Results (${roomLabel}, ${styleLabel})`;
   }
 };
 
