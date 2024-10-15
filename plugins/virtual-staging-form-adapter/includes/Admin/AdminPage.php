@@ -12,7 +12,7 @@ class AdminPage
   private $tokenService;
   private $redirectService;
   private $config;
-  private $generationResult = '';
+  private $generationResult = null;
 
   public function __construct(SettingsManager $settingsManager, TokenService $tokenService, RedirectService $redirectService, ConfigInterface $config)
   {
@@ -45,6 +45,8 @@ class AdminPage
     <div class="wrap">
       <h1>Virtual Staging API Form Adapter</h1>
 
+      <?php $this->renderTopNotice(); ?>
+
       <h2>WPForm Configuration</h2>
       <p>This section configures the integration with the WPForms plugin. It determines which form triggers the redirection
         and where users are sent after successful submission.</p>
@@ -57,8 +59,7 @@ class AdminPage
       </form>
 
       <h2>Token Generation</h2>
-      <p>Use this section to generate a token and view the resulting redirect URL. After submitting, the results will appear
-        in a notice at the top of the page.</p>
+      <p>Use this section to generate a token and view the resulting redirect URL.</p>
       <form method="post" action="">
         <?php wp_nonce_field('vsa_generate_token', 'vsa_token_nonce'); ?>
         <label for="render_limit">Render Limit (5-10):</label>
@@ -67,10 +68,34 @@ class AdminPage
         <input type="submit" name="generate_token" class="button button-primary" value="Generate Token and URL" />
       </form>
 
-      <div id="token-generation-result" style="margin-top: 20px;">
-        <?php echo $this->generationResult; ?>
-      </div>
+      <?php $this->renderCustomStyledResult(); ?>
     </div>
+
+    <style>
+      .vsa-result {
+        background-color: #f0f0f1;
+        border-left: 4px solid #72aee6;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+        margin: 20px 0;
+        padding: 12px;
+      }
+
+      .vsa-result p {
+        margin: 0.5em 0;
+        padding: 2px;
+      }
+
+      .vsa-result .vsa-token {
+        background-color: #e7e7e7;
+        padding: 5px;
+        font-family: monospace;
+        word-break: break-all;
+      }
+
+      .vsa-result .vsa-url {
+        word-break: break-all;
+      }
+    </style>
     <?php
   }
 
@@ -84,14 +109,52 @@ class AdminPage
     if ($token) {
       $redirectPath = $this->config->get('vsa_redirect_path');
       $redirectUrl = $this->redirectService->getRedirectUrl($redirectPath, $token);
-
-      $this->generationResult = '<div class="notice notice-success">';
-      $this->generationResult .= '<p><strong>Token generated successfully!</strong></p>';
-      $this->generationResult .= '<p><strong>Token:</strong> ' . esc_html($token) . '</p>';
-      $this->generationResult .= '<p><strong>Redirect URL:</strong> <a href="' . esc_url($redirectUrl) . '" target="_blank">' . esc_html($redirectUrl) . '</a></p>';
-      $this->generationResult .= '</div>';
+      $this->generationResult = [
+        'success' => true,
+        'token' => $token,
+        'redirectUrl' => $redirectUrl
+      ];
     } else {
-      $this->generationResult = '<div class="notice notice-error"><p>Failed to generate token. Please try again.</p></div>';
+      $this->generationResult = [
+        'success' => false
+      ];
     }
+  }
+
+  private function renderTopNotice()
+  {
+    if ($this->generationResult === null)
+      return;
+
+    $class = $this->generationResult['success'] ? 'notice-success' : 'notice-error';
+    $content = $this->getResultContent();
+
+    echo "<div class='notice {$class}'>{$content}</div>";
+  }
+
+  private function renderCustomStyledResult()
+  {
+    if ($this->generationResult === null)
+      return;
+
+    $content = $this->getResultContent();
+
+    echo "<div class='vsa-result'>{$content}</div>";
+  }
+
+  private function getResultContent()
+  {
+    if (!$this->generationResult['success']) {
+      return '<p>Failed to generate token. Please try again.</p>';
+    }
+
+    $token = esc_html($this->generationResult['token']);
+    $redirectUrl = esc_url($this->generationResult['redirectUrl']);
+
+    return "
+      <p><strong>Token generated successfully!</strong></p>
+      <p><strong>Token:</strong> <span class='vsa-token'>{$token}</span></p>
+      <p><strong>Redirect URL:</strong> <br><a href='{$redirectUrl}' target='_blank' class='vsa-url'>{$redirectUrl}</a></p>
+    ";
   }
 }
