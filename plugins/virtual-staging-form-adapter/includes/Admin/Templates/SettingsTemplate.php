@@ -16,6 +16,7 @@ class SettingsTemplate
   public function render()
   {
     $forms = $this->settingsManager->getForms();
+    $forms = is_array($forms) ? $forms : [];  // Ensure $forms is always an array
     ?>
     <h2>WPForm Configuration</h2>
     <p>This section configures the integration with the WPForms plugin. It determines which forms trigger the redirection
@@ -24,8 +25,12 @@ class SettingsTemplate
       <?php settings_fields('vsa_settings'); ?>
       <div id="vsa-forms-container">
         <?php
-        foreach ($forms as $index => $form) {
-          $this->renderFormFields($index, $form);
+        if (!empty($forms)) {
+          foreach ($forms as $index => $form) {
+            $this->renderFormFields($index, $form);
+          }
+        } else {
+          echo '<p>No forms configured yet. Use the "Add Form Hook" button to add a new form configuration.</p>';
         }
         ?>
       </div>
@@ -41,32 +46,32 @@ class SettingsTemplate
           content: (reference) => reference.getAttribute('title'),
           allowHTML: true,
         });
-        let formIndex = <?php echo count($forms); ?>;
+        let formIndex = <?php echo !empty($forms) ? count($forms) : 0; ?>;
 
         $('#vsa-add-form').on('click', function () {
           const newForm = `
-                                            <div class="vsa-form-fields">
-                                                <h3>Form Configuration</h3>
-                                                <input type="hidden" name="vsa_forms[${formIndex}][id]" value="${formIndex}">
-                                                <p>
-                                                    <label>Form ID:</label>
-                                                    <input type="text" name="vsa_forms[${formIndex}][form_id]" value="">
-                                                </p>
-                                                <p>
-                                                    <label>Renders Field ID:</label>
-                                                    <input type="text" name="vsa_forms[${formIndex}][renders_field_id]" value="">
-                                                </p>
-                                                <p>
-                                                    <label>Renders Regex:</label>
-                                                    <input type="text" name="vsa_forms[${formIndex}][renders_regex]" value="">
-                                                </p>
-                                                <p>
-                                                    <label>Redirect Path:</label>
-                                                    <input type="text" name="vsa_forms[${formIndex}][redirect_path]" value="">
-                                                </p>
-                                                <button type="button" class="button vsa-remove-form">Remove Form Hook</button>
-                                            </div>
-                                        `;
+                                                        <div class="vsa-form-fields">
+                                                            <h3>Form Configuration</h3>
+                                                            <input type="hidden" name="vsa_forms[${formIndex}][id]" value="${formIndex}">
+                                                            <p>
+                                                                <label>Form ID:</label>
+                                                                <input type="text" name="vsa_forms[${formIndex}][form_id]" value="">
+                                                            </p>
+                                                            <p>
+                                                                <label>Renders Field ID:</label>
+                                                                <input type="text" name="vsa_forms[${formIndex}][renders_field_id]" value="">
+                                                            </p>
+                                                            <p>
+                                                                <label>Renders Regex:</label>
+                                                                <input type="text" name="vsa_forms[${formIndex}][renders_regex]" value="">
+                                                            </p>
+                                                            <p>
+                                                                <label>Redirect Path:</label>
+                                                                <input type="text" name="vsa_forms[${formIndex}][redirect_path]" value="">
+                                                            </p>
+                                                            <button type="button" class="button vsa-remove-form">Remove Form Hook</button>
+                                                        </div>
+                                                    `;
           $('#vsa-forms-container').append(newForm);
           formIndex++;
         });

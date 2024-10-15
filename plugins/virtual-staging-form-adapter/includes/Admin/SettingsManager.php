@@ -40,7 +40,8 @@ class SettingsManager
 
     public function getForms()
     {
-        return $this->config->get('vsa_forms', []);
+        $forms = $this->config->get('vsa_forms', []);
+        return is_array($forms) ? $forms : [];
     }
 
     public function saveForms($forms)
