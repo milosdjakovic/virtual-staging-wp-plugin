@@ -12,6 +12,7 @@ class VSAI_Plugin
   private $router;
   private $template_renderer;
   private $token_handler;
+  private $language_loader;
 
   public function __construct()
   {
@@ -30,6 +31,7 @@ class VSAI_Plugin
     require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-vsai-template-renderer.php';
     require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-vsai-token-handler.php';
     require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-vsai-label-manager.php';
+    require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-vsai-language-loader.php';
   }
 
   private function initialize_components()
@@ -43,6 +45,9 @@ class VSAI_Plugin
 
     $plugin_url = plugin_dir_url(dirname(__FILE__));
     $this->template_renderer = new VSAI_Template_Renderer($plugin_url, $this->api_client);
+
+    $locale = $this->env_loader->get_env('LOCALE', 'en.json');
+    $this->language_loader = new VSAI_Language_Loader($locale);
   }
 
   private function setup_hooks()
@@ -87,6 +92,7 @@ class VSAI_Plugin
 
     $template_data = array(
       'next_page_url' => $next_page_url,
+      'translations' => $this->language_loader->get_all_translations()
     );
 
     if (is_array($data)) {
