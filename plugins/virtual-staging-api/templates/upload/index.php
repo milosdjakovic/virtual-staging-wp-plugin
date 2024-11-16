@@ -17,7 +17,6 @@ if (!defined('ABSPATH'))
     </div>
 </div>
 
-
 <div class="ReactModal__Content ReactModal__Content--after-open z-20 flex h-full max-h-screen w-full justify-center overflow-auto bg-white p-4 pt-12 font-outfit outline-none sm:overflow-hidden md:h-auto md:w-auto md:max-w-[90vw] md:rounded-2xl md:p-6 md:pt-6 md:shadow-sm sm:overflow-visible snipcss-7K6H4"
     tabindex="-1" role="dialog" aria-modal="true">
     <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
@@ -29,18 +28,19 @@ if (!defined('ABSPATH'))
     <div class="hidden style-wTgLQ" id="style-wTgLQ">
         <div>
             <div class="mb-6 flex flex-col items-center justify-center gap-3">
-                <p class="text-3xl font-bold text-gray-900">Remove furniture?</p>
-                <p class="font-medium">We have detected furniture in your image. Do you want to remove it?</p>
+                <p class="text-3xl font-bold text-gray-900"><?php echo esc_html($translations['upload-form']['remove-furniture']); ?></p>
+                <p class="font-medium"><?php echo esc_html($translations['upload-form']['detected-furniture']); ?></p>
             </div>
+            <div class="relative mb-6 flex justify-center"></div>
             <div class="relative mb-6 flex justify-center"></div>
             <div class="flex flex-col-reverse items-center justify-center gap-4 md:flex-row md:justify-end">
                 <button
                     class="flex text-sm font-semibold leading-none relative transition-colors duration-75 items-center justify-center gap-1 md:gap-1.5 rounded-xl border-2 px-10 py-3 text-darkgray border-darkgray hover:bg-darkgray hover:text-white w-full">
-                    <span>Keep furniture</span>
+                    <span><?php echo esc_html($translations['upload-form']['keep-furniture']); ?></span>
                 </button>
                 <button
                     class="flex text-sm font-semibold leading-none relative transition-colors duration-75 items-center justify-center gap-1 md:gap-1.5 rounded-xl border-2 px-10 py-3 text-white bg-primary border-primary hover:bg-primary/90 hover:border-primary/50 w-full">
-                    <span>Remove furniture</span>
+                    <span><?php echo esc_html($translations['upload-form']['remove-furniture-button']); ?></span>
                 </button>
             </div>
         </div>
@@ -87,7 +87,7 @@ if (!defined('ABSPATH'))
                                 d="M22 12c0-1.1-.9-2-2-2V7c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v3c-1.1 0-2 .9-2 2v5h1.33L4 19h1l.67-2h12.67l.66 2h1l.67-2H22v-5zm-4-2h-5V7h5v3zM6 7h5v3H6V7zm-2 5h16v3H4v-3z">
                             </path>
                         </svg>
-                        Virtual Staging
+                        <?php echo esc_html($translations['upload-form']['virtual-staging']); ?>
                     </button>
                     <button
                         class="hidden flex items-center justify-center gap-2 rounded-xl border border-black/15 p-2 text-center transition-all duration-100 text-black/90 hover:bg-black/10 break-all">
@@ -97,7 +97,7 @@ if (!defined('ABSPATH'))
                                 d="M48,64a8,8,0,0,1,8-8H72V40a8,8,0,0,1,16,0V56h16a8,8,0,0,1,0,16H88V88a8,8,0,0,1-16,0V72H56A8,8,0,0,1,48,64ZM184,192h-8v-8a8,8,0,0,0-16,0v8h-8a8,8,0,0,0,0,16h8v8a8,8,0,0,0,16,0v-8h8a8,8,0,0,0,0-16Zm56-48H224V128a8,8,0,0,0-16,0v16H192a8,8,0,0,0,0,16h16v16a8,8,0,0,0,16,0V160h16a8,8,0,0,0,0-16ZM219.31,80,80,219.31a16,16,0,0,1-22.62,0L36.68,198.63a16,16,0,0,1,0-22.63L176,36.69a16,16,0,0,1,22.63,0l20.68,20.68A16,16,0,0,1,219.31,80Zm-54.63,32L144,91.31l-96,96L68.68,208ZM208,68.69,187.31,48l-32,32L176,100.69Z">
                             </path>
                         </svg>
-                        Enhancement
+                        <?php echo esc_html($translations['upload-form']['enhancement']); ?>
                     </button>
                     <button
                         class="hidden flex items-center justify-center gap-2 rounded-xl border border-black/15 p-2 text-center transition-all duration-100 text-black/90 hover:bg-black/10">
@@ -113,7 +113,7 @@ if (!defined('ABSPATH'))
                             <line x1="23" y1="22" x2="1" y2="22"></line>
                             <polyline points="16 5 12 9 8 5"></polyline>
                         </svg>
-                        Day to Dusk
+                        <?php echo esc_html($translations['upload-form']['day-to-dusk']); ?>
                     </button>
                 </div>
                 <div class="flex flex-col gap-2">
@@ -126,7 +126,7 @@ if (!defined('ABSPATH'))
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <path d="M8 12h8"></path>
                             </svg>
-                            <div class="whitespace-nowrap text-base">Remove existing furniture</div>
+                            <div class="whitespace-nowrap text-base"><?php echo esc_html($translations['upload-form']['remove-existing-furniture']); ?></div>
                             <div sx="[object Object]" class=""><svg stroke="currentColor" fill="none" stroke-width="2"
                                     viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"
                                     class="text-base opacity-50" height="1em" width="1em"
@@ -150,7 +150,7 @@ if (!defined('ABSPATH'))
                                 <path d="M8 12h8"></path>
                                 <path d="M12 8v8"></path>
                             </svg>
-                            <div class="whitespace-nowrap text-base">Add furniture</div>
+                            <div class="whitespace-nowrap text-base"><?php echo esc_html($translations['upload-form']['add-furniture']); ?></div>
                             <input id="add-furniture-checkbox"
                                 style="visibility: hidden; position: absolute; opacity: 0;"
                                 class="ml-auto h-5 w-5 rounded border-gray-300 bg-white text-primary focus:ring-2"
@@ -174,7 +174,7 @@ if (!defined('ABSPATH'))
                                                         <path d="M3 18h18"></path>
                                                     </svg>
                                                 </div>
-                                                Room type
+                                                <?php echo esc_html($translations['upload-form']['room-type']); ?>
                                             </div>
                                         </label>
                                         <select id="room-type" name="room-type"
@@ -200,7 +200,7 @@ if (!defined('ABSPATH'))
                                                             d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z">
                                                         </path>
                                                     </svg>
-                                                </div>Furniture style
+                                                </div><?php echo esc_html($translations['upload-form']['furniture-style']); ?>
                                             </div>
                                         </label>
                                         <select id="furniture-style" name="furniture-style"
@@ -216,7 +216,7 @@ if (!defined('ABSPATH'))
                 <button id="process-button"
                     class="flex font-semibold relative transition-colors duration-75 items-center justify-center gap-1 md:gap-1.5 cursor-not-allowed opacity-50 rounded-xl border-2 px-10 py-3 text-white bg-primary border-primary mt-auto h-auto w-full text-base"
                     disabled="">
-                    <span>Process photo</span>
+                    <span><?php echo esc_html($translations['upload-form']['process-photo']); ?></span>
                 </button>
             </div>
         </div>

@@ -1,6 +1,18 @@
 {
   "upload-form": {
     "upload-image": "Otpremite sliku",
-    "or-drag-and-drop": " ili prevucite i otpustite"
+    "or-drag-and-drop": "ili prevucite i otpustite",
+    "remove-furniture": "Ukloniti nameštaj?",
+    "detected-furniture": "Otkrili smo nameštaj na vašoj slici. Da li želite da ga uklonite?",
+    "keep-furniture": "Zadrži nameštaj",
+    "remove-furniture-button": "Ukloni nameštaj",
+    "virtual-staging": "Virtuelno nameštanje",
+    "enhancement": "Poboljšanje",
+    "day-to-dusk": "Dan u sumrak",
+    "remove-existing-furniture": "Ukloni postojeći nameštaj",
+    "add-furniture": "Dodaj nameštaj",
+    "room-type": "Tip sobe",
+    "furniture-style": "Stil nameštaja",
+    "process-photo": "Obradi fotografiju"
   }
 }

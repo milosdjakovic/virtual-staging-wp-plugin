@@ -1,6 +1,18 @@
 {
   "upload-form": {
     "upload-image": "Upload an image",
-    "or-drag-and-drop": " or drag and drop"
+    "or-drag-and-drop": "or drag and drop",
+    "remove-furniture": "Remove furniture?",
+    "detected-furniture": "We have detected furniture in your image. Do you want to remove it?",
+    "keep-furniture": "Keep furniture",
+    "remove-furniture-button": "Remove furniture",
+    "virtual-staging": "Virtual Staging",
+    "enhancement": "Enhancement",
+    "day-to-dusk": "Day to Dusk",
+    "remove-existing-furniture": "Remove existing furniture",
+    "add-furniture": "Add furniture",
+    "room-type": "Room type",
+    "furniture-style": "Furniture style",
+    "process-photo": "Process photo"
   }
 }
