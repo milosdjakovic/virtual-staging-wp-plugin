@@ -38,7 +38,8 @@ class VSAI_Env_Loader
     return [
       'VIRTUAL_STAGING_API_URL' => $this->get_env('VIRTUAL_STAGING_API_URL'),
       'VIRTUAL_STAGING_API_KEY' => $this->get_env('VIRTUAL_STAGING_API_KEY'),
-      'DEV_MODE' => $this->get_env('DEV_MODE')
+      'DEV_MODE' => $this->get_env('DEV_MODE'),
+      'LOCALE' => $this->get_env('LOCALE')
     ];
   }
 }
