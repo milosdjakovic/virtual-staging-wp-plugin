@@ -14,5 +14,16 @@
     "room-type": "Room type",
     "furniture-style": "Furniture style",
     "process-photo": "Process photo"
+  },
+  "main": {
+    "upload-another-image": "Upload Another Image",
+    "original": "Original",
+    "room-type": "Room type",
+    "furniture-style": "Furniture style",
+    "generate-variation": "Generate Variation",
+    "unlimited-variations": "Unlimited variations and downloads included",
+    "results": "Results",
+    "loading": "Loading...",
+    "download-image": "Download Image"
   }
 }

@@ -13,14 +13,14 @@ if (!defined('ABSPATH'))
                 <path d="M19 12H5"></path>
                 <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
-            <span>Upload Another Image</span>
+            <span><?php echo esc_html($translations['main']['upload-another-image']); ?></span>
             <span id="tokenStatusDisplay" class="ml-2 text-xs"></span>
         </button>
     </div>
 
     <div class="flex flex-col-reverse gap-4 md:flex-row mt-4">
         <div class="md:w-1/3" id="renderPageOriginalContainer">
-            <h3 class="font-semibold mb-2 text-gray-800 text-lg md:text-xl mt-0">Original</h3>
+            <h3 class="font-semibold mb-2 text-gray-800 text-lg md:text-xl mt-0"><?php echo esc_html($translations['main']['original']); ?></h3>
             <div class="">
                 <div class="group w-full overflow-hidden rounded-xl cursor-pointer relative style-1oN9o"
                     id="style-1oN9o">
@@ -47,7 +47,7 @@ if (!defined('ABSPATH'))
                                     <path d="M3 20v-8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8"></path>
                                     <path d="M5 10V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"></path>
                                     <path d="M3 18h18"></path>
-                                </svg></div>Room type
+                                </svg></div><?php echo esc_html($translations['main']['room-type']); ?>
                         </div>
                     </label>
                     <div
@@ -73,7 +73,7 @@ if (!defined('ABSPATH'))
                                     <path
                                         d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z">
                                     </path>
-                                </svg></div>Furniture style
+                                </svg></div><?php echo esc_html($translations['main']['furniture-style']); ?>
                         </div>
                     </label>
                     <div
@@ -98,24 +98,24 @@ if (!defined('ABSPATH'))
                             <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
                             <path d="M16 16h5v5"></path>
                         </svg>
-                        <span>Generate Variation</span>
+                        <span><?php echo esc_html($translations['main']['generate-variation']); ?></span>
                     </button>
 
                     <span class="flex items-center justify-center text-center text-sm text-gray-400">
-                        Unlimited variations and downloads included
+                        <?php echo esc_html($translations['main']['unlimited-variations']); ?>
                     </span>
                 </div>
             </div>
         </div>
         <div class="md:w-2/3" id="renderPageResultsContainer">
             <div class="mb-2 flex items-center space-x-4">
-                <h3 class="font-semibold text-gray-800 text-lg md:text-xl mt-0">Results</h3>
+                <h3 class="font-semibold text-gray-800 text-lg md:text-xl mt-0"><?php echo esc_html($translations['main']['results']); ?></h3>
 
             </div>
             <div class="relative h-full">
                 <div id="loading-indicator" class="absolute bg-white flex h-full inset-0 items-center justify-center"
                     style="background: rgba(249, 249, 249, 0.8); z-index: 31;">
-                    <p class="text-lg">Loading...</p>
+                    <p class="text-lg"><?php echo esc_html($translations['main']['loading']); ?></p>
                 </div>
 
                 <div class="overflow-hidden h-full">
@@ -136,7 +136,7 @@ if (!defined('ABSPATH'))
                                             <line x1="12" y1="15" x2="12" y2="3"></line>
                                         </svg>
 
-                                        <p class="text-white font-semibold text-lg">Download Image</p>
+                                        <p class="text-white font-semibold text-lg"><?php echo esc_html($translations['main']['download-image']); ?></p>
                                     </div>
                                 </div>
 

@@ -14,5 +14,16 @@
     "room-type": "Tip sobe",
     "furniture-style": "Stil nameštaja",
     "process-photo": "Obradi fotografiju"
+  },
+  "main": {
+    "upload-another-image": "Otpremi drugu sliku",
+    "original": "Original",
+    "room-type": "Tip sobe",
+    "furniture-style": "Stil nameštaja",
+    "generate-variation": "Generiši varijaciju",
+    "unlimited-variations": "Neograničene varijacije i preuzimanja uključeni",
+    "results": "Rezultati",
+    "loading": "Učitavanje...",
+    "download-image": "Preuzmi sliku"
   }
 }
