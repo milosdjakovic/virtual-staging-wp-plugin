@@ -13,7 +13,19 @@
     "add-furniture": "Dodaj nameštaj",
     "room-type": "Tip sobe",
     "furniture-style": "Stil nameštaja",
-    "process-photo": "Obradi fotografiju"
+    "process-photo": "Obradi fotografiju",
+    "token-error": "Nije obezbeđen pristupni token. Molimo proverite svoj pristupni link.",
+    "invalid-token": "Vaš pristupni token više nije važeći. Molimo zatražite novi.",
+    "missing-token": "Postoji problem sa vašim pristupom. Pokušajte da osvežite stranicu.",
+    "upload-limit-reached": "Dostigli ste limit za otpremanje.",
+    "uploads-status": "Imate još %1$s otpremanja od ukupno %3$s.",
+    "limit-breached": "Dostigli ste maksimalan broj otpremanja za sada. Pokušajte ponovo kasnije.",
+    "missing-image": "Molimo izaberite sliku pre nego što nastavite.",
+    "upload-error": "Nismo uspeli da otpremimo vašu sliku u ovom trenutku. Pokušajte ponovo ili koristite drugu sliku.",
+    "render-error": "Trenutno imamo problem sa obradom vaše slike. Pokušajte ponovo za nekoliko trenutaka.",
+    "select-room-style": "Molimo izaberite i tip sobe i stil nameštaja.",
+    "contact-support": "Ako se problem nastavi, kontaktirajte našu podršku.",
+    "token-status-error": "Došlo je do greške prilikom provere statusa tokena. Pokušajte ponovo kasnije."
   },
   "main": {
     "upload-another-image": "Otpremi drugu sliku",

@@ -13,7 +13,19 @@
     "add-furniture": "Add furniture",
     "room-type": "Room type",
     "furniture-style": "Furniture style",
-    "process-photo": "Process photo"
+    "process-photo": "Process photo",
+    "token-error": "No access token provided. Please check your access link.",
+    "invalid-token": "Your access token is no longer valid. Please request a new one.",
+    "missing-token": "There's an issue with your access. Please try reloading the page.",
+    "upload-limit-reached": "You have reached your upload limit.",
+    "uploads-status": "You have %1$s upload%2$s remaining out of %3$s.",
+    "limit-breached": "You've reached the maximum number of uploads for now. Please try again later.",
+    "missing-image": "Please select an image before proceeding.",
+    "upload-error": "We couldn't upload your image at this time. Please try again or use a different image.",
+    "render-error": "We're having trouble processing your image right now. Please try again in a few moments.",
+    "select-room-style": "Please select both room type and furniture style.",
+    "contact-support": "If this problem persists, please contact our support team.",
+    "token-status-error": "An error occurred while checking your token status. Please try again later."
   },
   "main": {
     "upload-another-image": "Upload Another Image",

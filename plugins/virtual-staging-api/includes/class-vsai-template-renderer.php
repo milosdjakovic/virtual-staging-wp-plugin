@@ -38,6 +38,11 @@ class VSAI_Template_Renderer
     // Fetch options from API
     $options = $this->fetch_options();
 
+    // Add translations to JavaScript before rendering template
+    if (isset($data['translations'])) {
+      echo $this->inject_translations($data['translations']);
+    }
+
     ob_start();
     extract($data);
     include $this->templates[$name];
@@ -99,6 +104,13 @@ class VSAI_Template_Renderer
     if (isset($this->used_templates['test'])) {
       wp_enqueue_script('vsai-test-script', $this->plugin_url . 'templates/test/script.js', array('jquery'), null, true);
     }
+  }
+
+  private function inject_translations($translations) {
+    return sprintf(
+      '<script type="text/javascript">var vsaiTranslations = %s;</script>',
+      wp_json_encode($translations)
+    );
   }
 
 }

@@ -3,6 +3,23 @@ const DEV_MODE = false;
 const DEV_IMAGE_URL =
   "https://img.freepik.com/free-photo/modern-empty-room_23-2150528563.jpg?t=st=1728732147~exp=1728735747~hmac=014440306239606372948ce56acb6e5625ba052fef0338a2a299b569549eef93&w=1800";
 
+// Translation helper
+const t = (key) => {
+  const keys = key.split(".");
+  let value = window.vsaiTranslations;
+
+  for (const k of keys) {
+    if (value && value[k]) {
+      value = value[k];
+    } else {
+      console.warn(`Translation missing for key: ${key}`);
+      return key;
+    }
+  }
+
+  return value;
+};
+
 // Utility functions
 const updateUrlParameter = (key, value) => {
   const url = new URL(window.location.href);
@@ -233,7 +250,7 @@ class App {
     if (!token) {
       this.statusMessage.display(
         "error",
-        "No access token provided. Please check your access link."
+        t("upload-form.token-error")
       );
       return;
     }
@@ -243,25 +260,27 @@ class App {
       if (data.code === "invalid_token") {
         this.statusMessage.display(
           "error",
-          "Your access token is no longer valid. Please request a new one."
+          t("upload-form.invalid-token")
         );
       } else if (data.renders_left <= 0) {
         this.statusMessage.display(
           "warning",
-          "You have reached your upload limit."
+          t("upload-form.upload-limit-reached")
         );
       } else {
+        const plural = data.renders_left !== 1 ? "a" : "e"; // Serbian plural form
         this.statusMessage.display(
           "info",
-          `You have ${data.renders_left} upload${
-            data.renders_left !== 1 ? "s" : ""
-          } remaining out of ${data.limit}.`
+          t("upload-form.uploads-status")
+            .replace("%1$s", data.renders_left)
+            .replace("%2$s", data.renders_left !== 1 ? "s" : "")
+            .replace("%3$s", data.limit)
         );
       }
     } catch (error) {
       this.statusMessage.display(
         "error",
-        "An error occurred while checking your token status. Please try again later."
+        t("upload-form.token-status-error")
       );
     }
   }
@@ -278,7 +297,7 @@ class App {
     if (!token) {
       this.statusMessage.display(
         "error",
-        "Token error: Access token is not present. Please check your access link."
+        t("upload-form.token-error")
       );
       return;
     }
@@ -287,13 +306,13 @@ class App {
     if (!roomType || !furnitureStyle) {
       this.statusMessage.display(
         "error",
-        "Please select both room type and furniture style."
+        t("upload-form.select-room-style")
       );
       return;
     }
 
     if (!this.selectedFile) {
-      this.statusMessage.display("error", "Please select an image to upload.");
+      this.statusMessage.display("error", t("upload-form.select-image"));
       return;
     }
 
@@ -317,7 +336,7 @@ class App {
     } catch (error) {
       this.handleError(
         "upload_error",
-        "We couldn't upload your image at this time."
+        t("upload-form.upload-error")
       );
       this.enableProcessButton();
     }
@@ -358,7 +377,7 @@ class App {
     } catch (error) {
       this.handleError(
         "render_error",
-        "We couldn't process your image at this moment."
+        t("upload-form.render-error")
       );
       this.enableProcessButton();
     }
@@ -382,21 +401,21 @@ class App {
     console.error(`Error code: ${code}, Message: ${defaultMessage}`);
     const errorMessages = {
       invalid_token:
-        "Your session has expired. Please refresh the page and try again.",
+        t("upload-form.invalid-token"),
       missing_token:
-        "There's an issue with your access. Please try reloading the page.",
+        t("upload-form.missing-token"),
       limit_breached:
-        "You've reached the maximum number of uploads for now. Please try again later or contact support for more information.",
-      missing_image: "Please select an image before proceeding.",
+        t("upload-form.limit-breached"),
+      missing_image: t("upload-form.missing-image"),
       upload_error:
-        "We couldn't upload your image at this time. Please try again or use a different image.",
+        t("upload-form.upload-error"),
       render_error:
-        "We're having trouble processing your image right now. Please try again in a few moments.",
+        t("upload-form.render-error"),
     };
     const message = errorMessages[code] || defaultMessage;
     this.statusMessage.display(
       "error",
-      `${message} If this problem persists, please contact our support team.`
+      `${message} ${t("upload-form.contact-support")}`
     );
   }
 
