@@ -66,8 +66,8 @@ if (!defined('ABSPATH'))
                                     </svg>
 
                                     <span>
-                                        <span class="md:font-medium md:text-primary">Upload an image</span>
-                                        <span class="hidden md:inline"> or drag and drop</span>
+                                        <span class="md:font-medium md:text-primary"><?php echo esc_html($translations['upload-form']['upload-image']); ?></span>
+                                        <span class="hidden md:inline"><?php echo esc_html($translations['upload-form']['or-drag-and-drop']); ?></span>
                                     </span>
                                 </div>
                             </div>
