@@ -1,5 +1,6 @@
 {
   "upload-form": {
-    "upload-image-placeholder": "Upload an image or drag and drop"
+    "upload-image": "Upload an image",
+    "or-drag-and-drop": " or drag and drop"
   }
 }

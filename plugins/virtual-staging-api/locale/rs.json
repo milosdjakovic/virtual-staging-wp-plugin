@@ -1,3 +1,6 @@
 {
-  "upload-image-placeholder": "Otpremite sliku ili prevucite i ispustite"
+  "upload-form": {
+    "upload-image": "Otpremite sliku",
+    "or-drag-and-drop": " ili prevucite i otpustite"
+  }
 }
