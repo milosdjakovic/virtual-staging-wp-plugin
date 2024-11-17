@@ -11,7 +11,7 @@ class EnvironmentInfoTemplate
     $envManager = Plugin::getEnvironmentManager();
     $isDev = $envManager->isDev();
     $envFile = $envManager->getEnvFilePath();
-    $fileExists = file_exists($envFile) ? 'Yes' : 'No';
+    $fileExists = file_exists($envFile);
 
     ?>
     <div class="notice <?php echo $isDev ? 'notice-warning' : 'notice-info'; ?>">
@@ -19,8 +19,12 @@ class EnvironmentInfoTemplate
       <p>Current environment: <strong><?php echo $isDev ? 'Development' : 'Production'; ?></strong></p>
       <p><strong>DEV_MODE:</strong> <?php echo $isDev ? 'true' : 'false'; ?></p>
       <p><strong>LOCALE:</strong> <?php echo esc_html($envManager->get('LOCALE', 'en.json')); ?></p>
-      <p><strong>.env File Path:</strong> <?php echo esc_html($envFile); ?></p>
-      <p><strong>.env File Exists:</strong> <?php echo $fileExists; ?></p>
+      <?php if ($fileExists): ?>
+        <p><strong>.env File Path:</strong> <?php echo esc_html($envFile); ?></p>
+      <?php else: ?>
+        <p><strong>.env File Exists:</strong> No</p>
+        <p><strong>Expected .env Location:</strong> <?php echo esc_html($envFile); ?></p>
+      <?php endif; ?>
     </div>
     <?php
   }
