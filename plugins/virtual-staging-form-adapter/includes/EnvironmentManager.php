@@ -46,6 +46,11 @@ class EnvironmentManager
     return $this->env['DEV_MODE'];
   }
 
+  public function getLocale()
+  {
+    return $this->get('LOCALE', 'en.json');
+  }
+
   public function get($key, $default = null)
   {
     return isset($this->env[$key]) ? $this->env[$key] : $default;
