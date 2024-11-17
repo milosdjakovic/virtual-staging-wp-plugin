@@ -1,0 +1,63 @@
+{
+  "upload-form": {
+    "upload-image": "Bild hochladen",
+    "or-drag-and-drop": "oder ziehen und ablegen",
+    "remove-furniture": "Möbel entfernen?",
+    "detected-furniture": "Wir haben Möbel in Ihrem Bild erkannt. Möchten Sie sie entfernen?",
+    "keep-furniture": "Möbel behalten",
+    "remove-furniture-button": "Möbel entfernen",
+    "virtual-staging": "Virtuelles Staging",
+    "enhancement": "Verbesserung",
+    "day-to-dusk": "Tag zu Dämmerung",
+    "remove-existing-furniture": "Vorhandene Möbel entfernen",
+    "add-furniture": "Möbel hinzufügen",
+    "room-type": "Raumtyp",
+    "furniture-style": "Möbelstil",
+    "process-photo": "Foto verarbeiten",
+    "token-error": "Kein Zugriffstoken bereitgestellt. Bitte überprüfen Sie Ihren Zugriffslink.",
+    "invalid-token": "Ihr Zugriffstoken ist nicht mehr gültig. Bitte fordern Sie ein neues an.",
+    "missing-token": "Es gibt ein Problem mit Ihrem Zugriff. Bitte versuchen Sie, die Seite neu zu laden.",
+    "upload-limit-reached": "Sie haben Ihr Upload-Limit erreicht.",
+    "uploads-status": "Sie haben noch %1$s Upload%2$s von %3$s übrig.",
+    "limit-breached": "Sie haben die maximale Anzahl von Uploads erreicht. Bitte versuchen Sie es später erneut.",
+    "missing-image": "Bitte wählen Sie ein Bild aus, bevor Sie fortfahren.",
+    "upload-error": "Wir konnten Ihr Bild derzeit nicht hochladen. Bitte versuchen Sie es erneut oder verwenden Sie ein anderes Bild.",
+    "render-error": "Wir haben derzeit Probleme, Ihr Bild zu verarbeiten. Bitte versuchen Sie es in ein paar Minuten erneut.",
+    "select-room-style": "Bitte wählen Sie sowohl den Raumtyp als auch den Möbelstil aus.",
+    "contact-support": "Wenn dieses Problem weiterhin besteht, wenden Sie sich bitte an unser Support-Team.",
+    "token-status-error": "Beim Überprüfen Ihres Token-Status ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+  },
+  "main": {
+    "upload-another-image": "Ein weiteres Bild hochladen",
+    "original": "Original",
+    "room-type": "Raumtyp",
+    "furniture-style": "Möbelstil",
+    "generate-variation": "Variation generieren",
+    "unlimited-variations": "Unbegrenzte Variationen und Downloads inklusive",
+    "results": "Ergebnisse",
+    "loading": "Laden...",
+    "download-image": "Bild herunterladen"
+  },
+  "select_options": {
+    "styles": {
+      "modern": "Modern",
+      "scandinavian": "Skandinavisch",
+      "industrial": "Industriell",
+      "midcentury": "Mid-Century",
+      "luxury": "Luxus",
+      "farmhouse": "Bauernhaus",
+      "coastal": "Küstenstil",
+      "standard": "Standard"
+    },
+    "roomTypes": {
+      "living": "Wohnzimmer",
+      "bed": "Schlafzimmer",
+      "kitchen": "Küche",
+      "dining": "Esszimmer",
+      "bathroom": "Badezimmer",
+      "home_office": "Home Office",
+      "outdoor": "Außenbereich",
+      "kids_room": "Kinderzimmer"
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "upload-form": {
+    "upload-image": "Subir una imagen",
+    "or-drag-and-drop": "o arrastrar y soltar",
+    "remove-furniture": "¿Quitar muebles?",
+    "detected-furniture": "Hemos detectado muebles en tu imagen. ¿Quieres quitarlos?",
+    "keep-furniture": "Mantener muebles",
+    "remove-furniture-button": "Quitar muebles",
+    "virtual-staging": "Escenificación Virtual",
+    "enhancement": "Mejora",
+    "day-to-dusk": "De Día a Noche",
+    "remove-existing-furniture": "Quitar muebles existentes",
+    "add-furniture": "Agregar muebles",
+    "room-type": "Tipo de habitación",
+    "furniture-style": "Estilo de muebles",
+    "process-photo": "Procesar foto",
+    "token-error": "No se proporcionó un token de acceso. Por favor, verifica tu enlace de acceso.",
+    "invalid-token": "Tu token de acceso ya no es válido. Por favor, solicita uno nuevo.",
+    "missing-token": "Hay un problema con tu acceso. Por favor, intenta recargar la página.",
+    "upload-limit-reached": "Has alcanzado tu límite de carga.",
+    "uploads-status": "Te quedan %1$s carga%2$s de un total de %3$s.",
+    "limit-breached": "Has alcanzado el número máximo de cargas por ahora. Por favor, intenta de nuevo más tarde.",
+    "missing-image": "Por favor, selecciona una imagen antes de continuar.",
+    "upload-error": "No pudimos cargar tu imagen en este momento. Por favor, intenta de nuevo o usa una imagen diferente.",
+    "render-error": "Estamos teniendo problemas para procesar tu imagen en este momento. Por favor, intenta de nuevo en unos momentos.",
+    "select-room-style": "Por favor, selecciona tanto el tipo de habitación como el estilo de muebles.",
+    "contact-support": "Si este problema persiste, por favor contacta a nuestro equipo de soporte.",
+    "token-status-error": "Ocurrió un error al verificar el estado de tu token. Por favor, intenta de nuevo más tarde."
+  },
+  "main": {
+    "upload-another-image": "Subir Otra Imagen",
+    "original": "Original",
+    "room-type": "Tipo de habitación",
+    "furniture-style": "Estilo de muebles",
+    "generate-variation": "Generar Variación",
+    "unlimited-variations": "Variaciones y descargas ilimitadas incluidas",
+    "results": "Resultados",
+    "loading": "Cargando...",
+    "download-image": "Descargar Imagen"
+  },
+  "select_options": {
+    "styles": {
+      "modern": "Moderno",
+      "scandinavian": "Escandinavo",
+      "industrial": "Industrial",
+      "midcentury": "Mediados de Siglo",
+      "luxury": "Lujo",
+      "farmhouse": "Casa de Campo",
+      "coastal": "Costero",
+      "standard": "Estándar"
+    },
+    "roomTypes": {
+      "living": "Sala de Estar",
+      "bed": "Dormitorio",
+      "kitchen": "Cocina",
+      "dining": "Comedor",
+      "bathroom": "Baño",
+      "home_office": "Oficina en Casa",
+      "outdoor": "Exterior",
+      "kids_room": "Cuarto de Niños"
+    }
+  }
+}
