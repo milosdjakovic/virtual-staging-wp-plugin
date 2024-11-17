@@ -5,11 +5,20 @@ if (!defined('ABSPATH'))
 
 class VSAI_Language_Loader
 {
+  private static $LOCALE = null;
   private $locale_data = [];
 
-  public function __construct($locale)
+  public static function set_locale($locale) {
+    if (self::$LOCALE === null) {
+      self::$LOCALE = $locale;
+    }
+    return self::$LOCALE;
+  }
+
+  public function __construct($locale = null)
   {
-    $this->load_locale_file($locale);
+    $current_locale = self::set_locale($locale);
+    $this->load_locale_file($current_locale);
   }
 
   private function load_locale_file($locale)
