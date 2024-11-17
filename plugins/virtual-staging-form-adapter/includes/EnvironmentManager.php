@@ -20,10 +20,14 @@ class EnvironmentManager
     return self::$instance;
   }
 
+  public function getEnvFilePath()
+  {
+    return WP_PLUGIN_DIR . '/virtual-staging-api/.env';
+  }
+
   private function loadEnv()
   {
-    $pluginRoot = dirname(__FILE__); // This will point to the includes directory
-    $envFile = dirname($pluginRoot) . '/.env'; // Go up one level to the plugin root
+    $envFile = $this->getEnvFilePath();
 
     if (file_exists($envFile)) {
       $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);

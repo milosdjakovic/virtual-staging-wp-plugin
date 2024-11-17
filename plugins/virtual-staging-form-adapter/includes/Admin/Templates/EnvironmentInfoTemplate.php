@@ -10,22 +10,18 @@ class EnvironmentInfoTemplate
   {
     $envManager = Plugin::getEnvironmentManager();
     $isDev = $envManager->isDev();
-    $locale = $envManager->getLocale();
+    $envFile = $envManager->getEnvFilePath();
+    $fileExists = file_exists($envFile) ? 'Yes' : 'No';
 
-    if ($isDev) {
-      $pluginRoot = dirname(dirname(dirname(dirname(__FILE__)))); // Go up three levels to the plugin root
-      $envFile = $pluginRoot . '/.env';
-      $fileExists = file_exists($envFile) ? 'Yes' : 'No';
-
-      ?>
-      <div class="notice notice-warning">
-        <h2>Development Environment Active</h2>
-        <p>Plugin is running in development environment.</p>
-        <p><strong>DEV_MODE:</strong> true</p>
-        <p><strong>LOCALE:</strong> <?php echo esc_html($envManager->get('LOCALE', 'en.json')); ?></p>
-        <p><strong>.env File Path:</strong> <?php echo esc_html($envFile); ?></p>
-      </div>
-      <?php
-    }
+    ?>
+    <div class="notice <?php echo $isDev ? 'notice-warning' : 'notice-info'; ?>">
+      <h2>Environment Information</h2>
+      <p>Current environment: <strong><?php echo $isDev ? 'Development' : 'Production'; ?></strong></p>
+      <p><strong>DEV_MODE:</strong> <?php echo $isDev ? 'true' : 'false'; ?></p>
+      <p><strong>LOCALE:</strong> <?php echo esc_html($envManager->get('LOCALE', 'en.json')); ?></p>
+      <p><strong>.env File Path:</strong> <?php echo esc_html($envFile); ?></p>
+      <p><strong>.env File Exists:</strong> <?php echo $fileExists; ?></p>
+    </div>
+    <?php
   }
 }
