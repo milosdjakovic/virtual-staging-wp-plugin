@@ -32,6 +32,7 @@ class VSAI_Plugin
     require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-vsai-token-handler.php';
     require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-vsai-label-manager.php';
     require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-vsai-language-loader.php';
+    require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-vsai-options-formatter.php';
   }
 
   private function initialize_components()
@@ -50,7 +51,7 @@ class VSAI_Plugin
     $this->template_renderer = new VSAI_Template_Renderer(
         $plugin_url, 
         $this->api_client,
-        $this->language_loader
+        $this->language_loader->get_all_translations()
     );
   }
 

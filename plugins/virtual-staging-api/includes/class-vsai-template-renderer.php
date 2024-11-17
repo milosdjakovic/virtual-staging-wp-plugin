@@ -9,13 +9,13 @@ class VSAI_Template_Renderer
   private $plugin_url;
   private $used_templates = [];
   private $api_client;
-  private $language_loader; // Add this line
+  private $options_formatter;
 
-  public function __construct($plugin_url, $api_client, $language_loader) // Add language_loader parameter
+  public function __construct($plugin_url, $api_client, $translations)
   {
     $this->plugin_url = $plugin_url;
     $this->api_client = $api_client;
-    $this->language_loader = $language_loader; // Add this line
+    $this->options_formatter = new VSAI_Options_Formatter($translations);
     add_action('wp_enqueue_scripts', array($this, 'register_template_assets'));
     add_action('wp_footer', array($this, 'enqueue_template_assets'), 5);
   }
@@ -75,19 +75,8 @@ class VSAI_Template_Renderer
   public function generate_select_options($options)
   {
     $type = strpos(json_encode($options), 'modern') !== false ? 'styles' : 'roomTypes';
-    $translations = $this->language_loader->get_all_translations();
-    
-    $formatted_options = VSAI_Label_Manager::get_formatted_options($options, $translations, $type);
-    
-    $html = '';
-    foreach ($formatted_options as $option) {
-        $html .= sprintf(
-            '<option value="%s">%s</option>',
-            esc_attr($option['value']),
-            esc_html($option['label'])
-        );
-    }
-    return $html;
+    $formatted = $this->options_formatter->format($options, $type);
+    return $this->options_formatter->to_html($formatted);
   }
 
   public function register_template_assets()
