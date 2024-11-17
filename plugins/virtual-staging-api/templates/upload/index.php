@@ -226,6 +226,7 @@ if (!defined('ABSPATH'))
 </div>
 
 <script type="text/javascript">
+    var vsaiTranslations = <?php echo json_encode($translations); ?>;
     var vsaiApiSettings = {
         root: '<?php echo esc_url_raw(rest_url('vsai/v1/')); ?>',
         nonce: '<?php echo wp_create_nonce('wp_rest'); ?>',

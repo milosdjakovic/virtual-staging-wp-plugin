@@ -10,12 +10,14 @@ class VSAI_Template_Renderer
   private $used_templates = [];
   private $api_client;
   private $options_formatter;
+  private $translations;
 
   public function __construct($plugin_url, $api_client, $translations)
   {
     $this->plugin_url = $plugin_url;
     $this->api_client = $api_client;
     $this->options_formatter = new VSAI_Options_Formatter($translations);
+    $this->translations = $translations;
     add_action('wp_enqueue_scripts', array($this, 'register_template_assets'));
     add_action('wp_footer', array($this, 'enqueue_template_assets'), 5);
   }
@@ -37,29 +39,20 @@ class VSAI_Template_Renderer
 
     $this->used_templates[$name] = true;
 
-    // Fetch options from API
-    $options = $this->fetch_options();
-
-    // Add translations to JavaScript before rendering template
-    if (isset($data['translations'])) {
-      echo $this->inject_translations($data['translations']);
-    }
+    // Add translations to data
+    $data['translations'] = $this->translations;
+    $data['options'] = $this->fetch_options();
 
     ob_start();
+    
+    // Output translations script before template
+    echo $this->inject_translations($this->translations);
+
+    // Extract data to make variables available in template
     extract($data);
+    
     include $this->templates[$name];
-    $content = ob_get_clean();
-
-    // Output vsaiApiSettings script
-    $script = "<script type=\"text/javascript\">
-            var vsaiApiSettings = {
-                root: '" . esc_url_raw(rest_url('vsai/v1/')) . "',
-                nonce: '" . wp_create_nonce('wp_rest') . "',
-                nextPageUrl: '" . esc_js($data['next_page_url']) . "'
-            };
-        </script>";
-
-    return $script . $content;
+    return ob_get_clean();
   }
 
   private function fetch_options()
@@ -104,10 +97,12 @@ class VSAI_Template_Renderer
     }
   }
 
-  private function inject_translations($translations) {
+  private function inject_translations($translations)
+  {
+    $json = wp_json_encode($translations, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS);
     return sprintf(
-      '<script type="text/javascript">var vsaiTranslations = %s;</script>',
-      wp_json_encode($translations)
+      '<script type="text/javascript">window.vsaiTranslations = %s;</script>',
+      $json
     );
   }
 

@@ -1,6 +1,29 @@
+// Constants and translation helper
 const DEV_MODE = false;
 const DEV_IMAGE_URL =
   "https://img.freepik.com/free-photo/modern-empty-room_23-2150528563.jpg?t=st=1728732147~exp=1728735747~hmac=014440306239606372948ce56acb6e5625ba052fef0338a2a299b569549eef93&w=1800";
+
+// Translation helper
+const t = (key) => {
+  if (!window.vsaiTranslations) {
+    console.warn('Translations not loaded');
+    return key;
+  }
+  
+  const keys = key.split(".");
+  let value = window.vsaiTranslations;
+
+  for (const k of keys) {
+    if (value && value[k]) {
+      value = value[k];
+    } else {
+      console.warn(`Translation missing for key: ${key}`);
+      return key;
+    }
+  }
+
+  return value;
+};
 
 // Utility functions
 const $ = (selector) => document.querySelector(selector);
@@ -34,6 +57,14 @@ function getLabelForValue(value, selectId) {
   const select = document.getElementById(selectId);
   if (!select) return value;
 
+  // Get from translations first
+  const roomTypeTranslation = value && t("select_options.roomTypes")[value];
+  const styleTranslation = value && t("select_options.styles")[value];
+
+  if (roomTypeTranslation) return roomTypeTranslation;
+  if (styleTranslation) return styleTranslation;
+
+  // Fallback to select option text
   const option = select.querySelector(`option[value="${value}"]`);
   return option ? option.textContent : value;
 }
@@ -92,6 +123,16 @@ class StatusMessage {
   display(message) {
     if (this.container) {
       this.container.textContent = message;
+    }
+  }
+
+  async updateRenderCount(data) {
+    if (data.renders_left !== undefined) {
+      const message = t("upload-form.uploads-status")
+        .replace("%1$s", data.renders_left)
+        .replace("%2$s", data.renders_left !== 1 ? "s" : "")
+        .replace("%3$s", data.limit);
+      this.display("info", message);
     }
   }
 }

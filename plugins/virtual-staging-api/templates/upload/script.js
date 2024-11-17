@@ -5,6 +5,11 @@ const DEV_IMAGE_URL =
 
 // Translation helper
 const t = (key) => {
+  if (!window.vsaiTranslations) {
+    console.warn('Translations not loaded');
+    return key;
+  }
+  
   const keys = key.split(".");
   let value = window.vsaiTranslations;
 
