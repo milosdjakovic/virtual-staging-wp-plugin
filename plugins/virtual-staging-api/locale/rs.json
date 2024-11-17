@@ -37,5 +37,27 @@
     "results": "Rezultati",
     "loading": "Učitavanje...",
     "download-image": "Preuzmi sliku"
+  },
+  "select_options": {
+    "styles": {
+      "modern": "Moderan",
+      "scandinavian": "Skandinavski",
+      "industrial": "Industrijski",
+      "midcentury": "Sredina veka",
+      "luxury": "Luksuzni",
+      "farmhouse": "Seoska kuća",
+      "coastal": "Primorski",
+      "standard": "Standardni"
+    },
+    "roomTypes": {
+      "living": "Dnevna soba",
+      "bed": "Spavaća soba",
+      "kitchen": "Kuhinja",
+      "dining": "Trpezarija",
+      "bathroom": "Kupatilo",
+      "home_office": "Kućna kancelarija",
+      "outdoor": "Spoljašnji prostor",
+      "kids_room": "Dečija soba"
+    }
   }
 }

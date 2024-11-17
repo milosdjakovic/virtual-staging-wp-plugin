@@ -37,5 +37,27 @@
     "results": "Results",
     "loading": "Loading...",
     "download-image": "Download Image"
+  },
+  "select_options": {
+    "styles": {
+      "modern": "Modern",
+      "scandinavian": "Scandinavian",
+      "industrial": "Industrial",
+      "midcentury": "Mid-Century",
+      "luxury": "Luxury",
+      "farmhouse": "Farmhouse",
+      "coastal": "Coastal",
+      "standard": "Standard"
+    },
+    "roomTypes": {
+      "living": "Living Room",
+      "bed": "Bedroom",
+      "kitchen": "Kitchen",
+      "dining": "Dining Room",
+      "bathroom": "Bathroom",
+      "home_office": "Home Office",
+      "outdoor": "Outdoor",
+      "kids_room": "Kids Room"
+    }
   }
 }
