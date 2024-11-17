@@ -9,11 +9,13 @@ class VSAI_Template_Renderer
   private $plugin_url;
   private $used_templates = [];
   private $api_client;
+  private $language_loader; // Add this line
 
-  public function __construct($plugin_url, $api_client)
+  public function __construct($plugin_url, $api_client, $language_loader) // Add language_loader parameter
   {
     $this->plugin_url = $plugin_url;
     $this->api_client = $api_client;
+    $this->language_loader = $language_loader; // Add this line
     add_action('wp_enqueue_scripts', array($this, 'register_template_assets'));
     add_action('wp_footer', array($this, 'enqueue_template_assets'), 5);
   }
@@ -70,13 +72,20 @@ class VSAI_Template_Renderer
     return $options;
   }
 
-  public function generate_select_options($options, $selected = '')
+  public function generate_select_options($options)
   {
-    $formatted_options = VSAI_Label_Manager::get_formatted_options($options);
+    $type = strpos(json_encode($options), 'modern') !== false ? 'styles' : 'roomTypes';
+    $translations = $this->language_loader->get_all_translations();
+    
+    $formatted_options = VSAI_Label_Manager::get_formatted_options($options, $translations, $type);
+    
     $html = '';
     foreach ($formatted_options as $option) {
-      $selected_attr = ($option['value'] === $selected) ? ' selected' : '';
-      $html .= "<option value=\"{$option['value']}\"{$selected_attr}>{$option['label']}</option>";
+        $html .= sprintf(
+            '<option value="%s">%s</option>',
+            esc_attr($option['value']),
+            esc_html($option['label'])
+        );
     }
     return $html;
   }

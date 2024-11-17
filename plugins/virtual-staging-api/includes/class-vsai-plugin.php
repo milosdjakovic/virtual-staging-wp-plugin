@@ -43,11 +43,15 @@ class VSAI_Plugin
     $this->handlers = new VSAI_Handlers($this->api_client, $this->token_handler);
     $this->router = new VSAI_Router($this->handlers, $this->authorizer);
 
-    $plugin_url = plugin_dir_url(dirname(__FILE__));
-    $this->template_renderer = new VSAI_Template_Renderer($plugin_url, $this->api_client);
-
     $locale = $this->env_loader->get_env('LOCALE', 'en.json');
     $this->language_loader = new VSAI_Language_Loader($locale);
+
+    $plugin_url = plugin_dir_url(dirname(__FILE__));
+    $this->template_renderer = new VSAI_Template_Renderer(
+        $plugin_url, 
+        $this->api_client,
+        $this->language_loader
+    );
   }
 
   private function setup_hooks()
