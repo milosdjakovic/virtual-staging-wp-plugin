@@ -4,20 +4,25 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Navigate to the root directory of the project (parent of bin)
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+# Define output directory
+OUTPUT_DIR="$PROJECT_ROOT/output"
+# Create output directory if it doesn't exist
+mkdir -p "$OUTPUT_DIR"
 # Change to the project root directory
 cd "$PROJECT_ROOT" || exit
 
 # Function to package a single plugin
 package_plugin() {
   local plugin_dir="$1"
-  local plugin_name=$(basename "$plugin_dir")
-  local zip_file="${plugin_name}.zip"
+  local plugin_name
+  plugin_name=$(basename "$plugin_dir")
+  local zip_file="$OUTPUT_DIR/${plugin_name}.zip"
 
   echo "Starting to package the $plugin_name plugin..."
 
   # Create the zip file
   (
-    cd "$plugin_dir" && zip -r "$PROJECT_ROOT/$zip_file" . \
+    cd "$plugin_dir" && zip -r "$zip_file" . \
       -x "*.DS_Store" \
       -x "*/._*" \
       -x "*/__MACOSX/*" \
@@ -27,10 +32,10 @@ package_plugin() {
   )
 
   # Check if the zip was created successfully
-  if [ $? -eq 0 ] && [ -f "$PROJECT_ROOT/$zip_file" ]; then
+  if [ $? -eq 0 ] && [ -f "$zip_file" ]; then
     echo "Packaging complete!"
-    echo "Plugin has been packaged as $zip_file"
-    echo "Location: $PROJECT_ROOT/$zip_file"
+    echo "Plugin has been packaged as ${plugin_name}.zip"
+    echo "Location: $zip_file"
   else
     echo "Failed to package $plugin_name"
   fi
