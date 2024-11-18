@@ -394,9 +394,7 @@ class App {
     let initialDataLoaded = false;
 
     while (true) {
-      const data = await ApiService.fetchWithAuth(
-        `render?render_id=${renderId}`
-      );
+      const data = await ApiService.fetchWithAuth(`render?render_id=${renderId}`);
 
       if (!initialDataLoaded && data.outputs && data.outputs.length > 0) {
         this.updateUIWithRenderResults(data, true);
@@ -404,7 +402,7 @@ class App {
         initialDataLoaded = true;
 
         if (data.status !== "done") {
-          buttonSpan.textContent = "Generating...";
+          buttonSpan.textContent = t("main.generating");
           this.showGeneratingVariationIndicator();
         } else {
           generateButton.disabled = false;
@@ -464,7 +462,7 @@ class App {
     const button = getById("generateVariationButton");
     const buttonSpan = button.querySelector("span");
     const originalText = buttonSpan.textContent;
-    buttonSpan.textContent = "Generating...";
+    buttonSpan.textContent = t("main.generating");
     button.disabled = true;
     this.showGeneratingVariationIndicator();
 
