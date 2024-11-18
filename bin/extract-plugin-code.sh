@@ -3,6 +3,10 @@
 # Get the root directory (one level up from the bin directory)
 ROOT_DIR="$(dirname "$(dirname "$0")")"
 PLUGINS_DIR="$ROOT_DIR/plugins"
+EXPORTS_DIR="$ROOT_DIR/code-exports"
+
+# Create exports directory if it doesn't exist
+mkdir -p "$EXPORTS_DIR"
 
 # Function to process each file
 process_file() {
@@ -59,7 +63,7 @@ process_plugin() {
 # Main execution
 if [ $# -eq 0 ]; then
   # No arguments provided, process all plugins
-  output_file="$ROOT_DIR/plugins_code.md"
+  output_file="$EXPORTS_DIR/plugins_code.md"
   >"$output_file"
   echo "# All Plugins Code" >>"$output_file"
   echo "" >>"$output_file"
@@ -73,7 +77,7 @@ if [ $# -eq 0 ]; then
 else
   # Plugin name provided
   PLUGIN_NAME="$1"
-  output_file="$ROOT_DIR/${PLUGIN_NAME}_code.md"
+  output_file="$EXPORTS_DIR/${PLUGIN_NAME}_code.md"
   >"$output_file"
   echo "# $PLUGIN_NAME Plugin Code" >>"$output_file"
   echo "" >>"$output_file"
