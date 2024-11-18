@@ -4,6 +4,7 @@
 ROOT_DIR="$(dirname "$(dirname "$0")")"
 PLUGINS_DIR="$ROOT_DIR/plugins"
 EXPORTS_DIR="$ROOT_DIR/code-exports"
+ALL_PLUGINS_FILE="all_plugins_code.md"
 
 # Create exports directory if it doesn't exist
 mkdir -p "$EXPORTS_DIR"
@@ -75,7 +76,7 @@ extract_single_plugin() {
 if [ $# -eq 0 ]; then
   # No arguments provided, process all plugins
   # First create the main file with all plugins
-  output_file="$EXPORTS_DIR/plugins_code.md"
+  output_file="$EXPORTS_DIR/$ALL_PLUGINS_FILE"
   true >"$output_file"
   echo "# All Plugins Code" >>"$output_file"
   echo "" >>"$output_file"
