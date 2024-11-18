@@ -60,7 +60,7 @@ class AdminPage
   public function renderPage()
   {
     $this->templates['tokenGeneration']->handleRequest();
-
+    $this->templates['languageInfo']->handleRequest();
     ?>
     <div class="wrap">
       <h1>Virtual Staging API Form Adapter</h1>
