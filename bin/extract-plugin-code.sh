@@ -12,7 +12,7 @@ mkdir -p "$EXPORTS_DIR"
 process_file() {
   local file="$1"
   local output_file="$2"
-  local relative_path="${file#$ROOT_DIR/}"
+  local relative_path="${file#"$ROOT_DIR"/}"
   local extension="${file##*.}"
 
   # Write the file path as H3
