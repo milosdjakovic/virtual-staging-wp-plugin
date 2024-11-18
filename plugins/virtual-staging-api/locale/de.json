@@ -18,7 +18,7 @@
     "invalid-token": "Ihr Zugriffstoken ist nicht mehr gültig. Bitte fordern Sie ein neues an.",
     "missing-token": "Es gibt ein Problem mit Ihrem Zugriff. Bitte versuchen Sie, die Seite neu zu laden.",
     "upload-limit-reached": "Sie haben Ihr Upload-Limit erreicht.",
-    "uploads-status": "Sie haben noch %1$s Upload%2$s von %3$s übrig.",
+    "uploads-status": "Sie haben %1$s von %2$s Uploads übrig.",
     "limit-breached": "Sie haben die maximale Anzahl von Uploads erreicht. Bitte versuchen Sie es später erneut.",
     "missing-image": "Bitte wählen Sie ein Bild aus, bevor Sie fortfahren.",
     "upload-error": "Wir konnten Ihr Bild derzeit nicht hochladen. Bitte versuchen Sie es erneut oder verwenden Sie ein anderes Bild.",

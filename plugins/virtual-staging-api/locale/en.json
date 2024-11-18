@@ -18,7 +18,7 @@
     "invalid-token": "Your access token is no longer valid. Please request a new one.",
     "missing-token": "There's an issue with your access. Please try reloading the page.",
     "upload-limit-reached": "You have reached your upload limit.",
-    "uploads-status": "You have %1$s upload%2$s remaining out of %3$s.",
+    "uploads-status": "You have %1$s out of %2$s uploads remaining.",
     "limit-breached": "You've reached the maximum number of uploads for now. Please try again later.",
     "missing-image": "Please select an image before proceeding.",
     "upload-error": "We couldn't upload your image at this time. Please try again or use a different image.",

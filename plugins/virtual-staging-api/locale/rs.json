@@ -18,7 +18,7 @@
     "invalid-token": "Vaš pristupni token više nije važeći. Molimo zatražite novi.",
     "missing-token": "Postoji problem sa vašim pristupom. Pokušajte da osvežite stranicu.",
     "upload-limit-reached": "Dostigli ste limit za otpremanje.",
-    "uploads-status": "Imate još %1$s otpremanja od ukupno %3$s.",
+    "uploads-status": "Preostalo vam je %1$s od %2$s otpremanja.",
     "limit-breached": "Dostigli ste maksimalan broj otpremanja za sada. Pokušajte ponovo kasnije.",
     "missing-image": "Molimo izaberite sliku pre nego što nastavite.",
     "upload-error": "Nismo uspeli da otpremimo vašu sliku u ovom trenutku. Pokušajte ponovo ili koristite drugu sliku.",

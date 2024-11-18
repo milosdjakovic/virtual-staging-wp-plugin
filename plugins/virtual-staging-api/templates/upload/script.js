@@ -6,10 +6,10 @@ const DEV_IMAGE_URL =
 // Translation helper
 const t = (key) => {
   if (!window.vsaiTranslations) {
-    console.warn('Translations not loaded');
+    console.warn("Translations not loaded");
     return key;
   }
-  
+
   const keys = key.split(".");
   let value = window.vsaiTranslations;
 
@@ -253,40 +253,29 @@ class App {
   async checkTokenStatus() {
     const token = getUrlParameter("at");
     if (!token) {
-      this.statusMessage.display(
-        "error",
-        t("upload-form.token-error")
-      );
+      this.statusMessage.display("error", t("upload-form.token-error"));
       return;
     }
 
     try {
       const data = await ApiService.checkTokenStatus(token);
       if (data.code === "invalid_token") {
-        this.statusMessage.display(
-          "error",
-          t("upload-form.invalid-token")
-        );
+        this.statusMessage.display("error", t("upload-form.invalid-token"));
       } else if (data.renders_left <= 0) {
         this.statusMessage.display(
           "warning",
           t("upload-form.upload-limit-reached")
         );
       } else {
-        const plural = data.renders_left !== 1 ? "a" : "e"; // Serbian plural form
         this.statusMessage.display(
           "info",
           t("upload-form.uploads-status")
             .replace("%1$s", data.renders_left)
-            .replace("%2$s", data.renders_left !== 1 ? "s" : "")
-            .replace("%3$s", data.limit)
+            .replace("%2$s", data.limit)
         );
       }
     } catch (error) {
-      this.statusMessage.display(
-        "error",
-        t("upload-form.token-status-error")
-      );
+      this.statusMessage.display("error", t("upload-form.token-status-error"));
     }
   }
 
@@ -300,19 +289,13 @@ class App {
   async processPhoto() {
     const token = getUrlParameter("at");
     if (!token) {
-      this.statusMessage.display(
-        "error",
-        t("upload-form.token-error")
-      );
+      this.statusMessage.display("error", t("upload-form.token-error"));
       return;
     }
 
     const { roomType, furnitureStyle } = this.furnitureSelector.getSelections();
     if (!roomType || !furnitureStyle) {
-      this.statusMessage.display(
-        "error",
-        t("upload-form.select-room-style")
-      );
+      this.statusMessage.display("error", t("upload-form.select-room-style"));
       return;
     }
 
@@ -339,10 +322,7 @@ class App {
         throw new Error("Upload failed");
       }
     } catch (error) {
-      this.handleError(
-        "upload_error",
-        t("upload-form.upload-error")
-      );
+      this.handleError("upload_error", t("upload-form.upload-error"));
       this.enableProcessButton();
     }
   }
@@ -380,10 +360,7 @@ class App {
         throw new Error("No render_id received");
       }
     } catch (error) {
-      this.handleError(
-        "render_error",
-        t("upload-form.render-error")
-      );
+      this.handleError("render_error", t("upload-form.render-error"));
       this.enableProcessButton();
     }
   }
@@ -405,17 +382,12 @@ class App {
   handleError(code, defaultMessage) {
     console.error(`Error code: ${code}, Message: ${defaultMessage}`);
     const errorMessages = {
-      invalid_token:
-        t("upload-form.invalid-token"),
-      missing_token:
-        t("upload-form.missing-token"),
-      limit_breached:
-        t("upload-form.limit-breached"),
+      invalid_token: t("upload-form.invalid-token"),
+      missing_token: t("upload-form.missing-token"),
+      limit_breached: t("upload-form.limit-breached"),
       missing_image: t("upload-form.missing-image"),
-      upload_error:
-        t("upload-form.upload-error"),
-      render_error:
-        t("upload-form.render-error"),
+      upload_error: t("upload-form.upload-error"),
+      render_error: t("upload-form.render-error"),
     };
     const message = errorMessages[code] || defaultMessage;
     this.statusMessage.display(

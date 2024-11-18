@@ -18,7 +18,7 @@
     "invalid-token": "Tu token de acceso ya no es válido. Por favor, solicita uno nuevo.",
     "missing-token": "Hay un problema con tu acceso. Por favor, intenta recargar la página.",
     "upload-limit-reached": "Has alcanzado tu límite de carga.",
-    "uploads-status": "Te quedan %1$s carga%2$s de un total de %3$s.",
+    "uploads-status": "Te quedan %1$s de %2$s cargas disponibles.",
     "limit-breached": "Has alcanzado el número máximo de cargas por ahora. Por favor, intenta de nuevo más tarde.",
     "missing-image": "Por favor, selecciona una imagen antes de continuar.",
     "upload-error": "No pudimos cargar tu imagen en este momento. Por favor, intenta de nuevo o usa una imagen diferente.",
