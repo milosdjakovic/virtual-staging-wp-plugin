@@ -60,9 +60,21 @@ process_plugin() {
   fi
 }
 
+# Function to extract single plugin to its own file
+extract_single_plugin() {
+  local plugin_name="$1"
+  local output_file="$EXPORTS_DIR/${plugin_name}_code.md"
+  >"$output_file"
+  echo "# $plugin_name Plugin Code" >>"$output_file"
+  echo "" >>"$output_file"
+  process_plugin "$plugin_name" "$output_file"
+  echo "Plugin code has been extracted into $output_file"
+}
+
 # Main execution
 if [ $# -eq 0 ]; then
   # No arguments provided, process all plugins
+  # First create the main file with all plugins
   output_file="$EXPORTS_DIR/plugins_code.md"
   >"$output_file"
   echo "# All Plugins Code" >>"$output_file"
@@ -72,16 +84,14 @@ if [ $# -eq 0 ]; then
     if [ -d "$plugin_dir" ]; then
       plugin_name=$(basename "$plugin_dir")
       process_plugin "$plugin_name" "$output_file"
+      # Also create individual file for this plugin
+      extract_single_plugin "$plugin_name"
     fi
   done
-else
-  # Plugin name provided
-  PLUGIN_NAME="$1"
-  output_file="$EXPORTS_DIR/${PLUGIN_NAME}_code.md"
-  >"$output_file"
-  echo "# $PLUGIN_NAME Plugin Code" >>"$output_file"
-  echo "" >>"$output_file"
-  process_plugin "$PLUGIN_NAME" "$output_file"
-fi
 
-echo "Plugin code has been extracted into $output_file"
+  echo "All plugins code has been extracted into $output_file and individual files"
+else
+  # Plugin name provided, only extract that specific plugin
+  PLUGIN_NAME="$1"
+  extract_single_plugin "$PLUGIN_NAME"
+fi
