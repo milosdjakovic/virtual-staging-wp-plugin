@@ -64,7 +64,7 @@ process_plugin() {
 extract_single_plugin() {
   local plugin_name="$1"
   local output_file="$EXPORTS_DIR/${plugin_name}_code.md"
-  >"$output_file"
+  true >"$output_file"
   echo "# $plugin_name Plugin Code" >>"$output_file"
   echo "" >>"$output_file"
   process_plugin "$plugin_name" "$output_file"
@@ -76,7 +76,7 @@ if [ $# -eq 0 ]; then
   # No arguments provided, process all plugins
   # First create the main file with all plugins
   output_file="$EXPORTS_DIR/plugins_code.md"
-  >"$output_file"
+  true >"$output_file"
   echo "# All Plugins Code" >>"$output_file"
   echo "" >>"$output_file"
 
