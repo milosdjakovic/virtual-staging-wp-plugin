@@ -8,6 +8,7 @@ use VirtualStagingAdapter\Admin\Templates\EnvironmentInfoTemplate;
 use VirtualStagingAdapter\Config\ConfigInterface;
 use VirtualStagingAdapter\Service\TokenService;
 use VirtualStagingAdapter\Service\RedirectService;
+use VirtualStagingAdapter\Admin\Templates\LanguageInfoTemplate;
 
 class AdminPage
 {
@@ -40,6 +41,7 @@ class AdminPage
       $this->config
     );
     $this->templates['environmentInfo'] = new EnvironmentInfoTemplate();
+    $this->templates['languageInfo'] = new LanguageInfoTemplate();
   }
 
   public function addMenuPage()
@@ -64,11 +66,9 @@ class AdminPage
       <h1>Virtual Staging API Form Adapter</h1>
 
       <?php $this->templates['environmentInfo']->render(); ?>
-
+      <?php $this->templates['languageInfo']->render(); ?>
       <?php $this->templates['tokenGeneration']->renderTopNotice(); ?>
-
       <?php $this->templates['settings']->render(); ?>
-
       <?php $this->templates['tokenGeneration']->render(); ?>
     </div>
     <?php
