@@ -6,7 +6,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 # Define output directory
 OUTPUT_DIR="$PROJECT_ROOT/output"
-# Create output directory if it doesn't exist
+# Remove existing output directory if it exists
+rm -rf "$OUTPUT_DIR"
+# Create fresh output directory
 mkdir -p "$OUTPUT_DIR"
 # Change to the project root directory
 cd "$PROJECT_ROOT" || exit
@@ -16,7 +18,9 @@ package_plugin() {
   local plugin_dir="$1"
   local plugin_name
   plugin_name=$(basename "$plugin_dir")
-  local zip_file="$OUTPUT_DIR/${plugin_name}.zip"
+  local timestamp
+  timestamp=$(date +%s)
+  local zip_file="$OUTPUT_DIR/${plugin_name}-${timestamp}.zip"
 
   echo "Starting to package the $plugin_name plugin..."
 
